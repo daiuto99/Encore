@@ -90,16 +90,16 @@ export default function UploadZone({ onSongsUploaded }: UploadZoneProps) {
   };
 
   return (
-    <Card className="h-32 flex flex-col" data-testid="card-upload-zone">
-      <CardHeader className="pb-2 px-4 pt-3 flex-shrink-0">
+    <Card className="h-32 overflow-hidden" data-testid="card-upload-zone">
+      <CardHeader className="pb-1 px-3 pt-2">
         <CardTitle className="flex items-center text-sm">
           <CloudUpload className="mr-2 h-3 w-3 text-primary" />
           Add Songs
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 px-4 pb-3 flex-1">
+      <CardContent className="pt-0 px-3 pb-2">
         <div
-          className={`border-2 border-dashed rounded-lg p-2 text-center transition-colors cursor-pointer h-full flex flex-col justify-center ${
+          className={`border-2 border-dashed rounded-md p-2 text-center transition-colors cursor-pointer min-h-[60px] max-h-[70px] flex flex-col justify-center ${
             isDragOver 
               ? 'drag-over' 
               : 'border-border hover:border-primary hover:bg-primary/5'
@@ -109,18 +109,18 @@ export default function UploadZone({ onSongsUploaded }: UploadZoneProps) {
           onDrop={handleDrop}
           data-testid="zone-drag-drop"
         >
-          <CloudUpload className="mx-auto h-6 w-6 text-muted-foreground mb-1" />
-          <p className="text-xs text-muted-foreground mb-2">Drag & drop .md/.txt files</p>
+          <CloudUpload className="mx-auto h-4 w-4 text-muted-foreground mb-1" />
+          <p className="text-xs text-muted-foreground mb-1">Drag & drop .md/.txt files</p>
           <label>
             <Button 
               variant="default"
               size="sm"
-              className="h-6 text-xs"
+              className="h-5 text-xs px-2"
               asChild
               data-testid="button-choose-files"
             >
               <span>
-                <FilePlus className="mr-1 h-3 w-3" />
+                <FilePlus className="mr-1 h-2 w-2" />
                 Choose Files
               </span>
             </Button>

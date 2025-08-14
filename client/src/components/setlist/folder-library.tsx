@@ -125,8 +125,8 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
   }
 
   return (
-    <Card className="h-32 flex flex-col">
-      <CardHeader className="pb-2 px-4 pt-3 flex-shrink-0">
+    <Card className="h-32 overflow-hidden">
+      <CardHeader className="pb-1 px-3 pt-2">
         <CardTitle className="flex items-center gap-2 text-sm">
           {state.isConnected ? (
             <FolderOpen className="h-3 w-3 text-blue-500" />
@@ -141,14 +141,14 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 px-4 pb-3 flex-1 flex flex-col justify-center">
+      <CardContent className="pt-0 px-3 pb-2">
         {state.isConnected ? (
-          <div className="space-y-2">
+          <div className="space-y-1">
             <div>
               <p className="text-xs font-medium truncate">{state.folderName}</p>
               {state.lastSyncTime && (
                 <p className="text-xs text-muted-foreground">
-                  Last synced: {state.lastSyncTime.toLocaleString()}
+                  Last synced: {new Date(state.lastSyncTime).toLocaleTimeString()}
                 </p>
               )}
             </div>
@@ -158,10 +158,10 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
                 onClick={handleSyncSongs}
                 disabled={isSyncing}
                 size="sm"
-                className="flex-1 h-7 text-xs"
+                className="flex-1 h-6 text-xs px-2"
                 data-testid="button-sync-songs"
               >
-                <RefreshCw className={`mr-1 h-3 w-3 ${isSyncing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`mr-1 h-2 w-2 ${isSyncing ? 'animate-spin' : ''}`} />
                 {isSyncing ? 'Syncing...' : 'Sync'}
               </Button>
               
@@ -169,15 +169,15 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
                 variant="outline"
                 size="sm"
                 onClick={handleDisconnect}
-                className="h-7 px-2"
+                className="h-6 px-2"
                 data-testid="button-disconnect-folder"
               >
-                <Unlink className="h-3 w-3" />
+                <Unlink className="h-2 w-2" />
               </Button>
             </div>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-1">
             <p className="text-xs text-muted-foreground">
               Connect to automatically load song files
             </p>
@@ -185,10 +185,10 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
               onClick={handleConnectFolder}
               disabled={state.isLoading}
               size="sm"
-              className="w-full h-7 text-xs"
+              className="w-full h-6 text-xs px-2"
               data-testid="button-connect-folder"
             >
-              <Folder className="mr-1 h-3 w-3" />
+              <Folder className="mr-1 h-2 w-2" />
               {state.isLoading ? 'Connecting...' : 'Connect Folder'}
             </Button>
           </div>
