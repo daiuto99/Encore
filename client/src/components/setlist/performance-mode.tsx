@@ -138,7 +138,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
             variant="outline"
             onClick={() => actions.navigateSong(-1)}
             disabled={!hasPrev}
-            className="h-[24px] min-w-[60px] text-xs px-2"
+            className="h-[48px] min-w-[60px] text-xs px-2"
             data-testid="button-performance-prev-top"
           >
             <ChevronLeft className="mr-1 h-2 w-2" />
@@ -155,7 +155,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
           <Button 
             onClick={() => actions.navigateSong(1)}
             disabled={!hasNext}
-            className="h-[24px] min-w-[60px] text-xs px-2"
+            className="h-[48px] min-w-[60px] text-xs px-2"
             data-testid="button-performance-next-top"
           >
             {getNextSongName() || 'Next'}
@@ -195,7 +195,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
             variant="outline"
             onClick={() => actions.navigateSong(-1)}
             disabled={!hasPrev}
-            className="h-[24px] min-w-[60px] text-xs px-2"
+            className="h-[48px] min-w-[60px] text-xs px-2"
             data-testid="button-performance-prev-bottom"
           >
             <ChevronLeft className="mr-1 h-2 w-2" />
@@ -205,7 +205,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
           <Button 
             onClick={() => actions.navigateSong(1)}
             disabled={!hasNext}
-            className="h-[24px] min-w-[60px] text-xs px-2"
+            className="h-[48px] min-w-[60px] text-xs px-2"
             data-testid="button-performance-next-bottom"
           >
             {getNextSongName() || 'Next'}
