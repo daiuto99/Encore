@@ -1,6 +1,73 @@
 import { AppState } from '@shared/schema';
 import { embeddedMarkdownParser } from './markdown-parser';
 
+// Embed the key transposition utilities
+const embeddedKeyTransposition = `
+// Musical key transposition utilities
+const NOTES_SHARP = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+const NOTES_FLAT = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'];
+
+const CHORD_PATTERNS = [
+  /\\b([CDEFGAB][♯♭]?)(maj|major|M)?\\b/g,
+  /\\b([CDEFGAB][♯♭]?)(m|min|minor)\\b/g,
+  /\\b([CDEFGAB][♯♭]?)(7|maj7|min7|m7|dim7|aug7|sus7)\\b/g,
+  /\\b([CDEFGAB][♯♭]?)(9|11|13|add9|sus2|sus4|dim|aug)\\b/g,
+  /\\b([CDEFGAB][♯♭]?)\\/([CDEFGAB][♯♭]?)\\b/g,
+  /\\b([CDEFGAB][♯♭]?)\\b/g
+];
+
+function getNoteIndex(note) {
+  let index = NOTES_SHARP.indexOf(note);
+  if (index === -1) {
+    index = NOTES_FLAT.indexOf(note);
+  }
+  return index;
+}
+
+function transposeNote(note, semitones) {
+  const index = getNoteIndex(note);
+  if (index === -1) return note;
+  
+  const newIndex = (index + semitones + 12) % 12;
+  
+  if (semitones >= 0) {
+    return NOTES_SHARP[newIndex];
+  } else {
+    return NOTES_FLAT[newIndex];
+  }
+}
+
+function transposeChords(content, semitones) {
+  if (semitones === 0) return content;
+  
+  let transposedContent = content;
+  
+  CHORD_PATTERNS.forEach(pattern => {
+    transposedContent = transposedContent.replace(pattern, (match, ...groups) => {
+      if (groups.length >= 2 && groups[1] && groups[1].match(/^[CDEFGAB][♯♭]?$/)) {
+        const rootNote = transposeNote(groups[0], semitones);
+        const bassNote = transposeNote(groups[1], semitones);
+        return match.replace(groups[0], rootNote).replace(groups[1], bassNote);
+      } else {
+        const rootNote = transposeNote(groups[0], semitones);
+        return match.replace(groups[0], rootNote);
+      }
+    });
+  });
+  
+  return transposedContent;
+}
+
+function getKeyDisplayName(semitones) {
+  if (semitones === 0) return 'Original';
+  if (semitones > 0) {
+    return \`+\${semitones} (\${Array(semitones).fill('♯').join('')})\`;
+  } else {
+    return \`\${semitones} (\${Array(Math.abs(semitones)).fill('♭').join('')})\`;
+  }
+}
+`;
+
 export async function exportSetlist(state: AppState): Promise<void> {
   const exportData = {
     ...state,
@@ -33,9 +100,12 @@ async function createPortableHTML(data: AppState): Promise<string> {
   // Embed the markdown parser
   const parserScript = `<script>${embeddedMarkdownParser}</script>`;
   
+  // Embed the key transposition utilities
+  const keyTranspositionScript = `<script>${embeddedKeyTransposition}</script>`;
+  
   // Insert scripts before closing body tag
   const htmlWithData = currentHTML
-    .replace('</body>', `${dataScript}${parserScript}</body>`)
+    .replace('</body>', `${dataScript}${parserScript}${keyTranspositionScript}</body>`)
     // Remove development scripts and replace with production note
     .replace(/<script.*replit.*<\/script>/g, '')
     .replace(/<script.*vite.*<\/script>/g, '')
