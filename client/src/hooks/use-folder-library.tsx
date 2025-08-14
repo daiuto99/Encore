@@ -10,12 +10,18 @@ interface FolderLibraryState {
 }
 
 export function useFolderLibrary() {
-  const [state, setState] = useState<FolderLibraryState>({
-    isConnected: false,
-    folderName: null,
-    isSupported: 'showDirectoryPicker' in window,
-    isLoading: false,
-    lastSyncTime: null
+  const [state, setState] = useState<FolderLibraryState>(() => {
+    // Check if we're in an iframe which blocks file system access
+    const inIframe = window !== window.parent;
+    const hasAPI = 'showDirectoryPicker' in window;
+    
+    return {
+      isConnected: false,
+      folderName: null,
+      isSupported: hasAPI && !inIframe,
+      isLoading: false,
+      lastSyncTime: null
+    };
   });
 
   // Load saved folder handle from localStorage

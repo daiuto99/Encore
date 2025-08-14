@@ -67,17 +67,49 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
   };
 
   if (!state.isSupported) {
+    const inIframe = window !== window.parent;
+    const hasAPI = 'showDirectoryPicker' in window;
+    
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-amber-500" />
-            Folder Library Not Supported
+            Folder Library Limited
           </CardTitle>
           <CardDescription>
-            Your browser doesn't support automatic folder access. You can still upload songs using drag & drop.
+            {inIframe ? (
+              <>
+                Folder access is restricted in embedded environments. For full folder functionality, 
+                open this app in a new browser tab or use the drag & drop method below.
+              </>
+            ) : !hasAPI ? (
+              <>
+                Your browser doesn't support automatic folder access. Try Chrome or Edge for folder features, 
+                or use drag & drop below.
+              </>
+            ) : (
+              <>
+                Folder access is not available. You can still upload songs using drag & drop below.
+              </>
+            )}
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="text-center">
+            <Button 
+              variant="outline" 
+              onClick={() => window.open(window.location.href, '_blank')}
+              className="mb-2"
+              data-testid="button-open-new-tab"
+            >
+              Open in New Tab for Full Features
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Opening in a new tab enables folder access and automatic exports
+            </p>
+          </div>
+        </CardContent>
       </Card>
     );
   }
