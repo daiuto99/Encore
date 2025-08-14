@@ -4,20 +4,12 @@
 const NOTES_SHARP = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 const NOTES_FLAT = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'];
 
-// Common chord patterns to match (case insensitive)
+// Common chord patterns to match
 const CHORD_PATTERNS = [
-  // Major chords
-  /\b([CDEFGAB][♯♭]?)(maj|major|M)?\b/g,
-  // Minor chords
-  /\b([CDEFGAB][♯♭]?)(m|min|minor)\b/g,
-  // Seventh chords
-  /\b([CDEFGAB][♯♭]?)(7|maj7|min7|m7|dim7|aug7|sus7)\b/g,
-  // Extended chords
-  /\b([CDEFGAB][♯♭]?)(9|11|13|add9|sus2|sus4|dim|aug)\b/g,
-  // Slash chords
+  // Slash chords (must come first to avoid double processing)
   /\b([CDEFGAB][♯♭]?)\/([CDEFGAB][♯♭]?)\b/g,
-  // Simple note names (for lead sheets)
-  /\b([CDEFGAB][♯♭]?)\b/g
+  // All chord types with root note
+  /\b([CDEFGAB][♯♭]?)(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?\b/g
 ];
 
 function getNoteIndex(note: string): number {
@@ -48,21 +40,17 @@ export function transposeChords(content: string, semitones: number): string {
   
   let transposedContent = content;
   
-  // Apply transposition to all chord patterns
-  CHORD_PATTERNS.forEach(pattern => {
-    transposedContent = transposedContent.replace(pattern, (match, ...groups) => {
-      // Handle different chord pattern structures
-      if (groups.length >= 2 && groups[1] && groups[1].match(/^[CDEFGAB][♯♭]?$/)) {
-        // Slash chord: transpose both notes
-        const rootNote = transposeNote(groups[0], semitones);
-        const bassNote = transposeNote(groups[1], semitones);
-        return match.replace(groups[0], rootNote).replace(groups[1], bassNote);
-      } else {
-        // Regular chord: transpose root note only
-        const rootNote = transposeNote(groups[0], semitones);
-        return match.replace(groups[0], rootNote);
-      }
-    });
+  // Process slash chords first
+  transposedContent = transposedContent.replace(/\b([CDEFGAB][♯♭]?)\/([CDEFGAB][♯♭]?)\b/g, (match, root, bass) => {
+    const newRoot = transposeNote(root, semitones);
+    const newBass = transposeNote(bass, semitones);
+    return `${newRoot}/${newBass}`;
+  });
+  
+  // Then process regular chords
+  transposedContent = transposedContent.replace(/\b([CDEFGAB][♯♭]?)(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?\b/g, (match, root) => {
+    const newRoot = transposeNote(root, semitones);
+    return match.replace(root, newRoot);
   });
   
   return transposedContent;

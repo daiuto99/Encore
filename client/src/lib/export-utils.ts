@@ -7,14 +7,7 @@ const embeddedKeyTransposition = `
 const NOTES_SHARP = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 const NOTES_FLAT = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'];
 
-const CHORD_PATTERNS = [
-  /\\b([CDEFGAB][♯♭]?)(maj|major|M)?\\b/g,
-  /\\b([CDEFGAB][♯♭]?)(m|min|minor)\\b/g,
-  /\\b([CDEFGAB][♯♭]?)(7|maj7|min7|m7|dim7|aug7|sus7)\\b/g,
-  /\\b([CDEFGAB][♯♭]?)(9|11|13|add9|sus2|sus4|dim|aug)\\b/g,
-  /\\b([CDEFGAB][♯♭]?)\\/([CDEFGAB][♯♭]?)\\b/g,
-  /\\b([CDEFGAB][♯♭]?)\\b/g
-];
+// Updated chord patterns for export
 
 function getNoteIndex(note) {
   let index = NOTES_SHARP.indexOf(note);
@@ -42,17 +35,17 @@ function transposeChords(content, semitones) {
   
   let transposedContent = content;
   
-  CHORD_PATTERNS.forEach(pattern => {
-    transposedContent = transposedContent.replace(pattern, (match, ...groups) => {
-      if (groups.length >= 2 && groups[1] && groups[1].match(/^[CDEFGAB][♯♭]?$/)) {
-        const rootNote = transposeNote(groups[0], semitones);
-        const bassNote = transposeNote(groups[1], semitones);
-        return match.replace(groups[0], rootNote).replace(groups[1], bassNote);
-      } else {
-        const rootNote = transposeNote(groups[0], semitones);
-        return match.replace(groups[0], rootNote);
-      }
-    });
+  // Process slash chords first
+  transposedContent = transposedContent.replace(/\\b([CDEFGAB][♯♭]?)\\/([CDEFGAB][♯♭]?)\\b/g, (match, root, bass) => {
+    const newRoot = transposeNote(root, semitones);
+    const newBass = transposeNote(bass, semitones);
+    return newRoot + '/' + newBass;
+  });
+  
+  // Then process regular chords
+  transposedContent = transposedContent.replace(/\\b([CDEFGAB][♯♭]?)(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?\\b/g, (match, root) => {
+    const newRoot = transposeNote(root, semitones);
+    return match.replace(root, newRoot);
   });
   
   return transposedContent;
