@@ -1,0 +1,94 @@
+# Setlist Builder
+
+## Overview
+
+Setlist Builder is a musician's tool for creating and managing song setlists with both online editing capabilities and offline performance mode. The application allows users to upload song files (.md/.txt), organize them into multiple sets, and perform using an optimized performance interface. The key architectural constraint is that while creation requires an internet connection, the exported setlist becomes a fully self-contained, offline-capable HTML file.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript using Vite as the build tool
+- **UI Library**: Shadcn/ui components built on Radix UI primitives with Tailwind CSS for styling
+- **State Management**: Custom React hooks with local state management (no external state library)
+- **Routing**: Wouter for lightweight client-side routing
+- **Data Fetching**: TanStack Query for server state management
+
+### Component Structure
+- **Modular Design**: Components organized by feature (setlist management, song viewing, performance mode)
+- **UI Components**: Comprehensive design system with reusable components (buttons, cards, dialogs, etc.)
+- **Responsive Design**: Mobile-first approach with specific optimizations for iPad performance mode
+
+### Key Features Implementation
+- **File Upload**: Drag-and-drop interface for .md/.txt song files with validation
+- **Song Management**: Library system with search functionality and set organization
+- **Performance Mode**: Optimized full-screen interface with touch gestures, keyboard shortcuts, and wake lock
+- **Theme System**: Light/dark mode toggle with CSS custom properties
+- **Font Scaling**: Dynamic font size adjustment (50-200%) using CSS variables
+
+### Backend Architecture
+- **Server**: Express.js with TypeScript
+- **Database**: PostgreSQL with Drizzle ORM for schema management
+- **Storage**: Neon serverless database for production, in-memory storage for development
+- **Session Management**: Connect-pg-simple for PostgreSQL session storage
+
+### Data Schema
+- **Songs**: ID, name, content, duration
+- **Sets**: ID, name, songs array, color theme
+- **App State**: Comprehensive state including setlist name, current positions, UI preferences
+
+### Export/Import System
+- **Offline Export**: Generates self-contained HTML files with embedded JSON state and parsing libraries
+- **State Preservation**: Maintains all user data and preferences in exported files
+- **Import Capability**: Restores complete application state from previously exported files
+
+### Performance Optimizations
+- **Touch Gestures**: Swipe navigation for mobile/tablet interfaces
+- **Keyboard Shortcuts**: Arrow key navigation and escape key handling
+- **Wake Lock**: Prevents screen sleep during performance mode
+- **Responsive Breakpoints**: Optimized layouts for different screen sizes
+
+### Development Tooling
+- **Build System**: Vite with hot module replacement and development server
+- **Code Quality**: TypeScript for type safety, ESLint configuration ready
+- **Database Migrations**: Drizzle Kit for schema management and migrations
+- **Development Features**: Replit integration with error overlay and cartographer plugins
+
+## External Dependencies
+
+### Core Dependencies
+- **@neondatabase/serverless**: Serverless PostgreSQL connection for production database
+- **drizzle-orm**: Type-safe SQL ORM for database operations
+- **drizzle-kit**: Database schema management and migration tool
+
+### UI and Styling
+- **@radix-ui/react-***: Comprehensive collection of unstyled, accessible UI primitives
+- **tailwindcss**: Utility-first CSS framework for styling
+- **class-variance-authority**: Type-safe component variants
+- **clsx**: Conditional className utility
+
+### React Ecosystem
+- **@tanstack/react-query**: Server state management and caching
+- **@hookform/resolvers**: Form validation resolvers
+- **wouter**: Lightweight React router
+- **react-hook-form**: Forms with minimal re-renders
+
+### Development Tools
+- **vite**: Fast build tool and development server
+- **typescript**: Type checking and enhanced developer experience
+- **@replit/vite-plugin-***: Replit-specific development plugins
+
+### Utility Libraries
+- **date-fns**: Date manipulation and formatting
+- **nanoid**: Unique ID generation
+- **zod**: Schema validation and type inference
+- **embla-carousel-react**: Touch-friendly carousel component
+- **cmdk**: Command palette component
+
+### Build and Deployment
+- **esbuild**: Fast JavaScript bundler for production builds
+- **tsx**: TypeScript execution for development server
+- **postcss**: CSS processing with autoprefixer

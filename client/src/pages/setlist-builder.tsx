@@ -1,0 +1,209 @@
+import { useEffect } from 'react';
+import { useSetlistState } from '@/hooks/use-setlist-state';
+import { useToast } from '@/hooks/use-toast';
+import UploadZone from '@/components/setlist/upload-zone';
+import AvailableSongs from '@/components/setlist/available-songs';
+import SetManager from '@/components/setlist/set-manager';
+import SongViewer from '@/components/setlist/song-viewer';
+import PerformanceMode from '@/components/setlist/performance-mode';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Moon, Sun, Play, Pause, Download, Upload, Minus, Plus } from 'lucide-react';
+import { exportSetlist, loadSetlist } from '@/lib/export-utils';
+
+export default function SetlistBuilder() {
+  const { state, actions } = useSetlistState();
+  const { toast } = useToast();
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        actions.navigateSong(-1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        actions.navigateSong(1);
+      } else if (e.key === 'Escape' && state.isPerformanceMode) {
+        e.preventDefault();
+        actions.togglePerformanceMode();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeydown);
+    return () => document.removeEventListener('keydown', handleKeydown);
+  }, [state.isPerformanceMode, actions]);
+
+  const handleExport = async () => {
+    try {
+      await exportSetlist(state);
+      toast({
+        title: 'Success',
+        description: 'Setlist exported successfully',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to export setlist',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleLoad = async (file: File) => {
+    try {
+      const loadedState = await loadSetlist(file);
+      actions.loadState(loadedState);
+      toast({
+        title: 'Success',
+        description: 'Setlist loaded successfully',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to load setlist file',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  if (state.isPerformanceMode) {
+    return <PerformanceMode state={state} actions={actions} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-muted/30 transition-colors duration-200">
+      {/* Header */}
+      <header className="bg-card shadow-sm border-b no-print" data-testid="header-main">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <Input
+                value={state.setlistName}
+                onChange={(e) => actions.setSetlistName(e.target.value)}
+                className="text-xl font-semibold bg-transparent border-none focus:bg-muted/50 rounded px-2 py-1 min-w-[200px]"
+                data-testid="input-setlist-name"
+              />
+              {state.exportDate && (
+                <span className="text-sm text-muted-foreground" data-testid="text-export-date">
+                  {new Date(state.exportDate).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              {/* Font Size Controls */}
+              <div className="flex items-center space-x-1">
+                <Button 
+                  size="icon"
+                  variant="outline"
+                  onClick={() => actions.setFontSize(state.fontSize - 10)}
+                  data-testid="button-font-decrease"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-muted-foreground min-w-[3rem] text-center" data-testid="text-font-size">
+                  {state.fontSize}%
+                </span>
+                <Button 
+                  size="icon"
+                  variant="outline"
+                  onClick={() => actions.setFontSize(state.fontSize + 10)}
+                  data-testid="button-font-increase"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Dark Mode Toggle */}
+              <Button 
+                size="icon"
+                variant="outline"
+                onClick={actions.toggleDarkMode}
+                data-testid="button-dark-mode-toggle"
+              >
+                {state.isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+
+              {/* Performance Mode Toggle */}
+              <Button 
+                onClick={actions.togglePerformanceMode}
+                data-testid="button-performance-mode-toggle"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Performance Mode
+              </Button>
+
+              {/* Save/Load Controls */}
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline"
+                  className="bg-success hover:bg-success/90 text-white"
+                  onClick={handleExport}
+                  data-testid="button-save-setlist"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+                <label className="cursor-pointer">
+                  <Button variant="outline" className="bg-secondary hover:bg-secondary/90" asChild>
+                    <span>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Load
+                    </span>
+                  </Button>
+                  <input 
+                    type="file" 
+                    accept=".html" 
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        handleLoad(e.target.files[0]);
+                        e.target.value = '';
+                      }
+                    }}
+                    data-testid="input-load-setlist"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="main-content">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column: Upload & Available Songs */}
+            <div className="lg:col-span-1 space-y-6">
+              <UploadZone onSongsUploaded={actions.addSongs} />
+              <AvailableSongs 
+                songs={state.allSongs}
+                sets={state.sets}
+                currentSetIndex={state.currentSetIndex}
+                onAddToSet={actions.addSongToCurrentSet}
+              />
+            </div>
+
+            {/* Middle Column: Sets */}
+            <div className="lg:col-span-1 space-y-6">
+              <SetManager 
+                state={state}
+                actions={actions}
+              />
+            </div>
+
+            {/* Right Column: Song Viewer & Navigation */}
+            <div className="lg:col-span-1 space-y-6">
+              <SongViewer 
+                state={state}
+                actions={actions}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
