@@ -63,11 +63,12 @@ async function createPortableHTML(data: AppState): Promise<string> {
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-touch-fullscreen" content="yes" />
     <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <title>${data.setlistName} - Setlist</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -79,8 +80,15 @@ async function createPortableHTML(data: AppState): Promise<string> {
             -webkit-font-smoothing: antialiased;
             -webkit-text-size-adjust: 100%;
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -webkit-backface-visibility: hidden;
+            -webkit-transform: translate3d(0,0,0);
             touch-action: manipulation;
             font-size: 16px;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .header { text-align: center; margin-bottom: 30px; }
@@ -289,26 +297,37 @@ async function createPortableHTML(data: AppState): Promise<string> {
             }
         });
         
-        // Touch gestures for mobile
+        // Touch gestures for mobile (iOS 15 compatible)
         let touchStartX = 0;
+        let touchStartY = 0;
+        let touchMoved = false;
+        
         document.addEventListener('touchstart', function(e) {
             touchStartX = e.touches[0].clientX;
-        });
+            touchStartY = e.touches[0].clientY;
+            touchMoved = false;
+        }, { passive: true });
+        
+        document.addEventListener('touchmove', function(e) {
+            touchMoved = true;
+        }, { passive: true });
         
         document.addEventListener('touchend', function(e) {
             if (!document.getElementById('performanceMode').classList.contains('active')) return;
+            if (touchMoved) return; // Ignore if user was scrolling
             
             const touchEndX = e.changedTouches[0].clientX;
             const diff = touchStartX - touchEndX;
             
             if (Math.abs(diff) > 50) { // Minimum swipe distance
+                e.preventDefault();
                 if (diff > 0) {
                     nextSong(); // Swipe left = next
                 } else {
                     previousSong(); // Swipe right = previous
                 }
             }
-        });
+        }, { passive: false });
     </script>
 </body>
 </html>`;

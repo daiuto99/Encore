@@ -59,14 +59,19 @@
   body {
     @apply bg-background text-foreground;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    /* iOS Safari fixes */
+    /* iOS 15 Safari compatibility fixes */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
     touch-action: manipulation;
     /* Prevent iOS zoom on input focus */
     font-size: 16px;
+    /* iOS 15 memory optimization */
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translate3d(0,0,0);
   }
 }
 
