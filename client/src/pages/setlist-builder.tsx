@@ -65,16 +65,21 @@ export default function SetlistBuilder() {
 
   const handleLoad = async (file: File) => {
     try {
+      console.log('Loading setlist file:', file.name);
       const loadedState = await loadSetlist(file);
+      console.log('Loaded state from file:', loadedState);
+      
       actions.loadState(loadedState);
+      
       toast({
         title: 'Success',
-        description: 'Setlist loaded successfully',
+        description: `Setlist "${loadedState.setlistName}" loaded successfully`,
       });
     } catch (error) {
+      console.error('Error loading setlist:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load setlist file',
+        description: error instanceof Error ? error.message : 'Failed to load setlist file',
         variant: 'destructive',
       });
     }

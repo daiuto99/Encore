@@ -250,7 +250,34 @@ export function useSetlistState() {
     },
 
     loadState: (newState: AppState) => {
-      setState(newState);
+      try {
+        // Validate the new state has required properties
+        if (!newState || typeof newState !== 'object') {
+          throw new Error('Invalid state object');
+        }
+        
+        if (!newState.setlistName || !Array.isArray(newState.allSongs) || !Array.isArray(newState.sets)) {
+          throw new Error('Missing required state properties');
+        }
+        
+        // Ensure required properties exist with defaults
+        const validatedState: AppState = {
+          setlistName: newState.setlistName || 'Imported Setlist',
+          allSongs: newState.allSongs || [],
+          sets: newState.sets.length > 0 ? newState.sets : [{ id: 1, name: 'Set 1', songs: [], color: 'blue' }],
+          currentSetIndex: Math.max(0, Math.min(newState.currentSetIndex || 0, (newState.sets?.length || 1) - 1)),
+          currentSongIndex: newState.currentSongIndex || -1,
+          fontSize: newState.fontSize || 100,
+          isDarkMode: newState.isDarkMode || false,
+          isPerformanceMode: false // Always start in normal mode
+        };
+        
+        console.log('Loading validated state:', validatedState);
+        setState(validatedState);
+      } catch (error) {
+        console.error('Error loading state:', error);
+        throw new Error('Failed to load setlist: ' + (error as Error).message);
+      }
     }
   };
 
