@@ -194,12 +194,17 @@ export default function SetlistBuilder() {
 
       {/* Main Content */}
       <div className="main-content">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column: Upload & Available Songs */}
-            <div className="lg:col-span-1 space-y-6">
-              <FolderLibrary onSongsLoaded={handleFolderSongsLoaded} />
-              <UploadZone onSongsUploaded={actions.addSongs} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* Compact Top Section: Folder Library + Upload Zone */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <FolderLibrary onSongsLoaded={handleFolderSongsLoaded} />
+            <UploadZone onSongsUploaded={actions.addSongs} />
+          </div>
+
+          {/* Main Working Area: Available Songs + Sets (maximized space) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6" style={{ minHeight: '60vh' }}>
+            {/* Available Songs - Full Height */}
+            <div className="flex flex-col">
               <AvailableSongs 
                 songs={state.allSongs}
                 sets={state.sets}
@@ -208,21 +213,21 @@ export default function SetlistBuilder() {
               />
             </div>
 
-            {/* Middle Column: Sets */}
-            <div className="lg:col-span-1 space-y-6">
+            {/* Sets - Full Height */}
+            <div className="flex flex-col">
               <SetManager 
                 state={state}
                 actions={actions}
               />
             </div>
+          </div>
 
-            {/* Right Column: Song Viewer & Navigation */}
-            <div className="lg:col-span-1 space-y-6">
-              <SongViewer 
-                state={state}
-                actions={actions}
-              />
-            </div>
+          {/* Song Viewer - Below main area */}
+          <div className="border-t pt-6">
+            <SongViewer 
+              state={state}
+              actions={actions}
+            />
           </div>
         </div>
       </div>

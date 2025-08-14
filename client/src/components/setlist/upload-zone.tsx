@@ -90,16 +90,16 @@ export default function UploadZone({ onSongsUploaded }: UploadZoneProps) {
   };
 
   return (
-    <Card data-testid="card-upload-zone">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <CloudUpload className="mr-2 h-5 w-5 text-primary" />
-          Upload Songs
+    <Card className="h-fit" data-testid="card-upload-zone">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center text-base">
+          <CloudUpload className="mr-2 h-4 w-4 text-primary" />
+          Add Songs
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+          className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer ${
             isDragOver 
               ? 'drag-over' 
               : 'border-border hover:border-primary hover:bg-primary/5'
@@ -109,17 +109,17 @@ export default function UploadZone({ onSongsUploaded }: UploadZoneProps) {
           onDrop={handleDrop}
           data-testid="zone-drag-drop"
         >
-          <CloudUpload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground mb-2">Drag & drop .md or .txt files here</p>
-          <p className="text-sm text-muted-foreground mb-4">or</p>
+          <CloudUpload className="mx-auto h-8 w-8 text-muted-foreground mb-3" />
+          <p className="text-sm text-muted-foreground mb-2">Drag & drop .md/.txt files</p>
           <label>
             <Button 
               variant="default"
+              size="sm"
               asChild
               data-testid="button-choose-files"
             >
               <span>
-                <FilePlus className="mr-2 h-4 w-4" />
+                <FilePlus className="mr-1 h-3 w-3" />
                 Choose Files
               </span>
             </Button>

@@ -130,7 +130,7 @@ export default function SetManager({ state, actions }: SetManagerProps) {
         </div>
         
         {/* Set Songs */}
-        <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar" data-testid="list-set-songs">
+        <div className="space-y-2 overflow-y-auto custom-scrollbar" style={{ maxHeight: '50vh' }} data-testid="list-set-songs">
           {currentSet.songs.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
               <List className="mx-auto h-8 w-8 mb-2" />

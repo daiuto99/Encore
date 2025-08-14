@@ -125,91 +125,73 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="h-fit">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
           {state.isConnected ? (
-            <FolderOpen className="h-5 w-5 text-blue-500" />
+            <FolderOpen className="h-4 w-4 text-blue-500" />
           ) : (
-            <Folder className="h-5 w-5" />
+            <Folder className="h-4 w-4" />
           )}
           Song Folder Library
+          {state.isConnected && (
+            <Badge variant="secondary" className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-300 ml-auto">
+              Connected
+            </Badge>
+          )}
         </CardTitle>
-        <CardDescription>
-          Connect to a folder (like iCloud Drive) to automatically load your markdown song files
-        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="pt-0">
         {state.isConnected ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Connected to:</p>
-                <p className="text-sm text-muted-foreground">{state.folderName}</p>
-                {state.lastSyncTime && (
-                  <p className="text-xs text-muted-foreground">
-                    Last synced: {state.lastSyncTime.toLocaleString()}
-                  </p>
-                )}
-                {!state.lastSyncTime && (
-                  <p className="text-xs text-amber-600 dark:text-amber-400">
-                    Ready to sync - click "Sync Songs" to load your music
-                  </p>
-                )}
-              </div>
-              <Badge variant="secondary" className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-300">
-                Connected
-              </Badge>
+          <div className="space-y-3">
+            <div>
+              <p className="text-sm font-medium">{state.folderName}</p>
+              {state.lastSyncTime && (
+                <p className="text-xs text-muted-foreground">
+                  Last synced: {state.lastSyncTime.toLocaleString()}
+                </p>
+              )}
             </div>
             
             <div className="flex gap-2">
               <Button 
                 onClick={handleSyncSongs}
                 disabled={isSyncing}
+                size="sm"
                 className="flex-1"
                 data-testid="button-sync-songs"
               >
-                <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                {isSyncing ? 'Syncing...' : 'Sync Songs'}
+                <RefreshCw className={`mr-1 h-3 w-3 ${isSyncing ? 'animate-spin' : ''}`} />
+                {isSyncing ? 'Syncing...' : 'Sync'}
               </Button>
               
               <Button 
                 variant="outline"
+                size="sm"
                 onClick={handleDisconnect}
                 data-testid="button-disconnect-folder"
               >
-                <Unlink className="mr-2 h-4 w-4" />
-                Disconnect
+                <Unlink className="h-3 w-3" />
               </Button>
             </div>
           </div>
         ) : (
-          <div className="text-center space-y-4">
+          <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Connect to your song folder to automatically load markdown files
+              Connect to automatically load song files
             </p>
             <Button 
               onClick={handleConnectFolder}
               disabled={state.isLoading}
+              size="sm"
+              className="w-full"
               data-testid="button-connect-folder"
             >
-              <Folder className="mr-2 h-4 w-4" />
+              <Folder className="mr-2 h-3 w-3" />
               {state.isLoading ? 'Connecting...' : 'Connect Folder'}
             </Button>
           </div>
         )}
-        
-        <div className="pt-2 border-t space-y-1">
-          <p className="text-xs text-muted-foreground">
-            Works with iCloud Drive, Google Drive, OneDrive, and local folders. 
-            Requires Chrome, Edge, or other modern browsers.
-          </p>
-          {state.isConnected && (
-            <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-              💾 Setlist exports will automatically save to "{state.folderName}/sets/"
-            </p>
-          )}
-        </div>
       </CardContent>
     </Card>
   );
