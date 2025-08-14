@@ -111,34 +111,67 @@ export function useFolderLibrary() {
         throw new Error('Folder handle not found');
       }
 
-      const directoryHandle = JSON.parse(savedHandle);
+      // Parse the saved handle
+      let directoryHandle;
+      try {
+        directoryHandle = JSON.parse(savedHandle);
+      } catch (parseError) {
+        throw new Error('Invalid folder handle data');
+      }
+
+      console.log('Attempting to access directory:', directoryHandle);
       
       // Request permission to access the directory
-      const permission = await directoryHandle.requestPermission({ mode: 'read' });
+      let permission;
+      try {
+        permission = await directoryHandle.requestPermission({ mode: 'read' });
+        console.log('Permission result:', permission);
+      } catch (permError: any) {
+        console.error('Permission request failed:', permError);
+        throw new Error('Could not request folder permission: ' + (permError.message || permError));
+      }
+      
       if (permission !== 'granted') {
         throw new Error('Permission denied to access folder');
       }
 
       const songs: Song[] = [];
+      let fileCount = 0;
+      let processedCount = 0;
+      
+      console.log('Starting to read directory entries...');
       
       // Read all markdown files from the directory
-      for await (const [name, handle] of directoryHandle.entries()) {
-        if (handle.kind === 'file' && (name.endsWith('.md') || name.endsWith('.txt'))) {
-          try {
-            const file = await handle.getFile();
-            const content = await file.text();
-            
-            songs.push({
-              id: Date.now() + Math.random(),
-              name: name.replace(/\.(md|txt)$/, ''),
-              content: content,
-              duration: 0
-            });
-          } catch (error) {
-            console.warn(`Could not read file ${name}:`, error);
+      try {
+        for await (const [name, handle] of directoryHandle.entries()) {
+          fileCount++;
+          console.log(`Found entry: ${name}, kind: ${handle.kind}`);
+          
+          if (handle.kind === 'file' && (name.endsWith('.md') || name.endsWith('.txt'))) {
+            try {
+              console.log(`Processing file: ${name}`);
+              const file = await handle.getFile();
+              const content = await file.text();
+              
+              songs.push({
+                id: Date.now() + Math.random() + processedCount,
+                name: name.replace(/\.(md|txt)$/, ''),
+                content: content,
+                duration: 0
+              });
+              processedCount++;
+              console.log(`Successfully processed: ${name}`);
+            } catch (fileError) {
+              console.warn(`Could not read file ${name}:`, fileError);
+            }
           }
         }
+      } catch (iterError: any) {
+        console.error('Error iterating directory:', iterError);
+        throw new Error('Failed to read folder contents: ' + (iterError.message || iterError));
       }
+
+      console.log(`Sync complete: found ${fileCount} total entries, processed ${processedCount} song files`);
 
       setState(prev => ({
         ...prev,
@@ -149,6 +182,7 @@ export function useFolderLibrary() {
       return songs;
 
     } catch (error) {
+      console.error('Sync failed:', error);
       setState(prev => ({ ...prev, isLoading: false }));
       throw error;
     }
