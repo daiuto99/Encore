@@ -42,7 +42,6 @@ function transposeNote(note: string, semitones: number): string {
 export function transposeChords(content: string, semitones: number): string {
   if (semitones === 0) return content;
   
-  console.log('TRANSPOSE CALL:', { semitones, inputContent: content.substring(0, 200) });
   let transposedContent = content;
   
   // Pattern 1: Obsidian-style chords in backticks with brackets: `[Chord]`
@@ -57,15 +56,8 @@ export function transposeChords(content: string, semitones: number): string {
     return `[${newChord}]`;
   });
   
-  // Transpose key signatures in the metadata
-  transposedContent = transposedContent.replace(/\*\*Key:\*\*\s*([CDEFGAB][♯♭#b]?)\s*(Major|Minor|major|minor)/g, (match, key, mode) => {
-    console.log('KEY TRANSPOSE DEBUG:', { match, key, mode, semitones });
-    const newKey = transposeNote(key.replace('#', '♯').replace('b', '♭'), semitones);
-    console.log('KEY TRANSPOSE RESULT:', { originalKey: key, newKey, semitones });
-    const outputKey = newKey.replace('♯', '#').replace('♭', 'b');
-    console.log('KEY FINAL OUTPUT:', { outputKey });
-    return `**Key:** ${outputKey} ${mode}`;
-  });
+  // Transpose key signatures in the metadata (moved to end to avoid conflicts)
+  // This pattern is processed AFTER other chord patterns to prevent interference
   
   // Pattern 3: Slash chords in backticks: `[C/G]`
   transposedContent = transposedContent.replace(/`\[([CDEFGAB][♯♭#b]?)\/([CDEFGAB][♯♭#b]?)\]`/g, (match, root, bass) => {
@@ -87,7 +79,13 @@ export function transposeChords(content: string, semitones: number): string {
     return match.replace(chord, newChord);
   });
   
-  console.log('TRANSPOSE RESULT:', { semitones, outputContent: transposedContent.substring(0, 200) });
+  // Final pattern: Transpose key signatures in metadata (after all chord patterns to avoid conflicts)
+  transposedContent = transposedContent.replace(/\*\*Key:\*\*\s*([CDEFGAB][♯♭#b]?)\s*(Major|Minor|major|minor)/g, (match, key, mode) => {
+    const newKey = transposeNote(key.replace('#', '♯').replace('b', '♭'), semitones);
+    const outputKey = newKey.replace('♯', '#').replace('♭', 'b');
+    return `**Key:** ${outputKey} ${mode}`;
+  });
+  
   return transposedContent;
 }
 
