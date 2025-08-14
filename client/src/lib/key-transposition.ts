@@ -42,6 +42,7 @@ function transposeNote(note: string, semitones: number): string {
 export function transposeChords(content: string, semitones: number): string {
   if (semitones === 0) return content;
   
+  console.log('TRANSPOSE CALL:', { semitones, inputContent: content.substring(0, 200) });
   let transposedContent = content;
   
   // Pattern 1: Obsidian-style chords in backticks with brackets: `[Chord]`
@@ -83,6 +84,7 @@ export function transposeChords(content: string, semitones: number): string {
     return match.replace(chord, newChord);
   });
   
+  console.log('TRANSPOSE RESULT:', { semitones, outputContent: transposedContent.substring(0, 200) });
   return transposedContent;
 }
 
