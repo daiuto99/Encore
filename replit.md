@@ -24,7 +24,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Features Implementation
 - **File Upload**: Drag-and-drop interface for .md/.txt song files with validation
-- **Folder Library**: File System Access API integration for automatic song syncing from iCloud Drive/Google Drive folders
+- **Folder Library**: File System Access API integration for automatic song syncing from iCloud Drive/Google Drive folders (implemented and tested)
 - **Song Management**: Library system with search functionality and set organization
 - **Performance Mode**: Optimized full-screen interface with touch gestures, keyboard shortcuts, and wake lock
 - **Theme System**: Light/dark mode toggle with CSS custom properties
