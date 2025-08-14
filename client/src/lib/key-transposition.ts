@@ -40,20 +40,53 @@ export function transposeChords(content: string, semitones: number): string {
   
   let transposedContent = content;
   
-  // Process slash chords first
-  transposedContent = transposedContent.replace(/\b([CDEFGAB][♯♭]?)\/([CDEFGAB][♯♭]?)\b/g, (match, root, bass) => {
-    const newRoot = transposeNote(root, semitones);
-    const newBass = transposeNote(bass, semitones);
-    return `${newRoot}/${newBass}`;
+  // Pattern 1: Obsidian-style chords in backticks with brackets: `[Chord]`
+  transposedContent = transposedContent.replace(/`\[([CDEFGAB][♯♭#b]?(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?)\]`/g, (match, chord) => {
+    const newChord = transposeChordName(chord, semitones);
+    return `\`[${newChord}]\``;
   });
   
-  // Then process regular chords
-  transposedContent = transposedContent.replace(/\b([CDEFGAB][♯♭]?)(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?\b/g, (match, root) => {
+  // Pattern 2: Square bracket chords: [Chord]
+  transposedContent = transposedContent.replace(/\[([CDEFGAB][♯♭#b]?(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?)\]/g, (match, chord) => {
+    const newChord = transposeChordName(chord, semitones);
+    return `[${newChord}]`;
+  });
+  
+  // Pattern 3: Slash chords in backticks: `[C/G]`
+  transposedContent = transposedContent.replace(/`\[([CDEFGAB][♯♭#b]?)\/([CDEFGAB][♯♭#b]?)\]`/g, (match, root, bass) => {
     const newRoot = transposeNote(root, semitones);
-    return match.replace(root, newRoot);
+    const newBass = transposeNote(bass, semitones);
+    return `\`[${newRoot}/${newBass}]\``;
+  });
+  
+  // Pattern 4: Slash chords: [C/G]
+  transposedContent = transposedContent.replace(/\[([CDEFGAB][♯♭#b]?)\/([CDEFGAB][♯♭#b]?)\]/g, (match, root, bass) => {
+    const newRoot = transposeNote(root, semitones);
+    const newBass = transposeNote(bass, semitones);
+    return `[${newRoot}/${newBass}]`;
+  });
+  
+  // Pattern 5: Regular chord names in text (without brackets)
+  transposedContent = transposedContent.replace(/\b([CDEFGAB][♯♭#b]?)(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?\b/g, (match, chord) => {
+    const newChord = transposeChordName(chord, semitones);
+    return match.replace(chord, newChord);
   });
   
   return transposedContent;
+}
+
+function transposeChordName(chord: string, semitones: number): string {
+  // Extract root note (handle both # and ♯, b and ♭)
+  const rootMatch = chord.match(/^([CDEFGAB][♯♭#b]?)/);
+  if (!rootMatch) return chord;
+  
+  const originalRoot = rootMatch[1];
+  // Normalize sharp/flat symbols
+  const normalizedRoot = originalRoot.replace('#', '♯').replace('b', '♭');
+  const newRoot = transposeNote(normalizedRoot, semitones);
+  
+  // Replace the root in the original chord
+  return chord.replace(originalRoot, newRoot);
 }
 
 export function getKeyDisplayName(semitones: number): string {
