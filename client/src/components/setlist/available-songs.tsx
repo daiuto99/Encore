@@ -2,8 +2,10 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Music, Search } from 'lucide-react';
 import { Song, Set } from '@shared/schema';
+import { getSetColor, getSetColorClasses } from '@/lib/set-colors';
 
 interface AvailableSongsProps {
   songs: Song[];
@@ -52,9 +54,10 @@ export default function AvailableSongs({
             <Music className="mr-2 h-5 w-5 text-primary" />
             Available Songs
           </CardTitle>
-          <span className="text-sm text-muted-foreground" data-testid="text-song-count">
-            {songs.length} songs
-          </span>
+          <div className="text-sm text-muted-foreground" data-testid="text-song-count">
+            <div>{songs.length} total</div>
+            <div>{songs.filter(song => !isSongInAnySet(song.id).inSet).length} available</div>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -84,13 +87,27 @@ export default function AvailableSongs({
               const songInSet = isSongInAnySet(song.id);
               const buttonText = songInSet.inSet ? `In ${songInSet.setName}` : 'Add to Set';
               const buttonDisabled = songInSet.inSet && songInSet.setIndex === currentSetIndex;
+              const setColor = songInSet.inSet ? getSetColor(songInSet.setIndex!) : null;
+              const cardClasses = songInSet.inSet && setColor
+                ? `flex items-center justify-between p-3 rounded-md hover:opacity-80 transition-colors border ${getSetColorClasses(setColor, 'light')}`
+                : 'flex items-center justify-between p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors border border-border';
               
               return (
-                <div key={song.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors" data-testid={`item-song-${song.id}`}>
+                <div key={song.id} className={cardClasses} data-testid={`item-song-${song.id}`}>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-foreground truncate" data-testid={`text-song-name-${song.id}`}>
-                      {song.name}
-                    </h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-medium truncate" data-testid={`text-song-name-${song.id}`}>
+                        {song.name}
+                      </h4>
+                      {songInSet.inSet && setColor && (
+                        <Badge 
+                          variant="secondary" 
+                          className={`text-xs ${getSetColorClasses(setColor, 'medium')}`}
+                        >
+                          {songInSet.setName}
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground truncate" data-testid={`text-song-preview-${song.id}`}>
                       {song.content.substring(0, 100)}...
                     </p>
@@ -103,7 +120,7 @@ export default function AvailableSongs({
                     className="ml-3"
                     data-testid={`button-add-song-${song.id}`}
                   >
-                    {buttonText}
+                    {songInSet.inSet ? 'Add to Set' : 'Add to Set'}
                   </Button>
                 </div>
               );

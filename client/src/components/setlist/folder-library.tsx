@@ -125,7 +125,7 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
   }
 
   return (
-    <Card className="h-fit">
+    <Card className="h-32">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
           {state.isConnected ? (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AppState, Song, Set } from '@shared/schema';
+import { getSetColor } from '@/lib/set-colors';
 
 const initialState: AppState = {
   setlistName: 'My Setlist',
@@ -154,7 +155,7 @@ export function useSetlistState() {
           id: Date.now(),
           name: `Set ${prev.sets.length + 1}`,
           songs: [],
-          color: ['blue', 'green', 'purple', 'orange'][prev.sets.length % 4]
+          color: getSetColor(prev.sets.length)
         };
         return {
           ...prev,

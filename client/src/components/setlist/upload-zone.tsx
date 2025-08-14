@@ -90,7 +90,7 @@ export default function UploadZone({ onSongsUploaded }: UploadZoneProps) {
   };
 
   return (
-    <Card className="h-fit" data-testid="card-upload-zone">
+    <Card className="h-32" data-testid="card-upload-zone">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center text-base">
           <CloudUpload className="mr-2 h-4 w-4 text-primary" />

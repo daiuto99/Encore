@@ -16,6 +16,7 @@ import {
 import { List, Plus, Trash2, ChevronUp, ChevronDown, X } from 'lucide-react';
 import { AppState } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
+import { getSetColor, getSetColorClasses } from '@/lib/set-colors';
 
 interface SetManagerProps {
   state: AppState;
@@ -63,18 +64,26 @@ export default function SetManager({ state, actions }: SetManagerProps) {
       <CardContent>
         {/* Set Tabs */}
         <div className="flex space-x-1 mb-6 overflow-x-auto custom-scrollbar" data-testid="tabs-sets">
-          {state.sets.map((set, index) => (
-            <Button
-              key={set.id}
-              variant={index === state.currentSetIndex ? "default" : "outline"}
-              size="sm"
-              onClick={() => actions.switchToSet(index)}
-              className="whitespace-nowrap min-w-[80px]"
-              data-testid={`button-set-tab-${index}`}
-            >
-              {set.name}
-            </Button>
-          ))}
+          {state.sets.map((set, index) => {
+            const setColor = getSetColor(index);
+            const isActive = index === state.currentSetIndex;
+            const tabClasses = isActive 
+              ? `whitespace-nowrap min-w-[80px] ${getSetColorClasses(setColor, 'dark')}`
+              : `whitespace-nowrap min-w-[80px] border ${getSetColorClasses(setColor, 'light')}`;
+            
+            return (
+              <Button
+                key={set.id}
+                variant={isActive ? "default" : "outline"}
+                size="sm"
+                onClick={() => actions.switchToSet(index)}
+                className={tabClasses}
+                data-testid={`button-set-tab-${index}`}
+              >
+                {set.name} ({set.songs.length})
+              </Button>
+            );
+          })}
         </div>
         
         {/* Current Set Info */}
@@ -140,14 +149,15 @@ export default function SetManager({ state, actions }: SetManagerProps) {
           ) : (
             currentSet.songs.map((song, index) => {
               const isSelected = index === state.currentSongIndex;
+              const setColor = getSetColor(state.currentSetIndex);
+              const songClasses = isSelected 
+                ? `flex items-center p-3 rounded-md border transition-colors cursor-pointer ${getSetColorClasses(setColor, 'medium')}`
+                : `flex items-center p-3 rounded-md border transition-colors cursor-pointer ${getSetColorClasses(setColor, 'light')} hover:opacity-80`;
+              
               return (
                 <div 
                   key={`${song.id}-${index}`}
-                  className={`flex items-center p-3 rounded-md border transition-colors cursor-pointer ${
-                    isSelected 
-                      ? 'bg-primary/10 border-primary' 
-                      : 'bg-muted/30 border-border hover:bg-muted/50'
-                  }`}
+                  className={songClasses}
                   onClick={() => actions.selectSong(index)}
                   data-testid={`item-set-song-${index}`}
                 >
