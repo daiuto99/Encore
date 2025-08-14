@@ -230,7 +230,22 @@ export function useSetlistState() {
     },
 
     togglePerformanceMode: () => {
-      setState(prev => ({ ...prev, isPerformanceMode: !prev.isPerformanceMode }));
+      setState(prev => {
+        const newPerformanceMode = !prev.isPerformanceMode;
+        const currentSet = prev.sets[prev.currentSetIndex];
+        
+        // When entering performance mode, automatically start on first song if there are songs
+        let newSongIndex = prev.currentSongIndex;
+        if (newPerformanceMode && currentSet && currentSet.songs.length > 0 && prev.currentSongIndex === -1) {
+          newSongIndex = 0;
+        }
+        
+        return { 
+          ...prev, 
+          isPerformanceMode: newPerformanceMode,
+          currentSongIndex: newSongIndex
+        };
+      });
     },
 
     loadState: (newState: AppState) => {
