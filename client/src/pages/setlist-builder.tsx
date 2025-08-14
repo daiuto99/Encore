@@ -6,10 +6,12 @@ import AvailableSongs from '@/components/setlist/available-songs';
 import SetManager from '@/components/setlist/set-manager';
 import SongViewer from '@/components/setlist/song-viewer';
 import PerformanceMode from '@/components/setlist/performance-mode';
+import FolderLibrary from '@/components/setlist/folder-library';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Moon, Sun, Play, Pause, Download, Upload, Minus, Plus } from 'lucide-react';
 import { exportSetlist, loadSetlist } from '@/lib/export-utils';
+import { Song } from '@shared/schema';
 
 export default function SetlistBuilder() {
   const { state, actions } = useSetlistState();
@@ -65,6 +67,14 @@ export default function SetlistBuilder() {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleFolderSongsLoaded = (songs: Song[]) => {
+    // Replace all songs with the new ones from folder
+    actions.setState(prev => ({
+      ...prev,
+      allSongs: songs
+    }));
   };
 
   if (state.isPerformanceMode) {
@@ -177,6 +187,7 @@ export default function SetlistBuilder() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column: Upload & Available Songs */}
             <div className="lg:col-span-1 space-y-6">
+              <FolderLibrary onSongsLoaded={handleFolderSongsLoaded} />
               <UploadZone onSongsUploaded={actions.addSongs} />
               <AvailableSongs 
                 songs={state.allSongs}
