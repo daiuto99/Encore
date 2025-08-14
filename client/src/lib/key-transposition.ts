@@ -59,8 +59,11 @@ export function transposeChords(content: string, semitones: number): string {
   
   // Transpose key signatures in the metadata
   transposedContent = transposedContent.replace(/\*\*Key:\*\*\s*([CDEFGAB][♯♭#b]?)\s*(Major|Minor|major|minor)/g, (match, key, mode) => {
+    console.log('KEY TRANSPOSE DEBUG:', { match, key, mode, semitones });
     const newKey = transposeNote(key.replace('#', '♯').replace('b', '♭'), semitones);
+    console.log('KEY TRANSPOSE RESULT:', { originalKey: key, newKey, semitones });
     const outputKey = newKey.replace('♯', '#').replace('♭', 'b');
+    console.log('KEY FINAL OUTPUT:', { outputKey });
     return `**Key:** ${outputKey} ${mode}`;
   });
   
