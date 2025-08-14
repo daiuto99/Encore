@@ -1,0 +1,241 @@
+You are Replit AI. Build a production‑quality MVP named Setlist Builder, referencing the visual style and UI behaviors in the ZIP the user provided (use it as the authoritative style guide). You may choose the tech stack you think is best (vanilla, framework, or hybrid)—but the result must meet all functional and offline requirements below and match the existing look/feel.
+
+1) Product Goal
+
+A musician can upload song files, assemble multiple Sets, and perform using Performance Mode with fast navigation. Critical constraint:
+
+Online for creation, fully offline after export. Users can add songs and create sets while connected. When they Save/Export, generate a single portable file that contains the entire app state and required assets so it runs without any internet (e.g., on stage in airplane mode).
+
+2) Scope & Key Features
+
+Upload .md / .txt song files (drag‑drop + file picker).
+
+Library: “Available Songs” with search.
+
+Sets: create multiple sets, add/remove/reorder songs, rename sets.
+
+Song viewer: Markdown is rendered with the current visual style.
+
+Navigation: Prev/Next buttons + keyboard (←/→).
+
+Performance Mode (optimized for iPad): sticky set tabs, big tappable Next/Prev at top and bottom, current time clock, dark mode & font controls, swipe left/right to change songs.
+
+Theme: light/dark mode toggle; adjustable font size (50–200%).
+
+Save/Export: produce a single portable HTML (or equivalent) that bundles the app code + embedded JSON state + any parsing libs so it works fully offline.
+
+Load/Import: open a previously saved file to restore the app state.
+
+3) Visual & Interaction Requirements (match current app)
+
+Use the uploaded codebase as the source of truth for:
+
+Color tokens & CSS variables (primary/secondary backgrounds, accents, borders, shadows).
+
+Components and class naming: header with setlist name & controls; drag‑drop upload zone; “Available Songs” panel with search; Set tabs; Set list card with per‑song controls; progress bar text “N of M”; song viewer; top & bottom navigation; toast notifications; dark mode; sticky tabs in Performance Mode; clock under tabs in Performance Mode.
+
+Transitions, shadows, rounded radii, focus outlines, typography (system font stack).
+
+Responsive rules for mobile and iPad (reduced paddings, narrower tabs, full‑width buttons).
+
+If you switch frameworks, preserve the same visual styling and class structure so the app looks the same.
+
+4) Functional Design
+4.1 Song ingestion
+
+Accept multiple .md / .txt files (UTF‑8); each becomes a Song { id, name, content, duration=0 }.
+
+Validation: only allowed extensions; show toasts for success/errors.
+
+Search: debounced (≈300ms), matches filename (without extension) or content substring.
+
+4.2 Sets
+
+App opens with Set 1 (empty). Users can add more sets (Set 2, Set 3…).
+
+Each set stores an ordered list of song references (copy content at time of add).
+
+Add/remove a song from current set. If a song is already present in any set, the “Add” button reflects that (e.g., “In Set 2”) and is disabled for that set.
+
+Reorder songs via up/down buttons (and drag‑drop if you add it).
+
+Delete a set (confirm), but never allow deleting the last remaining set.
+
+Progress text & bar update as the user selects/navigates songs.
+
+4.3 Selection & Navigation
+
+Clicking a song selects it and renders in the viewer.
+
+Prev/Next updates the current index; button labels show neighbor song names when available (e.g., “‹ Song A”, “Song C ›”) and disable at bounds.
+
+Keyboard shortcuts: ← prev, → next; Esc exits Performance Mode.
+
+4.4 Performance Mode (iPad‑first)
+
+Toggle on/off from main UI; when active:
+
+Add a “performance” state that hides editing UI (header/upload/available list/set editor) and shows:
+
+Sticky Set Tabs bar at the very top (stays visible while scrolling).
+
+A clock readout under the sticky tabs (HH:MM:SS AM/PM).
+
+Top and bottom big navigation bars with large tap targets for prev/next.
+
+A compact overlay with controls: Exit, Font − / +, Dark toggle.
+
+iPad optimizations:
+
+Minimum 48×48 px tap targets for all interactive controls.
+
+Horizontal swipe gestures: swipe left = next song, swipe right = previous.
+
+Respect iOS safe areas; avoid accidental system gesture conflicts.
+
+Keep screen awake during Performance Mode if possible (e.g., Wake Lock API with graceful fallback).
+
+Orientation‑aware layout (portrait/landscape).
+
+Persist font size and dark mode within the session and saved state.
+
+4.5 Dark Mode & Font Size
+
+Dark mode toggles on the <body> (or framework equivalent) and updates tokens.
+
+Font size scales the viewer content (50–200%, clamped).
+
+4.6 Save/Export (works offline later)
+
+Provide a Save/Export action that produces one file the user can download.
+
+That file must include:
+
+The full UI code (HTML/CSS/JS) and any required libs (e.g., Markdown parser) embedded so it can run offline.
+
+A <script type="application/json" id="setlist-data">…</script> block containing the entire app state, e.g.:
+
+{
+  "setlistName": "string",
+  "allSongs": [{ "id": number, "name": "string", "content": "string", "duration": 0 }],
+  "sets": [{ "id": number, "name": "string", "songs": [Song], "color": "string" }],
+  "currentSetIndex": number,
+  "currentSongIndex": number,
+  "fontSize": number,
+  "isDarkMode": boolean,
+  "isPerformanceMode": boolean,
+  "exportDate": "ISOString"
+}
+
+
+File name default: <Sanitized_Setlist_Name>+Setlist.html (non‑word → _).
+
+No external network calls should be needed by the exported file.
+
+4.7 Load/Import
+
+Provide a Load control that lets the user select a previously exported file.
+
+Parse its HTML, read #setlist-data, and hydrate state (including setlist name, dark mode, font size, selection, etc.). Toast success or error.
+
+4.8 State & Modules (implementation‑agnostic)
+
+Implement a clean separation of concerns (adapt names for your stack, but keep feature parity):
+
+State Manager (e.g., getState, addSongs, addSongToCurrentSet, removeSongFromCurrentSet, reorderSongs, addSet, removeSet, switchToSet, navigateSong, selectSong, setFontSize, toggleDarkMode, togglePerformanceMode, loadState, exportState).
+
+UI layer (renders Available Songs, Set Tabs, Current Set list, Viewer, Nav buttons, Progress bar).
+
+Events (bind UI, keyboard, and touch gestures).
+
+Protected Upload module with extension validation and robust error handling.
+
+4.9 Accessibility
+
+Keyboard focus rings on all interactive elements; visible focus.
+
+aria-live="polite" for toasts/announcements of key actions.
+
+Sufficient color contrast for both themes.
+
+Print CSS hides non‑content UI.
+
+5) Non‑Functional Requirements
+
+Offline exported file must run entirely locally (no CDNs). If you use a Markdown parser during development, inline its minified code into the exported file.
+
+Smooth performance on iPad Safari (latest iPadOS).
+
+Debounced search and minimal reflows (batch DOM updates).
+
+Defensive bounds checking for indices, empty sets, etc.
+
+Responsive across mobile, iPad, and desktop for set building; optimize layouts and hit targets for iPad in Performance Mode.
+
+6) Data Model (reference)
+type Song = { id: number; name: string; content: string; duration: number };
+type Set = { id: number; name: string; songs: Song[]; color: string };
+
+type AppState = {
+  setlistName: string;
+  allSongs: Song[];
+  sets: Set[];
+  currentSetIndex: number;
+  currentSongIndex: number;
+  fontSize: number; // 50–200
+  isDarkMode: boolean;
+  isPerformanceMode: boolean;
+  exportDate?: string; // ISO
+}
+
+7) Testing & Acceptance Criteria
+
+Ship only when the following pass:
+
+Upload: Drag‑drop 3 .md files → “Available Songs” shows 3; search filters by text; “Add” reflects membership & disables for sets containing the song.
+
+Sets: Add Set 2; switch to it; add different songs; delete Set 2 (confirm) → Set 1 remains.
+
+Reorder: Move a song up/down; viewer & progress update accordingly.
+
+Navigation: Prev/Next labels show neighbor titles; disabled at edges; keyboard arrows work.
+
+Performance Mode (iPad):
+
+Sticky tabs + clock visible below tabs.
+
+Large top and bottom nav bars with big buttons.
+
+Swipe left/right changes songs.
+
+Wake‑lock (if supported) or graceful no‑op fallback.
+
+Esc exits (keyboard), visible Exit button works (touch).
+
+Theme & Font: Dark toggle flips tokens; font size clamps and persists.
+
+Save/Export: Creates a single file. With Wi‑Fi off, opening that file allows full navigation, dark mode, Performance Mode, and rendering of all songs.
+
+Load/Import: Loading a previously saved file restores the entire state with a success toast.
+
+A11y: Focus visible; aria-live announces key actions; color contrast is adequate in both themes.
+
+8) Deliverables
+
+A working app in Replit matching the current visual design from the provided ZIP.
+
+Clear Export and Load features as specified.
+
+Minimal README (how to run, how to export & offline‑test).
+
+Keep implementation clean and modular; your chosen stack is fine as long as the exported artifact meets the offline requirement and the UI matches the current style.
+
+9) Nice‑to‑Haves (do only if time permits)
+
+Drag‑and‑drop reorder with visual drop indicators.
+
+Set color cycling (e.g., blue, orange, purple, green).
+
+Auto‑scroll selected song into view in set list.
+
+Important: Match the current visual styling and interaction patterns from the uploaded code, keep Performance Mode iPad‑first, and ensure exported sets are fully offline‑capable.
