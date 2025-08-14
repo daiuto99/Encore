@@ -61,7 +61,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
       {/* Sticky Set Tabs with Controls */}
       <div className="sticky top-0 z-40 bg-card border-b shadow-sm" data-testid="performance-sticky-tabs">
         <div className="max-w-7xl mx-auto px-4">
-          {/* Header with controls inline */}
+          {/* Header with controls inline and clock centered */}
           <div className="flex items-center justify-between py-2 gap-2 overflow-x-auto">
             {/* Set buttons */}
             <div className="flex space-x-1 shrink-0">
@@ -76,6 +76,11 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
                   {set.name}
                 </Button>
               ))}
+            </div>
+            
+            {/* Clock - centered */}
+            <div className="text-center text-sm font-mono text-muted-foreground shrink-0" data-testid="performance-clock">
+              {currentTime}
             </div>
             
             {/* Performance Mode Controls - inline with sets */}
@@ -123,45 +128,38 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
               </Button>
             </div>
           </div>
-          
-          {/* Clock */}
-          <div className="text-center py-2 text-lg font-mono text-muted-foreground" data-testid="performance-clock">
-            {currentTime}
-          </div>
         </div>
       </div>
 
-      {/* Top Navigation Bar */}
-      <div className="bg-card border-b p-4" data-testid="performance-top-nav">
+      {/* Top Navigation Bar - 50% smaller */}
+      <div className="bg-card border-b p-2" data-testid="performance-top-nav">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <Button 
             variant="outline"
-            size="lg"
             onClick={() => actions.navigateSong(-1)}
             disabled={!hasPrev}
-            className="min-h-[48px] min-w-[120px]"
+            className="h-[24px] min-w-[60px] text-xs px-2"
             data-testid="button-performance-prev-top"
           >
-            <ChevronLeft className="mr-2 h-4 w-4" />
+            <ChevronLeft className="mr-1 h-2 w-2" />
             {getPrevSongName() || 'Previous'}
           </Button>
           
           <div className="text-center">
-            <div className="text-sm text-muted-foreground">Song</div>
-            <div className="text-lg font-semibold" data-testid="performance-progress">
+            <div className="text-xs text-muted-foreground">Song</div>
+            <div className="text-sm font-semibold" data-testid="performance-progress">
               {Math.max(0, state.currentSongIndex + 1)} of {currentSet.songs.length}
             </div>
           </div>
           
           <Button 
-            size="lg"
             onClick={() => actions.navigateSong(1)}
             disabled={!hasNext}
-            className="min-h-[48px] min-w-[120px]"
+            className="h-[24px] min-w-[60px] text-xs px-2"
             data-testid="button-performance-next-top"
           >
             {getNextSongName() || 'Next'}
-            <ChevronRight className="ml-2 h-4 w-4" />
+            <ChevronRight className="ml-1 h-2 w-2" />
           </Button>
         </div>
       </div>
@@ -190,30 +188,28 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
         </div>
       </div>
 
-      {/* Bottom Navigation Bar */}
-      <div className="sticky bottom-0 bg-card border-t p-4" data-testid="performance-bottom-nav">
+      {/* Bottom Navigation Bar - 50% smaller */}
+      <div className="sticky bottom-0 bg-card border-t p-2" data-testid="performance-bottom-nav">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <Button 
             variant="outline"
-            size="lg"
             onClick={() => actions.navigateSong(-1)}
             disabled={!hasPrev}
-            className="min-h-[48px] min-w-[120px]"
+            className="h-[24px] min-w-[60px] text-xs px-2"
             data-testid="button-performance-prev-bottom"
           >
-            <ChevronLeft className="mr-2 h-4 w-4" />
+            <ChevronLeft className="mr-1 h-2 w-2" />
             {getPrevSongName() || 'Previous'}
           </Button>
           
           <Button 
-            size="lg"
             onClick={() => actions.navigateSong(1)}
             disabled={!hasNext}
-            className="min-h-[48px] min-w-[120px]"
+            className="h-[24px] min-w-[60px] text-xs px-2"
             data-testid="button-performance-next-bottom"
           >
             {getNextSongName() || 'Next'}
-            <ChevronRight className="ml-2 h-4 w-4" />
+            <ChevronRight className="ml-1 h-2 w-2" />
           </Button>
         </div>
       </div>
