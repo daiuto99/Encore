@@ -61,16 +61,16 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
       {/* Sticky Set Tabs with Controls */}
       <div className="sticky top-0 z-40 bg-card border-b shadow-sm" data-testid="performance-sticky-tabs">
         <div className="max-w-7xl mx-auto px-4">
-          {/* Header with controls */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between py-2 gap-4">
-            <div className="flex space-x-1 overflow-x-auto">
+          {/* Header with controls inline */}
+          <div className="flex items-center justify-between py-2 gap-2 overflow-x-auto">
+            {/* Set buttons */}
+            <div className="flex space-x-1 shrink-0">
               {state.sets.map((set, index) => (
                 <Button
                   key={set.id}
                   variant={index === state.currentSetIndex ? "default" : "outline"}
-                  size="lg"
                   onClick={() => actions.switchToSet(index)}
-                  className="font-medium min-w-[120px] text-center min-h-[48px] shrink-0"
+                  className="font-medium min-w-[84px] text-center h-[34px] text-sm px-3 shrink-0"
                   data-testid={`button-performance-set-${index}`}
                 >
                   {set.name}
@@ -78,72 +78,48 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
               ))}
             </div>
             
-            {/* Performance Mode Controls */}
-            <div className="flex items-center justify-center lg:justify-end space-x-2 lg:space-x-3" data-testid="performance-controls-header">
-              <div className="flex items-center space-x-1">
-                <Button 
-                  size="icon"
-                  variant="outline"
-                  onClick={() => actions.setFontSize(state.fontSize - 10)}
-                  className="min-h-[48px] min-w-[48px] shrink-0"
-                  data-testid="button-performance-font-decrease"
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="text-xs lg:text-sm text-muted-foreground min-w-[2.5rem] lg:min-w-[3rem] text-center shrink-0" data-testid="performance-font-size">
-                  {state.fontSize}%
-                </span>
-                <Button 
-                  size="icon"
-                  variant="outline"
-                  onClick={() => actions.setFontSize(state.fontSize + 10)}
-                  className="min-h-[48px] min-w-[48px] shrink-0"
-                  data-testid="button-performance-font-increase"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              
+            {/* Performance Mode Controls - inline with sets */}
+            <div className="flex items-center space-x-1 shrink-0" data-testid="performance-controls-header">
               <Button 
+                size="icon"
                 variant="outline"
-                size="lg"
-                onClick={actions.toggleDarkMode}
-                className="min-h-[48px] shrink-0 hidden sm:flex"
-                data-testid="button-performance-dark-toggle"
+                onClick={() => actions.setFontSize(state.fontSize - 10)}
+                className="h-[34px] w-[34px] shrink-0"
+                data-testid="button-performance-font-decrease"
               >
-                {state.isDarkMode ? (
-                  <>
-                    <Sun className="mr-2 h-4 w-4" />
-                    Light
-                  </>
-                ) : (
-                  <>
-                    <Moon className="mr-2 h-4 w-4" />
-                    Dark
-                  </>
-                )}
+                <Minus className="h-3 w-3" />
+              </Button>
+              <span className="text-xs text-muted-foreground min-w-[2rem] text-center shrink-0" data-testid="performance-font-size">
+                {state.fontSize}%
+              </span>
+              <Button 
+                size="icon"
+                variant="outline"
+                onClick={() => actions.setFontSize(state.fontSize + 10)}
+                className="h-[34px] w-[34px] shrink-0"
+                data-testid="button-performance-font-increase"
+              >
+                <Plus className="h-3 w-3" />
               </Button>
               
-              {/* Mobile dark mode button - icon only */}
               <Button 
                 size="icon"
                 variant="outline"
                 onClick={actions.toggleDarkMode}
-                className="min-h-[48px] min-w-[48px] shrink-0 sm:hidden"
-                data-testid="button-performance-dark-toggle-mobile"
+                className="h-[34px] w-[34px] shrink-0"
+                data-testid="button-performance-dark-toggle"
               >
-                {state.isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {state.isDarkMode ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
               </Button>
               
               <Button 
                 variant="destructive"
-                size="lg"
                 onClick={actions.togglePerformanceMode}
-                className="min-h-[48px] shrink-0"
+                className="h-[34px] shrink-0 text-sm px-3"
                 data-testid="button-exit-performance"
               >
-                <X className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Exit</span>
+                <X className="mr-1 h-3 w-3" />
+                Exit
               </Button>
             </div>
           </div>
