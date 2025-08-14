@@ -10,9 +10,12 @@ const NOTES_FLAT = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A'
 // Updated chord patterns for export
 
 function getNoteIndex(note) {
-  let index = NOTES_SHARP.indexOf(note);
+  // Normalize sharp/flat symbols first
+  const normalizedNote = note.replace(/#/g, '♯').replace(/b/g, '♭');
+  
+  let index = NOTES_SHARP.indexOf(normalizedNote);
   if (index === -1) {
-    index = NOTES_FLAT.indexOf(note);
+    index = NOTES_FLAT.indexOf(normalizedNote);
   }
   return index;
 }
@@ -76,12 +79,15 @@ function transposeChordName(chord, semitones) {
   if (!rootMatch) return chord;
   
   const originalRoot = rootMatch[1];
-  // Normalize sharp/flat symbols
+  // Normalize sharp/flat symbols for processing
   const normalizedRoot = originalRoot.replace(/#/g, '♯').replace(/b/g, '♭');
   const newRoot = transposeNote(normalizedRoot, semitones);
   
+  // Convert back to user's preferred format (# instead of ♯)
+  const outputRoot = newRoot.replace(/♯/g, '#').replace(/♭/g, 'b');
+  
   // Replace the root in the original chord
-  return chord.replace(originalRoot, newRoot);
+  return chord.replace(originalRoot, outputRoot);
 }
 
 function getKeyDisplayName(semitones) {

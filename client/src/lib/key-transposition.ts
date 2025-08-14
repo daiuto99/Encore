@@ -13,10 +13,13 @@ const CHORD_PATTERNS = [
 ];
 
 function getNoteIndex(note: string): number {
+  // Normalize sharp/flat symbols first
+  const normalizedNote = note.replace('#', '♯').replace('b', '♭');
+  
   // Handle both sharp and flat notation
-  let index = NOTES_SHARP.indexOf(note);
+  let index = NOTES_SHARP.indexOf(normalizedNote);
   if (index === -1) {
-    index = NOTES_FLAT.indexOf(note);
+    index = NOTES_FLAT.indexOf(normalizedNote);
   }
   return index;
 }
@@ -25,7 +28,8 @@ function transposeNote(note: string, semitones: number): string {
   const index = getNoteIndex(note);
   if (index === -1) return note; // Return original if not found
   
-  const newIndex = (index + semitones + 12) % 12;
+  let newIndex = (index + semitones) % 12;
+  if (newIndex < 0) newIndex += 12; // Handle negative modulo
   
   // Use sharps for positive transposition, flats for negative
   if (semitones >= 0) {
@@ -81,12 +85,15 @@ function transposeChordName(chord: string, semitones: number): string {
   if (!rootMatch) return chord;
   
   const originalRoot = rootMatch[1];
-  // Normalize sharp/flat symbols
+  // Normalize sharp/flat symbols for processing
   const normalizedRoot = originalRoot.replace('#', '♯').replace('b', '♭');
   const newRoot = transposeNote(normalizedRoot, semitones);
   
+  // Convert back to user's preferred format (# instead of ♯)
+  const outputRoot = newRoot.replace('♯', '#').replace('♭', 'b');
+  
   // Replace the root in the original chord
-  return chord.replace(originalRoot, newRoot);
+  return chord.replace(originalRoot, outputRoot);
 }
 
 export function getKeyDisplayName(semitones: number): string {
