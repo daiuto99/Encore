@@ -4,7 +4,6 @@ import { X, Minus, Plus, Moon, Sun, ChevronLeft, ChevronRight } from 'lucide-rea
 import { AppState } from '@shared/schema';
 import { parseMarkdown } from '@/lib/markdown-parser';
 import { useTouchGestures } from '@/hooks/use-touch-gestures';
-import { transposeChords, getKeyDisplayName } from '@/lib/key-transposition';
 
 interface PerformanceModeProps {
   state: AppState;
@@ -18,10 +17,6 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
   const currentSong = currentSet.songs[state.currentSongIndex];
   const hasPrev = state.currentSongIndex > 0;
   const hasNext = state.currentSongIndex < currentSet.songs.length - 1;
-  
-  // Get original content from allSongs to ensure transposition is applied to original, not already-transposed content
-  const originalSong = currentSong ? state.allSongs.find(s => s.id === currentSong.id) : null;
-  const originalContent = originalSong ? originalSong.content : (currentSong ? currentSong.content : '');
 
   // Clock update
   useEffect(() => {
@@ -90,36 +85,6 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
             
             {/* Performance Mode Controls - inline with sets */}
             <div className="flex items-center space-x-1 shrink-0" data-testid="performance-controls-header">
-              {/* Key Controls */}
-              {currentSong && (
-                <>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => actions.transposeSong(state.currentSongIndex, -1)}
-                    disabled={currentSong.keyTransposition <= -6}
-                    className="h-[34px] w-[34px] shrink-0"
-                    data-testid="button-performance-transpose-flat"
-                  >
-                    ♭
-                  </Button>
-                  <span className="text-xs text-muted-foreground min-w-[3rem] text-center font-mono shrink-0" data-testid="performance-key-display">
-                    {getKeyDisplayName(currentSong.keyTransposition)}
-                  </span>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => actions.transposeSong(state.currentSongIndex, 1)}
-                    disabled={currentSong.keyTransposition >= 6}
-                    className="h-[34px] w-[34px] shrink-0"
-                    data-testid="button-performance-transpose-sharp"
-                  >
-                    ♯
-                  </Button>
-                  <div className="w-1 shrink-0" /> {/* Small spacer */}
-                </>
-              )}
-              
               <Button 
                 size="icon"
                 variant="outline"
@@ -213,7 +178,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
             {currentSong ? (
               <div 
                 dangerouslySetInnerHTML={{ 
-                  __html: parseMarkdown(transposeChords(originalContent, currentSong.keyTransposition)) 
+                  __html: parseMarkdown(currentSong.content) 
                 }} 
               />
             ) : (

@@ -1,9 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, ChevronLeft, ChevronRight, FileText, RotateCcw } from 'lucide-react';
+import { Eye, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { AppState } from '@shared/schema';
 import { parseMarkdown } from '@/lib/markdown-parser';
-import { transposeChords, getKeyDisplayName } from '@/lib/key-transposition';
 
 interface SongViewerProps {
   state: AppState;
@@ -15,23 +14,6 @@ export default function SongViewer({ state, actions }: SongViewerProps) {
   const currentSong = currentSet.songs[state.currentSongIndex];
   const hasPrev = state.currentSongIndex > 0;
   const hasNext = state.currentSongIndex < currentSet.songs.length - 1;
-  
-  // Get original content from allSongs to ensure transposition is applied to original, not already-transposed content
-  const originalSong = currentSong ? state.allSongs.find(s => s.id === currentSong.id) : null;
-  const originalContent = originalSong ? originalSong.content : (currentSong ? currentSong.content : '');
-  
-  // Diagnostic: Check if content contains already-transposed chords
-  if (currentSong && originalContent) {
-    const hasSharpChords = originalContent.match(/\[D#\]|\[F#\]|\[A#\]|\[C#\]|\[G#\]/);
-    const originalKey = originalContent.match(/\*\*Key:\*\*\s*([CDEFGAB][♯♭#b]?)\s*(Major|Minor)/);
-    console.log('CONTENT DIAGNOSTIC:', {
-      keyTransposition: currentSong.keyTransposition,
-      hasSharpChords: !!hasSharpChords,
-      extractedKey: originalKey ? originalKey[1] : 'not found',
-      firstLine: originalContent.split('\n')[0],
-      chordSample: originalContent.match(/\[[CDEFGAB][♯♭#b]?\]/g)?.slice(0, 5) || 'no chords found'
-    });
-  }
 
   const getPrevSongName = () => {
     if (hasPrev && state.currentSongIndex > 0) {
@@ -95,53 +77,8 @@ export default function SongViewer({ state, actions }: SongViewerProps) {
               <Eye className="mr-2 h-5 w-5 text-primary" />
               Song Viewer
             </CardTitle>
-            <div className="flex items-center space-x-4">
-              {/* Key Transposition Controls */}
-              {currentSong && (
-                <div className="flex items-center space-x-2" data-testid="key-controls">
-                  <span className="text-sm text-muted-foreground">Key:</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => actions.transposeSong(state.currentSongIndex, -1)}
-                    disabled={!currentSong || currentSong.keyTransposition <= -6}
-                    data-testid="button-transpose-flat"
-                    className="h-8 w-8 p-0"
-                  >
-                    ♭
-                  </Button>
-                  <span 
-                    className="text-xs text-muted-foreground min-w-[4rem] text-center font-mono"
-                    data-testid="text-key-display"
-                  >
-                    {getKeyDisplayName(currentSong.keyTransposition)}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => actions.transposeSong(state.currentSongIndex, 1)}
-                    disabled={!currentSong || currentSong.keyTransposition >= 6}
-                    data-testid="button-transpose-sharp"
-                    className="h-8 w-8 p-0"
-                  >
-                    ♯
-                  </Button>
-                  {currentSong.keyTransposition !== 0 && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => actions.resetSongKey(state.currentSongIndex)}
-                      data-testid="button-reset-key"
-                      className="h-8 w-8 p-0"
-                    >
-                      <RotateCcw className="h-3 w-3" />
-                    </Button>
-                  )}
-                </div>
-              )}
-              <div className="text-sm text-muted-foreground" data-testid="text-current-song-info">
-                {currentSong ? `${state.currentSongIndex + 1} of ${currentSet.songs.length}` : 'No song selected'}
-              </div>
+            <div className="text-sm text-muted-foreground" data-testid="text-current-song-info">
+              {currentSong ? `${state.currentSongIndex + 1} of ${currentSet.songs.length}` : 'No song selected'}
             </div>
           </div>
         </CardHeader>
@@ -153,7 +90,7 @@ export default function SongViewer({ state, actions }: SongViewerProps) {
             {currentSong ? (
               <div 
                 dangerouslySetInnerHTML={{ 
-                  __html: parseMarkdown(transposeChords(originalContent, currentSong.keyTransposition)) 
+                  __html: parseMarkdown(currentSong.content) 
                 }} 
               />
             ) : (

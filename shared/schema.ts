@@ -4,8 +4,7 @@ export const songSchema = z.object({
   id: z.number(),
   name: z.string(),
   content: z.string(),
-  duration: z.number().default(0),
-  keyTransposition: z.number().default(0) // semitones: positive for sharp, negative for flat
+  duration: z.number().default(0)
 });
 
 export const setSchema = z.object({

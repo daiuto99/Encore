@@ -1,105 +1,6 @@
 import { AppState } from '@shared/schema';
 import { embeddedMarkdownParser } from './markdown-parser';
 
-// Embed the key transposition utilities
-const embeddedKeyTransposition = `
-// Musical key transposition utilities
-const NOTES_SHARP = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
-const NOTES_FLAT = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'];
-
-// Updated chord patterns for export
-
-function getNoteIndex(note) {
-  // Normalize sharp/flat symbols first
-  const normalizedNote = note.replace(/#/g, '♯').replace(/b/g, '♭');
-  
-  let index = NOTES_SHARP.indexOf(normalizedNote);
-  if (index === -1) {
-    index = NOTES_FLAT.indexOf(normalizedNote);
-  }
-  return index;
-}
-
-function transposeNote(note, semitones) {
-  const index = getNoteIndex(note);
-  if (index === -1) return note;
-  
-  const newIndex = (index + semitones + 12) % 12;
-  
-  if (semitones >= 0) {
-    return NOTES_SHARP[newIndex];
-  } else {
-    return NOTES_FLAT[newIndex];
-  }
-}
-
-function transposeChords(content, semitones) {
-  if (semitones === 0) return content;
-  
-  let transposedContent = content;
-  
-  // Pattern 1: Obsidian-style chords in backticks with brackets: \`[Chord]\`
-  transposedContent = transposedContent.replace(/\`\\[([CDEFGAB][♯♭#b]?(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?)\\]\`/g, function(match, chord) {
-    const newChord = transposeChordName(chord, semitones);
-    return '\`[' + newChord + ']\`';
-  });
-  
-  // Pattern 2: Square bracket chords: [Chord]
-  transposedContent = transposedContent.replace(/\\[([CDEFGAB][♯♭#b]?(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?)\\]/g, function(match, chord) {
-    const newChord = transposeChordName(chord, semitones);
-    return '[' + newChord + ']';
-  });
-  
-  // Pattern 3: Slash chords in backticks: \`[C/G]\`
-  transposedContent = transposedContent.replace(/\`\\[([CDEFGAB][♯♭#b]?)\\/([CDEFGAB][♯♭#b]?)\\]\`/g, function(match, root, bass) {
-    const newRoot = transposeNote(root, semitones);
-    const newBass = transposeNote(bass, semitones);
-    return '\`[' + newRoot + '/' + newBass + ']\`';
-  });
-  
-  // Pattern 4: Slash chords: [C/G]
-  transposedContent = transposedContent.replace(/\\[([CDEFGAB][♯♭#b]?)\\/([CDEFGAB][♯♭#b]?)\\]/g, function(match, root, bass) {
-    const newRoot = transposeNote(root, semitones);
-    const newBass = transposeNote(bass, semitones);
-    return '[' + newRoot + '/' + newBass + ']';
-  });
-  
-  // Pattern 5: Regular chord names in text (without brackets)
-  transposedContent = transposedContent.replace(/\\b([CDEFGAB][♯♭#b]?)(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?\\b/g, function(match, chord) {
-    const newChord = transposeChordName(chord, semitones);
-    return match.replace(chord, newChord);
-  });
-  
-  return transposedContent;
-}
-
-function transposeChordName(chord, semitones) {
-  // Extract root note (handle both # and ♯, b and ♭)
-  const rootMatch = chord.match(/^([CDEFGAB][♯♭#b]?)/);
-  if (!rootMatch) return chord;
-  
-  const originalRoot = rootMatch[1];
-  // Normalize sharp/flat symbols for processing
-  const normalizedRoot = originalRoot.replace(/#/g, '♯').replace(/b/g, '♭');
-  const newRoot = transposeNote(normalizedRoot, semitones);
-  
-  // Convert back to user's preferred format (# instead of ♯)
-  const outputRoot = newRoot.replace(/♯/g, '#').replace(/♭/g, 'b');
-  
-  // Replace the root in the original chord
-  return chord.replace(originalRoot, outputRoot);
-}
-
-function getKeyDisplayName(semitones) {
-  if (semitones === 0) return 'Original';
-  if (semitones > 0) {
-    return \`+\${semitones} (\${Array(semitones).fill('♯').join('')})\`;
-  } else {
-    return \`\${semitones} (\${Array(Math.abs(semitones)).fill('♭').join('')})\`;
-  }
-}
-`;
-
 export async function exportSetlist(state: AppState): Promise<void> {
   const exportData = {
     ...state,
@@ -132,12 +33,9 @@ async function createPortableHTML(data: AppState): Promise<string> {
   // Embed the markdown parser
   const parserScript = `<script>${embeddedMarkdownParser}</script>`;
   
-  // Embed the key transposition utilities
-  const keyTranspositionScript = `<script>${embeddedKeyTransposition}</script>`;
-  
   // Insert scripts before closing body tag
   const htmlWithData = currentHTML
-    .replace('</body>', `${dataScript}${parserScript}${keyTranspositionScript}</body>`)
+    .replace('</body>', `${dataScript}${parserScript}</body>`)
     // Remove development scripts and replace with production note
     .replace(/<script.*replit.*<\/script>/g, '')
     .replace(/<script.*vite.*<\/script>/g, '')

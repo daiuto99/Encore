@@ -80,7 +80,7 @@ export function useSetlistState() {
     addSongToCurrentSet: (song: Song) => {
       setState(prev => {
         const currentSet = prev.sets[prev.currentSetIndex];
-        const songCopy = { ...song, keyTransposition: 0 }; // Reset transposition for new copy
+        const songCopy = { ...song };
         
         const updatedSets = [...prev.sets];
         updatedSets[prev.currentSetIndex] = {
@@ -235,48 +235,6 @@ export function useSetlistState() {
 
     loadState: (newState: AppState) => {
       setState(newState);
-    },
-
-    transposeSong: (songIndex: number, semitoneChange: number) => {
-      setState(prev => {
-        const currentSet = prev.sets[prev.currentSetIndex];
-        const song = currentSet.songs[songIndex];
-        if (!song) return prev;
-        
-        const newTransposition = Math.max(-6, Math.min(6, song.keyTransposition + semitoneChange));
-        
-        const updatedSets = [...prev.sets];
-        updatedSets[prev.currentSetIndex] = {
-          ...currentSet,
-          songs: currentSet.songs.map((s, i) => 
-            i === songIndex 
-              ? { ...s, keyTransposition: newTransposition }
-              : s
-          )
-        };
-        
-        return { ...prev, sets: updatedSets };
-      });
-    },
-
-    resetSongKey: (songIndex: number) => {
-      setState(prev => {
-        const currentSet = prev.sets[prev.currentSetIndex];
-        const song = currentSet.songs[songIndex];
-        if (!song) return prev;
-        
-        const updatedSets = [...prev.sets];
-        updatedSets[prev.currentSetIndex] = {
-          ...currentSet,
-          songs: currentSet.songs.map((s, i) => 
-            i === songIndex 
-              ? { ...s, keyTransposition: 0 }
-              : s
-          )
-        };
-        
-        return { ...prev, sets: updatedSets };
-      });
     }
   };
 
