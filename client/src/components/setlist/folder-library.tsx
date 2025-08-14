@@ -21,11 +21,13 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
       await connectFolder();
       toast({
         title: 'Folder Connected',
-        description: 'Your song folder has been connected successfully',
+        description: 'Connected successfully! Loading your songs...',
       });
       
       // Automatically sync songs after connecting
-      handleSyncSongs();
+      setTimeout(() => {
+        handleSyncSongs();
+      }, 500); // Small delay to let the connection settle
     } catch (error: any) {
       if (error.name !== 'AbortError') {
         toast({
@@ -147,6 +149,11 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
                 {state.lastSyncTime && (
                   <p className="text-xs text-muted-foreground">
                     Last synced: {state.lastSyncTime.toLocaleString()}
+                  </p>
+                )}
+                {!state.lastSyncTime && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    Ready to sync - click "Sync Songs" to load your music
                   </p>
                 )}
               </div>
