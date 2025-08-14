@@ -19,6 +19,20 @@ export default function SongViewer({ state, actions }: SongViewerProps) {
   // Get original content from allSongs to ensure transposition is applied to original, not already-transposed content
   const originalSong = currentSong ? state.allSongs.find(s => s.id === currentSong.id) : null;
   const originalContent = originalSong ? originalSong.content : (currentSong ? currentSong.content : '');
+  
+  // Debug logging
+  if (currentSong) {
+    console.log('SONG DEBUG:', {
+      songId: currentSong.id,
+      songName: currentSong.name,
+      keyTransposition: currentSong.keyTransposition,
+      foundOriginal: !!originalSong,
+      originalId: originalSong?.id,
+      contentMatch: originalSong?.content === currentSong.content,
+      firstLineOriginal: originalContent.split('\n')[0],
+      firstLineCurrent: currentSong.content.split('\n')[0]
+    });
+  }
 
   const getPrevSongName = () => {
     if (hasPrev && state.currentSongIndex > 0) {
