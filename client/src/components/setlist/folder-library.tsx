@@ -152,11 +152,16 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
           </div>
         )}
         
-        <div className="pt-2 border-t">
+        <div className="pt-2 border-t space-y-1">
           <p className="text-xs text-muted-foreground">
             Works with iCloud Drive, Google Drive, OneDrive, and local folders. 
             Requires Chrome, Edge, or other modern browsers.
           </p>
+          {state.isConnected && (
+            <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+              💾 Setlist exports will automatically save to "{state.folderName}/sets/"
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

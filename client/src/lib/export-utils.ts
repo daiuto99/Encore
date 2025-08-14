@@ -1,7 +1,7 @@
 import { AppState } from '@shared/schema';
 import { embeddedMarkdownParser } from './markdown-parser';
 
-export async function exportSetlist(state: AppState): Promise<void> {
+export async function exportSetlist(state: AppState, folderHandle?: any): Promise<void> {
   const exportData = {
     ...state,
     exportDate: new Date().toISOString()
@@ -9,18 +9,53 @@ export async function exportSetlist(state: AppState): Promise<void> {
   
   // Create the complete HTML file with embedded state and app code
   const html = await createPortableHTML(exportData);
+  const filename = `${state.setlistName.replace(/[^\w\s]/gi, '_')}_Setlist.html`;
   
-  // Create download
+  // If folder handle is provided, try to save to connected folder
+  if (folderHandle && 'showDirectoryPicker' in window) {
+    try {
+      await saveToConnectedFolder(html, filename, folderHandle);
+      return;
+    } catch (error) {
+      console.warn('Could not save to connected folder, falling back to download:', error);
+      // Fall through to regular download
+    }
+  }
+  
+  // Fallback: Create regular download
   const blob = new Blob([html], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
   
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${state.setlistName.replace(/[^\w\s]/gi, '_')}_Setlist.html`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+async function saveToConnectedFolder(html: string, filename: string, folderHandle: any): Promise<void> {
+  // Request permission to write to the directory
+  const permission = await folderHandle.requestPermission({ mode: 'readwrite' });
+  if (permission !== 'granted') {
+    throw new Error('Permission denied to write to folder');
+  }
+
+  // Get or create the "sets" subdirectory
+  let setsFolder;
+  try {
+    setsFolder = await folderHandle.getDirectoryHandle('sets');
+  } catch (error) {
+    // Folder doesn't exist, create it
+    setsFolder = await folderHandle.getDirectoryHandle('sets', { create: true });
+  }
+
+  // Create the file in the sets folder
+  const fileHandle = await setsFolder.getFileHandle(filename, { create: true });
+  const writable = await fileHandle.createWritable();
+  await writable.write(html);
+  await writable.close();
 }
 
 async function createPortableHTML(data: AppState): Promise<string> {

@@ -24,6 +24,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Features Implementation
 - **File Upload**: Drag-and-drop interface for .md/.txt song files with validation
+- **Folder Library**: File System Access API integration for automatic song syncing from iCloud Drive/Google Drive folders
 - **Song Management**: Library system with search functionality and set organization
 - **Performance Mode**: Optimized full-screen interface with touch gestures, keyboard shortcuts, and wake lock
 - **Theme System**: Light/dark mode toggle with CSS custom properties
@@ -42,6 +43,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Export/Import System
 - **Offline Export**: Generates self-contained HTML files with embedded JSON state and parsing libraries
+- **Automatic Folder Export**: When connected to a folder, exports automatically save to a "sets" subdirectory
 - **State Preservation**: Maintains all user data and preferences in exported files
 - **Import Capability**: Restores complete application state from previously exported files
 

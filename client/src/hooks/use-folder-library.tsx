@@ -148,10 +148,21 @@ export function useFolderLibrary() {
     }
   }, [state.isConnected]);
 
+  const getFolderHandle = useCallback((): any | null => {
+    try {
+      const savedHandle = localStorage.getItem('songFolderHandle');
+      return savedHandle ? JSON.parse(savedHandle) : null;
+    } catch (error) {
+      console.warn('Could not retrieve folder handle:', error);
+      return null;
+    }
+  }, []);
+
   return {
     state,
     connectFolder,
     disconnectFolder,
-    syncSongs
+    syncSongs,
+    getFolderHandle
   };
 }

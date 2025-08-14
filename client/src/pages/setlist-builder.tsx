@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSetlistState } from '@/hooks/use-setlist-state';
+import { useFolderLibrary } from '@/hooks/use-folder-library';
 import { useToast } from '@/hooks/use-toast';
 import UploadZone from '@/components/setlist/upload-zone';
 import AvailableSongs from '@/components/setlist/available-songs';
@@ -15,6 +16,7 @@ import { Song } from '@shared/schema';
 
 export default function SetlistBuilder() {
   const { state, actions } = useSetlistState();
+  const { getFolderHandle } = useFolderLibrary();
   const { toast } = useToast();
 
   // Keyboard shortcuts
@@ -38,11 +40,20 @@ export default function SetlistBuilder() {
 
   const handleExport = async () => {
     try {
-      await exportSetlist(state);
-      toast({
-        title: 'Success',
-        description: 'Setlist exported successfully',
-      });
+      const folderHandle = getFolderHandle();
+      await exportSetlist(state, folderHandle);
+      
+      if (folderHandle) {
+        toast({
+          title: 'Success',
+          description: 'Setlist saved to your connected folder in the "sets" directory',
+        });
+      } else {
+        toast({
+          title: 'Success', 
+          description: 'Setlist exported successfully',
+        });
+      }
     } catch (error) {
       toast({
         title: 'Error',
