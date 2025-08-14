@@ -18,6 +18,10 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
   const currentSong = currentSet.songs[state.currentSongIndex];
   const hasPrev = state.currentSongIndex > 0;
   const hasNext = state.currentSongIndex < currentSet.songs.length - 1;
+  
+  // Get original content from allSongs to ensure transposition is applied to original, not already-transposed content
+  const originalSong = currentSong ? state.allSongs.find(s => s.id === currentSong.id) : null;
+  const originalContent = originalSong ? originalSong.content : (currentSong ? currentSong.content : '');
 
   // Clock update
   useEffect(() => {
@@ -209,7 +213,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
             {currentSong ? (
               <div 
                 dangerouslySetInnerHTML={{ 
-                  __html: parseMarkdown(transposeChords(currentSong.content, currentSong.keyTransposition)) 
+                  __html: parseMarkdown(transposeChords(originalContent, currentSong.keyTransposition)) 
                 }} 
               />
             ) : (
