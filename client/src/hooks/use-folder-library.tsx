@@ -9,6 +9,9 @@ interface FolderLibraryState {
   lastSyncTime: Date | null;
 }
 
+// Store the actual handle in memory, not localStorage
+let globalFolderHandle: any = null;
+
 export function useFolderLibrary() {
   const [state, setState] = useState<FolderLibraryState>(() => {
     // Check if we're in an iframe which blocks file system access
@@ -24,28 +27,21 @@ export function useFolderLibrary() {
     };
   });
 
-  // Load saved folder handle from localStorage
+  // Load saved folder info from localStorage
   useEffect(() => {
-    const loadSavedFolder = async () => {
+    const loadSavedFolder = () => {
       try {
-        const savedHandle = localStorage.getItem('songFolderHandle');
         const folderName = localStorage.getItem('songFolderName');
         
-        if (savedHandle && folderName) {
-          // Try to restore the folder handle
-          const handle = JSON.parse(savedHandle);
-          if (handle && handle.kind === 'directory') {
-            setState(prev => ({
-              ...prev,
-              isConnected: true,
-              folderName: folderName
-            }));
-          }
+        if (folderName && globalFolderHandle) {
+          setState(prev => ({
+            ...prev,
+            isConnected: true,
+            folderName: folderName
+          }));
         }
       } catch (error) {
         console.log('Could not restore folder connection:', error);
-        // Clear invalid data
-        localStorage.removeItem('songFolderHandle');
         localStorage.removeItem('songFolderName');
       }
     };
@@ -69,8 +65,10 @@ export function useFolderLibrary() {
         startIn: 'documents'
       });
 
-      // Save the handle and folder name
-      localStorage.setItem('songFolderHandle', JSON.stringify(directoryHandle));
+      // Store the actual handle in memory (can't serialize to localStorage)
+      globalFolderHandle = directoryHandle;
+      
+      // Only save the folder name to localStorage
       localStorage.setItem('songFolderName', directoryHandle.name);
 
       setState(prev => ({
@@ -89,7 +87,7 @@ export function useFolderLibrary() {
   }, [state.isSupported]);
 
   const disconnectFolder = useCallback(() => {
-    localStorage.removeItem('songFolderHandle');
+    globalFolderHandle = null;
     localStorage.removeItem('songFolderName');
     setState(prev => ({
       ...prev,
@@ -103,28 +101,19 @@ export function useFolderLibrary() {
       throw new Error('No folder connected');
     }
 
+    if (!globalFolderHandle) {
+      throw new Error('Folder handle not available - please reconnect folder');
+    }
+
     try {
       setState(prev => ({ ...prev, isLoading: true }));
 
-      const savedHandle = localStorage.getItem('songFolderHandle');
-      if (!savedHandle) {
-        throw new Error('Folder handle not found');
-      }
-
-      // Parse the saved handle
-      let directoryHandle;
-      try {
-        directoryHandle = JSON.parse(savedHandle);
-      } catch (parseError) {
-        throw new Error('Invalid folder handle data');
-      }
-
-      console.log('Attempting to access directory:', directoryHandle);
+      console.log('Attempting to access directory:', globalFolderHandle);
       
       // Request permission to access the directory
       let permission;
       try {
-        permission = await directoryHandle.requestPermission({ mode: 'read' });
+        permission = await globalFolderHandle.requestPermission({ mode: 'read' });
         console.log('Permission result:', permission);
       } catch (permError: any) {
         console.error('Permission request failed:', permError);
@@ -143,7 +132,7 @@ export function useFolderLibrary() {
       
       // Read all markdown files from the directory
       try {
-        for await (const [name, handle] of directoryHandle.entries()) {
+        for await (const [name, handle] of globalFolderHandle.entries()) {
           fileCount++;
           console.log(`Found entry: ${name}, kind: ${handle.kind}`);
           
@@ -189,13 +178,7 @@ export function useFolderLibrary() {
   }, [state.isConnected]);
 
   const getFolderHandle = useCallback((): any | null => {
-    try {
-      const savedHandle = localStorage.getItem('songFolderHandle');
-      return savedHandle ? JSON.parse(savedHandle) : null;
-    } catch (error) {
-      console.warn('Could not retrieve folder handle:', error);
-      return null;
-    }
+    return globalFolderHandle;
   }, []);
 
   return {
