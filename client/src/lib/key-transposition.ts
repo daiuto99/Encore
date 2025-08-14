@@ -52,9 +52,7 @@ export function transposeChords(content: string, semitones: number): string {
   
   // Pattern 2: Square bracket chords: [Chord]
   transposedContent = transposedContent.replace(/\[([CDEFGAB][♯♭#b]?(?:maj|major|M|m|min|minor|7|maj7|min7|m7|dim7|aug7|sus7|9|11|13|add9|sus2|sus4|dim|aug)?)\]/g, (match, chord) => {
-    console.log('BRACKET CHORD DEBUG:', { match, chord, semitones });
     const newChord = transposeChordName(chord, semitones);
-    console.log('BRACKET CHORD RESULT:', { originalChord: chord, newChord, semitones });
     return `[${newChord}]`;
   });
   

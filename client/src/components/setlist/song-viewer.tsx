@@ -20,17 +20,16 @@ export default function SongViewer({ state, actions }: SongViewerProps) {
   const originalSong = currentSong ? state.allSongs.find(s => s.id === currentSong.id) : null;
   const originalContent = originalSong ? originalSong.content : (currentSong ? currentSong.content : '');
   
-  // Debug logging
-  if (currentSong) {
-    console.log('SONG DEBUG:', {
-      songId: currentSong.id,
-      songName: currentSong.name,
+  // Diagnostic: Check if content contains already-transposed chords
+  if (currentSong && originalContent) {
+    const hasSharpChords = originalContent.match(/\[D#\]|\[F#\]|\[A#\]|\[C#\]|\[G#\]/);
+    const originalKey = originalContent.match(/\*\*Key:\*\*\s*([CDEFGAB][♯♭#b]?)\s*(Major|Minor)/);
+    console.log('CONTENT DIAGNOSTIC:', {
       keyTransposition: currentSong.keyTransposition,
-      foundOriginal: !!originalSong,
-      originalId: originalSong?.id,
-      contentMatch: originalSong?.content === currentSong.content,
-      firstLineOriginal: originalContent.split('\n')[0],
-      firstLineCurrent: currentSong.content.split('\n')[0]
+      hasSharpChords: !!hasSharpChords,
+      extractedKey: originalKey ? originalKey[1] : 'not found',
+      firstLine: originalContent.split('\n')[0],
+      chordSample: originalContent.match(/\[[CDEFGAB][♯♭#b]?\]/g)?.slice(0, 5) || 'no chords found'
     });
   }
 
