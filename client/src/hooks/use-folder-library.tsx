@@ -27,18 +27,27 @@ export function useFolderLibrary() {
     };
   });
 
-  // Load saved folder info from localStorage
+  // Load saved folder info from localStorage and sync with handle availability
   useEffect(() => {
     const loadSavedFolder = () => {
       try {
         const folderName = localStorage.getItem('songFolderName');
         
+        // Only show as connected if we have both the name AND the handle
         if (folderName && globalFolderHandle) {
           setState(prev => ({
             ...prev,
             isConnected: true,
             folderName: folderName
           }));
+        } else if (folderName && !globalFolderHandle) {
+          // We have the name but no handle - clear the stale connection
+          setState(prev => ({
+            ...prev,
+            isConnected: false,
+            folderName: null
+          }));
+          localStorage.removeItem('songFolderName');
         }
       } catch (error) {
         console.log('Could not restore folder connection:', error);

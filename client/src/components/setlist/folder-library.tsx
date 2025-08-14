@@ -43,10 +43,18 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
       const songs = await syncSongs();
       onSongsLoaded(songs);
       
-      toast({
-        title: 'Sync Complete',
-        description: `Loaded ${songs.length} song${songs.length !== 1 ? 's' : ''} from your folder`,
-      });
+      if (songs.length === 0) {
+        toast({
+          title: 'No Songs Found',
+          description: 'No .md or .txt files were found in your connected folder. Check the browser console for details.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Sync Complete',
+          description: `Loaded ${songs.length} song${songs.length !== 1 ? 's' : ''} from your folder`,
+        });
+      }
     } catch (error: any) {
       toast({
         title: 'Sync Failed',
