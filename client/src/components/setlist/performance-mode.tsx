@@ -56,6 +56,16 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
     return null;
   };
 
+  const renderSongWithHarmonies = (content: string) => {
+    // Process harmony tags for performance mode display
+    const processedContent = content.replace(
+      /\{harmony\}(.*?)\{\/harmony\}/g, 
+      '<span class="harmony-line">$1</span>'
+    );
+    
+    return parseMarkdown(processedContent);
+  };
+
   return (
     <div className="performance-ui min-h-screen bg-background">
       {/* Sticky Set Tabs with Controls */}
@@ -178,7 +188,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
             {currentSong ? (
               <div 
                 dangerouslySetInnerHTML={{ 
-                  __html: parseMarkdown(currentSong.content) 
+                  __html: renderSongWithHarmonies(currentSong.content) 
                 }} 
               />
             ) : (

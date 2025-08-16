@@ -48,12 +48,20 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
     if (!currentSong) return '';
     
     // Process harmony syntax for display
-    const processedContent = showHarmonies 
-      ? currentSong.content.replace(
-          /\{harmony\}(.*?)\{\/harmony\}/g, 
-          '<span class="harmony-line">🎵 $1</span>'
-        )
-      : currentSong.content.replace(/\{harmony\}(.*?)\{\/harmony\}/g, '$1');
+    let processedContent = currentSong.content;
+    
+    if (showHarmonies) {
+      processedContent = processedContent.replace(
+        /\{harmony\}(.*?)\{\/harmony\}/g, 
+        '<span class="harmony-line">$1</span>'
+      );
+    } else {
+      // Remove harmony tags but keep the content
+      processedContent = processedContent.replace(
+        /\{harmony\}(.*?)\{\/harmony\}/g, 
+        '$1'
+      );
+    }
     
     return parseMarkdown(processedContent);
   };
