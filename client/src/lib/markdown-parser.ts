@@ -20,8 +20,8 @@ export function parseMarkdown(content: string): string {
     // Process inline code
     .replace(/`([^`\n]+)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm font-mono">$1</code>')
     
-    // Process vocal harmony markers
-    .replace(/\{harmony\}(.*?)\{\/harmony\}/g, '<span class="harmony-line">$1</span>')
+    // Process vocal harmony markers (handle multiline)
+    .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-line">$1</span>')
     
     // Process links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>')
@@ -64,8 +64,8 @@ export const embeddedMarkdownParser = `
       // Process inline code
       .replace(/\`([^\`\\n]+)\`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm font-mono">$1</code>')
       
-      // Process vocal harmony markers
-      .replace(/\\{harmony\\}(.*?)\\{\\/harmony\\}/g, '<span class="harmony-line">$1</span>')
+      // Process vocal harmony markers (handle multiline)
+      .replace(/\\{harmony\\}([\\s\\S]*?)\\{\\/harmony\\}/g, '<span class="harmony-line">$1</span>')
       
       // Process links
       .replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>')

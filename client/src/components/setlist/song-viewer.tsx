@@ -52,13 +52,13 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
     
     if (showHarmonies) {
       processedContent = processedContent.replace(
-        /\{harmony\}(.*?)\{\/harmony\}/g, 
+        /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
         '<span class="harmony-line">$1</span>'
       );
     } else {
       // Remove harmony tags but keep the content
       processedContent = processedContent.replace(
-        /\{harmony\}(.*?)\{\/harmony\}/g, 
+        /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
         '$1'
       );
     }

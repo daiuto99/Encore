@@ -57,9 +57,9 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
   };
 
   const renderSongWithHarmonies = (content: string) => {
-    // Process harmony tags for performance mode display
+    // Process harmony tags for performance mode display (handle multiline)
     const processedContent = content.replace(
-      /\{harmony\}(.*?)\{\/harmony\}/g, 
+      /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
       '<span class="harmony-line">$1</span>'
     );
     

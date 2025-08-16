@@ -76,13 +76,13 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
   };
 
   const renderPreview = () => {
-    // Enhanced markdown parser that handles harmony syntax
+    // Enhanced markdown parser that handles harmony syntax (multiline support)
     const processedContent = showHarmonies 
       ? content.replace(
-          /\{harmony\}(.*?)\{\/harmony\}/g, 
-          '<span class="harmony-line">🎵 $1</span>'
+          /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
+          '<span class="harmony-line">$1</span>'
         )
-      : content.replace(/\{harmony\}(.*?)\{\/harmony\}/g, '$1');
+      : content.replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '$1');
     
     return parseMarkdown(processedContent);
   };
