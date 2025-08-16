@@ -1,15 +1,23 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
-import { AppState } from '@shared/schema';
+import { Badge } from '@/components/ui/badge';
+import { Eye, ChevronLeft, ChevronRight, FileText, Edit, Music } from 'lucide-react';
+import { AppState, Song } from '@shared/schema';
 import { parseMarkdown } from '@/lib/markdown-parser';
+import SongEditor from './song-editor';
 
 interface SongViewerProps {
   state: AppState;
   actions: any;
+  onSongUpdate?: (song: Song) => void;
+  onSyncToFolder?: (song: Song) => Promise<void>;
 }
 
-export default function SongViewer({ state, actions }: SongViewerProps) {
+export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolder }: SongViewerProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [showHarmonies, setShowHarmonies] = useState(true);
+  
   const currentSet = state.sets[state.currentSetIndex];
   const currentSong = currentSet.songs[state.currentSongIndex];
   const hasPrev = state.currentSongIndex > 0;
@@ -28,6 +36,38 @@ export default function SongViewer({ state, actions }: SongViewerProps) {
     }
     return null;
   };
+
+  const handleSongSave = (updatedSong: Song) => {
+    if (onSongUpdate) {
+      onSongUpdate(updatedSong);
+    }
+    setIsEditing(false);
+  };
+
+  const renderSongContent = () => {
+    if (!currentSong) return '';
+    
+    // Process harmony syntax for display
+    const processedContent = showHarmonies 
+      ? currentSong.content.replace(
+          /\{harmony\}(.*?)\{\/harmony\}/g, 
+          '<span class="harmony-line">🎵 $1</span>'
+        )
+      : currentSong.content.replace(/\{harmony\}(.*?)\{\/harmony\}/g, '$1');
+    
+    return parseMarkdown(processedContent);
+  };
+
+  if (isEditing && currentSong) {
+    return (
+      <SongEditor
+        song={currentSong}
+        onSave={handleSongSave}
+        onCancel={() => setIsEditing(false)}
+        onSyncToFolder={onSyncToFolder}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -73,12 +113,44 @@ export default function SongViewer({ state, actions }: SongViewerProps) {
       <Card data-testid="card-song-viewer">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center">
-              <Eye className="mr-2 h-5 w-5 text-primary" />
-              Song Viewer
-            </CardTitle>
-            <div className="text-sm text-muted-foreground" data-testid="text-current-song-info">
-              {currentSong ? `${state.currentSongIndex + 1} of ${currentSet.songs.length}` : 'No song selected'}
+            <div className="flex items-center gap-2">
+              <CardTitle className="flex items-center">
+                <Eye className="mr-2 h-5 w-5 text-primary" />
+                {currentSong ? currentSong.name : 'No song selected'}
+              </CardTitle>
+              {currentSong?.isModified && (
+                <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                  Modified
+                </Badge>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-muted-foreground" data-testid="text-current-song-info">
+                {currentSong ? `${state.currentSongIndex + 1} of ${currentSet.songs.length}` : 'No song selected'}
+              </div>
+              
+              {currentSong && (
+                <div className="flex gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowHarmonies(!showHarmonies)}
+                  >
+                    <Music className="h-4 w-4 mr-1" />
+                    {showHarmonies ? 'Hide' : 'Show'} Harmonies
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -90,7 +162,7 @@ export default function SongViewer({ state, actions }: SongViewerProps) {
             {currentSong ? (
               <div 
                 dangerouslySetInnerHTML={{ 
-                  __html: parseMarkdown(currentSong.content) 
+                  __html: renderSongContent() 
                 }} 
               />
             ) : (

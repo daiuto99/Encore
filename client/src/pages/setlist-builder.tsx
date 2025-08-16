@@ -93,6 +93,44 @@ export default function SetlistBuilder() {
     }));
   };
 
+  const handleSongUpdate = (updatedSong: Song) => {
+    actions.updateSong(updatedSong);
+    toast({
+      title: 'Song Updated',
+      description: `"${updatedSong.name}" has been saved successfully`,
+    });
+  };
+
+  const handleSyncToFolder = async (song: Song): Promise<void> => {
+    const folderHandle = getFolderHandle();
+    if (!folderHandle) {
+      throw new Error('No folder connected');
+    }
+
+    try {
+      // Request permission to write to the directory
+      const permission = await folderHandle.requestPermission({ mode: 'readwrite' });
+      if (permission !== 'granted') {
+        throw new Error('Permission denied to write to folder');
+      }
+
+      // Create the updated file content
+      const filename = `${song.name.replace(/[^\w\s]/gi, '_')}.md`;
+      const fileHandle = await folderHandle.getFileHandle(filename, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(song.content);
+      await writable.close();
+
+      toast({
+        title: 'Synced to Folder',
+        description: `"${song.name}" has been saved to your connected folder`,
+      });
+    } catch (error) {
+      console.error('Failed to sync to folder:', error);
+      throw error;
+    }
+  };
+
   if (state.isPerformanceMode) {
     return <PerformanceMode state={state} actions={actions} />;
   }
@@ -231,6 +269,8 @@ export default function SetlistBuilder() {
             <SongViewer 
               state={state}
               actions={actions}
+              onSongUpdate={handleSongUpdate}
+              onSyncToFolder={handleSyncToFolder}
             />
           </div>
         </div>

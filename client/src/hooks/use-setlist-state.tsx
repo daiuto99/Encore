@@ -278,6 +278,29 @@ export function useSetlistState() {
         console.error('Error loading state:', error);
         throw new Error('Failed to load setlist: ' + (error as Error).message);
       }
+    },
+
+    updateSong: (updatedSong: Song) => {
+      setState(prev => {
+        // Update in allSongs
+        const updatedAllSongs = prev.allSongs.map(song => 
+          song.id === updatedSong.id ? updatedSong : song
+        );
+        
+        // Update in all sets
+        const updatedSets = prev.sets.map(set => ({
+          ...set,
+          songs: set.songs.map(song => 
+            song.id === updatedSong.id ? updatedSong : song
+          )
+        }));
+        
+        return {
+          ...prev,
+          allSongs: updatedAllSongs,
+          sets: updatedSets
+        };
+      });
     }
   };
 

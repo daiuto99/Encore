@@ -4,7 +4,10 @@ export const songSchema = z.object({
   id: z.number(),
   name: z.string(),
   content: z.string(),
-  duration: z.number().default(0)
+  duration: z.number().default(0),
+  originalContent: z.string().optional(), // Track original content for comparison
+  isModified: z.boolean().default(false), // Track if song has been edited
+  lastModified: z.string().optional() // ISO date string of last edit
 });
 
 export const setSchema = z.object({
