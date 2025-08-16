@@ -163,8 +163,7 @@ export default function SetlistBuilder() {
               {/* Save/Load Controls */}
               <div className="flex items-center space-x-2">
                 <Button 
-                  variant="outline"
-                  className="bg-success hover:bg-success/90 text-white"
+                  className="bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
                   onClick={handleExport}
                   data-testid="button-save-setlist"
                 >
