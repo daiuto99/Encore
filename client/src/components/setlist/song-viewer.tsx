@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, ChevronLeft, ChevronRight, FileText, Edit, Music } from 'lucide-react';
+import { Eye, ChevronLeft, ChevronRight, FileText, Edit, Music, X } from 'lucide-react';
 import { AppState, Song } from '@shared/schema';
 import { parseMarkdown } from '@/lib/markdown-parser';
 import SongEditor from './song-editor';
@@ -19,7 +19,8 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
   const [showHarmonies, setShowHarmonies] = useState(true);
   
   const currentSet = state.sets[state.currentSetIndex];
-  const currentSong = currentSet.songs[state.currentSongIndex];
+  const setCurrentSong = currentSet.songs[state.currentSongIndex];
+  const currentSong = state.selectedPreviewSong || setCurrentSong;
   const hasPrev = state.currentSongIndex > 0;
   const hasNext = state.currentSongIndex < currentSet.songs.length - 1;
 
@@ -125,6 +126,11 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
               <CardTitle className="flex items-center">
                 <Eye className="mr-2 h-5 w-5 text-primary" />
                 {currentSong ? currentSong.name : 'No song selected'}
+                {state.selectedPreviewSong && (
+                  <Badge variant="outline" className="ml-2 text-xs">
+                    Preview Mode
+                  </Badge>
+                )}
               </CardTitle>
               {currentSong?.isModified && (
                 <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
@@ -135,11 +141,27 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
             
             <div className="flex items-center gap-2">
               <div className="text-sm text-muted-foreground" data-testid="text-current-song-info">
-                {currentSong ? `${state.currentSongIndex + 1} of ${currentSet.songs.length}` : 'No song selected'}
+                {state.selectedPreviewSong 
+                  ? 'Preview from Available Songs'
+                  : currentSong 
+                    ? `${state.currentSongIndex + 1} of ${currentSet.songs.length}`
+                    : 'No song selected'
+                }
               </div>
               
               {currentSong && (
                 <div className="flex gap-1">
+                  {state.selectedPreviewSong && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => actions.selectPreviewSong(null)}
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Exit Preview
+                    </Button>
+                  )}
+                  
                   <Button
                     variant="outline"
                     size="sm"

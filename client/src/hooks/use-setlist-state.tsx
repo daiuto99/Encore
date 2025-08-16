@@ -295,12 +295,25 @@ export function useSetlistState() {
           )
         }));
         
+        // Update selected preview song if it matches
+        const updatedPreviewSong = prev.selectedPreviewSong?.id === updatedSong.id 
+          ? updatedSong 
+          : prev.selectedPreviewSong;
+        
         return {
           ...prev,
           allSongs: updatedAllSongs,
-          sets: updatedSets
+          sets: updatedSets,
+          selectedPreviewSong: updatedPreviewSong
         };
       });
+    },
+
+    selectPreviewSong: (song: Song | null) => {
+      setState(prev => ({
+        ...prev,
+        selectedPreviewSong: song
+      }));
     }
   };
 

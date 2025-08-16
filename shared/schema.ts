@@ -26,6 +26,7 @@ export const appStateSchema = z.object({
   fontSize: z.number().min(50).max(200).default(100),
   isDarkMode: z.boolean().default(false),
   isPerformanceMode: z.boolean().default(false),
+  selectedPreviewSong: songSchema.nullable().optional(),
   exportDate: z.string().optional()
 });
 

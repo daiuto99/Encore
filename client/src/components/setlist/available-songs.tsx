@@ -12,13 +12,17 @@ interface AvailableSongsProps {
   sets: Set[];
   currentSetIndex: number;
   onAddToSet: (song: Song) => void;
+  onSongSelect?: (song: Song) => void;
+  selectedPreviewSong?: Song | null;
 }
 
 export default function AvailableSongs({ 
   songs, 
   sets, 
   currentSetIndex, 
-  onAddToSet 
+  onAddToSet,
+  onSongSelect,
+  selectedPreviewSong
 }: AvailableSongsProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -92,13 +96,33 @@ export default function AvailableSongs({
                 ? `flex items-center justify-between p-3 rounded-md hover:opacity-80 transition-colors border ${getSetColorClasses(setColor, 'light')}`
                 : 'flex items-center justify-between p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors border border-border';
               
+              const isSelected = selectedPreviewSong?.id === song.id;
+              const clickableCardClasses = `${cardClasses} cursor-pointer ${
+                isSelected ? 'ring-2 ring-primary/20 bg-primary/5 dark:bg-primary/10' : ''
+              }`;
+              
               return (
-                <div key={song.id} className={cardClasses} data-testid={`item-song-${song.id}`}>
+                <div 
+                  key={song.id} 
+                  className={clickableCardClasses} 
+                  onClick={() => onSongSelect?.(song)}
+                  data-testid={`item-song-${song.id}`}
+                >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h4 className="font-medium truncate" data-testid={`text-song-name-${song.id}`}>
                         {song.name}
                       </h4>
+                      {song.isModified && (
+                        <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs">
+                          Modified
+                        </Badge>
+                      )}
+                      {isSelected && (
+                        <Badge variant="default" className="bg-primary text-primary-foreground text-xs">
+                          Previewing
+                        </Badge>
+                      )}
                       {songInSet.inSet && setColor && (
                         <Badge 
                           variant="secondary" 
@@ -115,7 +139,10 @@ export default function AvailableSongs({
                   <Button 
                     size="sm"
                     variant={buttonDisabled ? "outline" : "default"}
-                    onClick={() => !buttonDisabled && onAddToSet(song)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent song selection when clicking button
+                      !buttonDisabled && onAddToSet(song);
+                    }}
                     disabled={buttonDisabled}
                     className="ml-3"
                     data-testid={`button-add-song-${song.id}`}
