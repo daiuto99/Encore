@@ -64,8 +64,20 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
   const handleMarkAsHarmony = () => {
     if (!selectedText) return;
     
-    const newContent = content.replace(selectedText, `{harmony}${selectedText}{/harmony}`);
-    setContent(newContent);
+    // Find the selected text in the textarea and replace only that specific instance
+    const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedContent = content.substring(start, end);
+      
+      if (selectedContent === selectedText) {
+        const before = content.substring(0, start);
+        const after = content.substring(end);
+        const newContent = before + `{harmony}${selectedText}{/harmony}` + after;
+        setContent(newContent);
+      }
+    }
     setSelectedText('');
   };
 

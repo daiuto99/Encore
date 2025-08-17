@@ -81,17 +81,19 @@
     line-height: 1.6;
   }
   
-  /* Vocal Harmony Styling */
+  /* Vocal Harmony Styling - Clean single highlight */
   .harmony-line {
-    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    background: linear-gradient(135deg, hsl(280, 100%, 70%) 0%, hsl(260, 100%, 85%) 100%);
     color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 600;
-    display: inline-block;
-    margin: 1px;
-    box-shadow: 0 1px 3px rgba(168, 85, 247, 0.3);
-    border-left: 4px solid #7c3aed;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    display: inline;
+    margin: 0;
+    line-height: inherit;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
   
   /* Performance mode harmony styling */
@@ -177,19 +179,7 @@
     }
   }
 
-/* Vocal Harmony Styling */
-.harmony-line {
-  background: linear-gradient(135deg, hsl(280, 100%, 70%) 0%, hsl(260, 100%, 85%) 100%);
-  color: white;
-  padding: 1px 3px;
-  border-radius: 2px;
-  font-weight: 500;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  animation: harmonyPulse 2s ease-in-out infinite alternate;
-  display: inline;
-  margin: 0;
-  line-height: 1.4;
-}
+
 
 @keyframes harmonyPulse {
   0% {

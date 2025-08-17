@@ -20,7 +20,7 @@ export function parseMarkdown(content: string): string {
     // Process inline code
     .replace(/`([^`\n]+)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm font-mono">$1</code>')
     
-    // Process vocal harmony markers (handle multiline)
+    // Process vocal harmony markers (handle multiline) - but only if harmony tags exist
     .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-line">$1</span>')
     
     // Process links
