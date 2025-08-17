@@ -59,7 +59,7 @@ export default function AvailableSongs({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center">
             <Music className="mr-2 h-5 w-5 text-primary" />
-            Available Songs
+            Song Library
           </CardTitle>
           <div className="text-sm text-muted-foreground" data-testid="text-song-count">
             <div>{songs.length} total</div>
@@ -92,8 +92,6 @@ export default function AvailableSongs({
           ) : (
             filteredSongs.map(song => {
               const songInSet = isSongInAnySet(song.id);
-              const buttonText = songInSet.inSet ? `In ${songInSet.setName}` : 'Add to Set';
-              const buttonDisabled = songInSet.inSet && songInSet.setIndex === currentSetIndex;
               const setColor = songInSet.inSet ? getSetColor(songInSet.setIndex!) : null;
               const cardClasses = songInSet.inSet && setColor
                 ? `flex items-center justify-between p-3 rounded-md hover:opacity-80 transition-colors border ${getSetColorClasses(setColor, 'light')}`
@@ -126,32 +124,33 @@ export default function AvailableSongs({
                           Previewing
                         </Badge>
                       )}
-                      {songInSet.inSet && setColor && (
-                        <Badge 
-                          variant="secondary" 
-                          className={`text-xs ${getSetColorClasses(setColor, 'medium')}`}
-                        >
-                          {songInSet.setName}
-                        </Badge>
-                      )}
                     </div>
-                    <p className="text-sm text-muted-foreground truncate" data-testid={`text-song-preview-${song.id}`}>
-                      {song.content.substring(0, 100)}...
+                    <p className="text-sm text-muted-foreground truncate" data-testid={`text-song-artist-${song.id}`}>
+                      Artist Name
                     </p>
                   </div>
                   <div className="flex gap-1">
-                    <Button 
-                      size="sm"
-                      variant={buttonDisabled ? "outline" : "default"}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent song selection when clicking button
-                        !buttonDisabled && onAddToSet(song);
-                      }}
-                      disabled={buttonDisabled}
-                      data-testid={`button-add-song-${song.id}`}
-                    >
-                      {songInSet.inSet ? 'Add to Set' : 'Add to Set'}
-                    </Button>
+                    {songInSet.inSet && setColor ? (
+                      <Badge 
+                        variant="secondary" 
+                        className={`text-xs px-3 py-1 ${getSetColorClasses(setColor, 'medium')}`}
+                        data-testid={`badge-set-${song.id}`}
+                      >
+                        Set {songInSet.setIndex! + 1}
+                      </Badge>
+                    ) : (
+                      <Button 
+                        size="sm"
+                        variant="default"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent song selection when clicking button
+                          onAddToSet(song);
+                        }}
+                        data-testid={`button-add-song-${song.id}`}
+                      >
+                        Add to Set
+                      </Button>
+                    )}
                     
                     {onDeleteSong && (
                       <AlertDialog>
