@@ -79,7 +79,7 @@ export default function AvailableSongs({
         </div>
         
         {/* Songs List */}
-        <div className="space-y-2 overflow-y-auto custom-scrollbar" style={{ maxHeight: '60vh' }} data-testid="list-available-songs">
+        <div className="space-y-2 overflow-y-auto custom-scrollbar max-h-96" data-testid="list-available-songs">
           {filteredSongs.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
               <Music className="mx-auto h-8 w-8 mb-2" />

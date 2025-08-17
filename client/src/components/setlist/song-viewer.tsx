@@ -135,12 +135,13 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
             </div>
             
             {currentSong && (
-              <div className="flex gap-1">
+              <div className="flex gap-1 flex-wrap">
                 {state.selectedPreviewSong && (
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => actions.selectPreviewSong(null)}
+                    className="flex-shrink-0"
                   >
                     <X className="h-4 w-4 mr-1" />
                     Exit Preview
@@ -151,15 +152,18 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
                   variant="outline"
                   size="sm"
                   onClick={() => setShowHarmonies(!showHarmonies)}
+                  className="flex-shrink-0"
                 >
                   <Music className="h-4 w-4 mr-1" />
-                  {showHarmonies ? 'Hide' : 'Show'} Harmonies
+                  <span className="hidden sm:inline">{showHarmonies ? 'Hide' : 'Show'} Harmonies</span>
+                  <span className="sm:hidden">{showHarmonies ? 'Hide' : 'Show'}</span>
                 </Button>
                 
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setIsEditing(true)}
+                  className="flex-shrink-0"
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
