@@ -121,71 +121,56 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
       {/* Song Viewer */}
       <Card data-testid="card-song-viewer">
         <CardHeader>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <CardTitle className="flex items-center truncate">
-                  <Eye className="mr-2 h-5 w-5 text-primary flex-shrink-0" />
-                  <span className="truncate">{currentSong ? currentSong.name : 'No song selected'}</span>
-                </CardTitle>
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <CardTitle className="flex items-center">
+                <Eye className="mr-2 h-5 w-5 text-primary flex-shrink-0" />
+                <span className="truncate">{currentSong ? currentSong.name : 'No song selected'}</span>
                 {state.selectedPreviewSong && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="ml-2 text-xs flex-shrink-0">
                     Preview Mode
                   </Badge>
                 )}
                 {currentSong?.isModified && (
-                  <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs">
+                  <Badge variant="secondary" className="ml-2 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs flex-shrink-0">
                     Modified
                   </Badge>
                 )}
-              </div>
+              </CardTitle>
             </div>
             
-            <div className="flex flex-col items-end gap-2">
-              <div className="text-sm text-muted-foreground" data-testid="text-current-song-info">
-                {state.selectedPreviewSong 
-                  ? 'Preview from Available Songs'
-                  : currentSong 
-                    ? `${state.currentSongIndex + 1} of ${currentSet.songs.length}`
-                    : 'No song selected'
-                }
+            {currentSong && (
+              <div className="flex gap-1 flex-shrink-0">
+                {state.selectedPreviewSong && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => actions.selectPreviewSong(null)}
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Exit Preview
+                  </Button>
+                )}
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowHarmonies(!showHarmonies)}
+                >
+                  <Music className="h-4 w-4 mr-1" />
+                  {showHarmonies ? 'Hide' : 'Show'} Harmonies
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
               </div>
-              
-              {currentSong && (
-                <div className="flex gap-1 flex-wrap">
-                  {state.selectedPreviewSong && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => actions.selectPreviewSong(null)}
-                    >
-                      <X className="h-4 w-4 mr-1" />
-                      Exit Preview
-                    </Button>
-                  )}
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowHarmonies(!showHarmonies)}
-                  >
-                    <Music className="h-4 w-4 mr-1" />
-                    {showHarmonies ? 'Hide' : 'Show'} Harmonies
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    <Edit className="h-4 w-4 mr-1" />
-                    Edit
-                  </Button>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </CardHeader>
         <CardContent>
