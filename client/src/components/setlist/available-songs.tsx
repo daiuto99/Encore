@@ -125,9 +125,6 @@ export default function AvailableSongs({
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground truncate" data-testid={`text-song-artist-${song.id}`}>
-                      Artist Name
-                    </p>
                   </div>
                   <div className="flex gap-1">
                     {songInSet.inSet && setColor ? (
