@@ -238,15 +238,15 @@ export default function SetlistBuilder() {
       <div className="main-content">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4">
           {/* Compact Top Section: Folder Library + Upload Zone */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <FolderLibrary onSongsLoaded={handleFolderSongsLoaded} />
             <UploadZone onSongsUploaded={actions.addSongs} />
           </div>
 
           {/* Main Working Area: Available Songs + Sets - Responsive Stack */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6">
+          <div className="responsive-grid grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             {/* Available Songs */}
-            <div className="min-h-0">
+            <div className="w-full">
               <AvailableSongs 
                 songs={state.allSongs}
                 sets={state.sets}
@@ -259,7 +259,7 @@ export default function SetlistBuilder() {
             </div>
 
             {/* Sets */}
-            <div className="min-h-0">
+            <div className="w-full">
               <SetManager 
                 state={state}
                 actions={actions}
