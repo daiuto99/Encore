@@ -253,6 +253,7 @@ export default function SetlistBuilder() {
                 currentSetIndex={state.currentSetIndex}
                 onAddToSet={actions.addSongToCurrentSet}
                 onSongSelect={actions.selectPreviewSong}
+                onDeleteSong={actions.deleteSong}
                 selectedPreviewSong={state.selectedPreviewSong}
               />
             </div>

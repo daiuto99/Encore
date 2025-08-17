@@ -314,6 +314,40 @@ export function useSetlistState() {
         ...prev,
         selectedPreviewSong: song
       }));
+    },
+
+    deleteSong: (songId: number) => {
+      setState(prev => {
+        // Remove from allSongs
+        const updatedAllSongs = prev.allSongs.filter(song => song.id !== songId);
+        
+        // Remove from all sets
+        const updatedSets = prev.sets.map(set => ({
+          ...set,
+          songs: set.songs.filter(song => song.id !== songId)
+        }));
+        
+        // Clear preview if it was the deleted song
+        const updatedPreviewSong = prev.selectedPreviewSong?.id === songId 
+          ? null 
+          : prev.selectedPreviewSong;
+        
+        // Adjust current song index if needed
+        const currentSet = updatedSets[prev.currentSetIndex];
+        let newCurrentSongIndex = prev.currentSongIndex;
+        
+        if (currentSet && prev.currentSongIndex >= currentSet.songs.length) {
+          newCurrentSongIndex = Math.max(0, currentSet.songs.length - 1);
+        }
+        
+        return {
+          ...prev,
+          allSongs: updatedAllSongs,
+          sets: updatedSets,
+          selectedPreviewSong: updatedPreviewSong,
+          currentSongIndex: newCurrentSongIndex
+        };
+      });
     }
   };
 

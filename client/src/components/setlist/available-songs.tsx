@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Music, Search } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Music, Search, Trash2 } from 'lucide-react';
 import { Song, Set } from '@shared/schema';
 import { getSetColor, getSetColorClasses } from '@/lib/set-colors';
 
@@ -13,6 +14,7 @@ interface AvailableSongsProps {
   currentSetIndex: number;
   onAddToSet: (song: Song) => void;
   onSongSelect?: (song: Song) => void;
+  onDeleteSong?: (songId: number) => void;
   selectedPreviewSong?: Song | null;
 }
 
@@ -22,6 +24,7 @@ export default function AvailableSongs({
   currentSetIndex, 
   onAddToSet,
   onSongSelect,
+  onDeleteSong,
   selectedPreviewSong
 }: AvailableSongsProps) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -136,19 +139,53 @@ export default function AvailableSongs({
                       {song.content.substring(0, 100)}...
                     </p>
                   </div>
-                  <Button 
-                    size="sm"
-                    variant={buttonDisabled ? "outline" : "default"}
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent song selection when clicking button
-                      !buttonDisabled && onAddToSet(song);
-                    }}
-                    disabled={buttonDisabled}
-                    className="ml-3"
-                    data-testid={`button-add-song-${song.id}`}
-                  >
-                    {songInSet.inSet ? 'Add to Set' : 'Add to Set'}
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button 
+                      size="sm"
+                      variant={buttonDisabled ? "outline" : "default"}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent song selection when clicking button
+                        !buttonDisabled && onAddToSet(song);
+                      }}
+                      disabled={buttonDisabled}
+                      data-testid={`button-add-song-${song.id}`}
+                    >
+                      {songInSet.inSet ? 'Add to Set' : 'Add to Set'}
+                    </Button>
+                    
+                    {onDeleteSong && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-destructive hover:text-destructive-foreground hover:bg-destructive"
+                            data-testid={`button-delete-song-${song.id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Song</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{song.name}"? This will remove it from your library and all sets. This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => onDeleteSong(song.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </div>
                 </div>
               );
             })
