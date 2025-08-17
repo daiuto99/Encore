@@ -237,13 +237,9 @@ export default function SetlistBuilder() {
       {/* Main Content */}
       <div className="main-content">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4">
-          {/* Top Section: Folder Library */}
-          <div className="mb-4">
+          {/* Top Section: Folder Library + Upload Zone */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             <FolderLibrary onSongsLoaded={handleFolderSongsLoaded} />
-          </div>
-
-          {/* Upload Zone */}
-          <div className="mb-6">
             <UploadZone onSongsUploaded={actions.addSongs} />
           </div>
 
