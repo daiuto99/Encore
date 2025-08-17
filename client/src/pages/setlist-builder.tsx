@@ -237,34 +237,35 @@ export default function SetlistBuilder() {
       {/* Main Content */}
       <div className="main-content">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4">
-          {/* Compact Top Section: Folder Library + Upload Zone */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          {/* Top Section: Folder Library */}
+          <div className="mb-4">
             <FolderLibrary onSongsLoaded={handleFolderSongsLoaded} />
+          </div>
+
+          {/* Upload Zone */}
+          <div className="mb-6">
             <UploadZone onSongsUploaded={actions.addSongs} />
           </div>
 
-          {/* Main Working Area: Available Songs + Sets - Responsive Stack */}
-          <div className="responsive-grid grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-            {/* Available Songs */}
-            <div className="w-full">
-              <AvailableSongs 
-                songs={state.allSongs}
-                sets={state.sets}
-                currentSetIndex={state.currentSetIndex}
-                onAddToSet={actions.addSongToCurrentSet}
-                onSongSelect={actions.selectPreviewSong}
-                onDeleteSong={actions.deleteSong}
-                selectedPreviewSong={state.selectedPreviewSong}
-              />
-            </div>
+          {/* Available Songs */}
+          <div className="mb-6">
+            <AvailableSongs 
+              songs={state.allSongs}
+              sets={state.sets}
+              currentSetIndex={state.currentSetIndex}
+              onAddToSet={actions.addSongToCurrentSet}
+              onSongSelect={actions.selectPreviewSong}
+              onDeleteSong={actions.deleteSong}
+              selectedPreviewSong={state.selectedPreviewSong}
+            />
+          </div>
 
-            {/* Sets */}
-            <div className="w-full">
-              <SetManager 
-                state={state}
-                actions={actions}
-              />
-            </div>
+          {/* Sets */}
+          <div className="mb-6">
+            <SetManager 
+              state={state}
+              actions={actions}
+            />
           </div>
 
           {/* Song Viewer - Below main area */}
