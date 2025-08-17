@@ -121,25 +121,29 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
       {/* Song Viewer */}
       <Card data-testid="card-song-viewer">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CardTitle className="flex items-center">
-                <Eye className="mr-2 h-5 w-5 text-primary" />
-                {currentSong ? currentSong.name : 'No song selected'}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <CardTitle className="flex items-center truncate">
+                  <Eye className="mr-2 h-5 w-5 text-primary flex-shrink-0" />
+                  <span className="truncate">{currentSong ? currentSong.name : 'No song selected'}</span>
+                </CardTitle>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
                 {state.selectedPreviewSong && (
-                  <Badge variant="outline" className="ml-2 text-xs">
+                  <Badge variant="outline" className="text-xs">
                     Preview Mode
                   </Badge>
                 )}
-              </CardTitle>
-              {currentSong?.isModified && (
-                <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                  Modified
-                </Badge>
-              )}
+                {currentSong?.isModified && (
+                  <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs">
+                    Modified
+                  </Badge>
+                )}
+              </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-end gap-2">
               <div className="text-sm text-muted-foreground" data-testid="text-current-song-info">
                 {state.selectedPreviewSong 
                   ? 'Preview from Available Songs'
@@ -150,7 +154,7 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
               </div>
               
               {currentSong && (
-                <div className="flex gap-1">
+                <div className="flex gap-1 flex-wrap">
                   {state.selectedPreviewSong && (
                     <Button
                       variant="outline"
