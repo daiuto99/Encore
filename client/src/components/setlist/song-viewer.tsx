@@ -121,16 +121,11 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
       {/* Song Viewer */}
       <Card data-testid="card-song-viewer">
         <CardHeader>
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <CardTitle className="flex items-center">
+          <div className="space-y-3">
+            <div className="flex items-center">
+              <CardTitle className="flex items-center flex-1">
                 <Eye className="mr-2 h-5 w-5 text-primary flex-shrink-0" />
                 <span className="truncate">{currentSong ? currentSong.name : 'No song selected'}</span>
-                {state.selectedPreviewSong && (
-                  <Badge variant="outline" className="ml-2 text-xs flex-shrink-0">
-                    Preview Mode
-                  </Badge>
-                )}
                 {currentSong?.isModified && (
                   <Badge variant="secondary" className="ml-2 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs flex-shrink-0">
                     Modified
@@ -140,7 +135,7 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
             </div>
             
             {currentSong && (
-              <div className="flex gap-1 flex-shrink-0">
+              <div className="flex gap-1">
                 {state.selectedPreviewSong && (
                   <Button
                     variant="outline"
