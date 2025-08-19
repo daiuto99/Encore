@@ -145,7 +145,7 @@ export default function SetlistBuilder() {
               {/* Logo */}
               <div className="flex items-center">
                 <img 
-                  src="@assets/EncoreLogo_1755646315062.png" 
+                  src="/src/assets/encore-logo.png" 
                   alt="Encore" 
                   className="h-10 w-auto"
                   data-testid="logo-encore"
