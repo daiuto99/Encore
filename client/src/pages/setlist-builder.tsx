@@ -142,15 +142,14 @@ export default function SetlistBuilder() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              {/* Logo and Title */}
-              <div className="flex items-center space-x-3">
+              {/* Logo */}
+              <div className="flex items-center">
                 <img 
-                  src="/attached_assets/EncoreLogo_1755646315062.png" 
+                  src="@assets/EncoreLogo_1755646315062.png" 
                   alt="Encore" 
-                  className="h-8 w-8"
+                  className="h-10 w-auto"
                   data-testid="logo-encore"
                 />
-                <h1 className="text-xl font-bold" data-testid="text-app-title">Encore</h1>
               </div>
               {state.exportDate && (
                 <span className="text-sm text-muted-foreground" data-testid="text-export-date">
