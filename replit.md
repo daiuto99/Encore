@@ -4,6 +4,17 @@
 
 Encore is a musician's tool for creating and managing song setlists with both online editing capabilities and offline performance mode. The application allows users to upload song files (.md/.txt), organize them into multiple sets, and perform using an optimized performance interface. The key architectural constraint is that while creation requires an internet connection, the exported setlist becomes a fully self-contained, offline-capable HTML file.
 
+## Recent Changes
+
+### August 2025 - Major Feature Updates
+- **Comprehensive Vocal Harmony System**: Implemented unlimited multiple harmony sections per song using {harmony}...{/harmony} syntax with purple gradient styling
+- **Song Preview Workflow**: Added direct song preview by clicking songs in Song Library
+- **Song Deletion**: Added song deletion functionality with confirmation dialogs and proper cleanup from sets
+- **UI/UX Improvements**: Fixed responsive layout issues, renamed "Available Songs" to "Song Library", simplified display to show only song titles
+- **Set Assignment Logic**: Implemented proper one-song-per-set logic with either "Add to Set" button OR "Set #" badge display
+- **Branding Update**: Rebranded from "Setlist Builder" to "Encore" with custom logo integration
+- **Layout Optimization**: Maintained clean vertical stacking: Folder Library → Upload Zone → Song Library → Sets → Song Viewer
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
