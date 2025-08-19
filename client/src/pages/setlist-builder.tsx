@@ -142,12 +142,16 @@ export default function SetlistBuilder() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Input
-                value={state.setlistName}
-                onChange={(e) => actions.setSetlistName(e.target.value)}
-                className="text-xl font-semibold bg-transparent border-none focus:bg-muted/50 rounded px-2 py-1 min-w-[200px]"
-                data-testid="input-setlist-name"
-              />
+              {/* Logo and Title */}
+              <div className="flex items-center space-x-3">
+                <img 
+                  src="/attached_assets/EncoreLogo_1755646315062.png" 
+                  alt="Encore" 
+                  className="h-8 w-8"
+                  data-testid="logo-encore"
+                />
+                <h1 className="text-xl font-bold" data-testid="text-app-title">Encore</h1>
+              </div>
               {state.exportDate && (
                 <span className="text-sm text-muted-foreground" data-testid="text-export-date">
                   {new Date(state.exportDate).toLocaleDateString()}

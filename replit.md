@@ -1,8 +1,8 @@
-# Setlist Builder
+# Encore
 
 ## Overview
 
-Setlist Builder is a musician's tool for creating and managing song setlists with both online editing capabilities and offline performance mode. The application allows users to upload song files (.md/.txt), organize them into multiple sets, and perform using an optimized performance interface. The key architectural constraint is that while creation requires an internet connection, the exported setlist becomes a fully self-contained, offline-capable HTML file.
+Encore is a musician's tool for creating and managing song setlists with both online editing capabilities and offline performance mode. The application allows users to upload song files (.md/.txt), organize them into multiple sets, and perform using an optimized performance interface. The key architectural constraint is that while creation requires an internet connection, the exported setlist becomes a fully self-contained, offline-capable HTML file.
 
 ## User Preferences
 
