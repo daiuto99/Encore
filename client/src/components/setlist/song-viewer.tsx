@@ -16,7 +16,8 @@ interface SongViewerProps {
 
 export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolder }: SongViewerProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [showHarmonies, setShowHarmonies] = useState(true);
+  const [showHighHarmony, setShowHighHarmony] = useState(true);
+  const [showLowHarmony, setShowLowHarmony] = useState(true);
   
   const currentSet = state.sets[state.currentSetIndex];
   const setCurrentSong = currentSet.songs[state.currentSongIndex];
@@ -56,25 +57,36 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
     let processedContent = currentSong.content;
     
     if (isLyricsOnly) {
-      // Remove chord annotations like [C], [Am], [G7], etc.
+      // More comprehensive chord removal for lyrics-only mode
       processedContent = processedContent
-        .replace(/\[[A-G][#b]?[^[\]]*\]/g, '') // Remove chord symbols
-        .replace(/^\s*\n/gm, '') // Remove blank lines
+        .replace(/\[[A-G][#b]?[^[\]]*\]/g, '') // Remove chord symbols like [C], [Am7], [Gsus4]
+        .replace(/^[A-G][#b]?[^\s\n]*\s*/gm, '') // Remove lines starting with chord names
+        .replace(/\b[A-G][#b]?[^\s\n]*(?=\s|$)/g, '') // Remove isolated chord symbols
+        .replace(/\n\s*\n/g, '\n') // Remove extra blank lines
+        .replace(/^\s+/gm, '') // Remove leading whitespace
         .trim();
     }
     
-    if (showHarmonies) {
+    // Handle harmony display based on individual toggle states
+    if (showHighHarmony) {
       processedContent = processedContent
-        .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '<span class="harmony-high">$1</span>')
-        .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '<span class="harmony-low">$1</span>')
-        .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-highlight">$1</span>');
+        .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '<span class="harmony-high">$1</span>');
     } else {
-      // Remove harmony tags but keep the content
       processedContent = processedContent
-        .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '$1')
-        .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '$1')
-        .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '$1');
+        .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '$1');
     }
+    
+    if (showLowHarmony) {
+      processedContent = processedContent
+        .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '<span class="harmony-low">$1</span>');
+    } else {
+      processedContent = processedContent
+        .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '$1');
+    }
+    
+    // Always handle legacy harmony tags
+    processedContent = processedContent
+      .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-highlight">$1</span>');
     
     return parseMarkdown(processedContent);
   };
@@ -161,14 +173,23 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
                 )}
                 
                 <Button
-                  variant="outline"
+                  variant={showHighHarmony ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setShowHarmonies(!showHarmonies)}
+                  onClick={() => setShowHighHarmony(!showHighHarmony)}
                   className="flex-shrink-0"
+                  title="Toggle High Harmony Display (♫♫)"
                 >
-                  <Music className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">{showHarmonies ? 'Hide' : 'Show'} Harmonies</span>
-                  <span className="sm:hidden">{showHarmonies ? 'Hide' : 'Show'}</span>
+                  High
+                </Button>
+                
+                <Button
+                  variant={showLowHarmony ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setShowLowHarmony(!showLowHarmony)}
+                  className="flex-shrink-0"
+                  title="Toggle Low Harmony Display (♩)"
+                >
+                  Low
                 </Button>
                 
                 <Button

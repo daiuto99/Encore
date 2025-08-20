@@ -26,7 +26,8 @@ interface SongEditorProps {
 export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: SongEditorProps) {
   const [content, setContent] = useState(song.content);
   const [showPreview, setShowPreview] = useState(false);
-  const [showHarmonies, setShowHarmonies] = useState(true);
+  const [showHighHarmony, setShowHighHarmony] = useState(true);
+  const [showLowHarmony, setShowLowHarmony] = useState(true);
   const [selectedText, setSelectedText] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -139,29 +140,34 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
     // Enhanced markdown parser that handles harmony syntax (multiline support)
     let processedContent = content;
     
-    if (showHarmonies) {
-      // Handle high harmonies
+    // Handle harmony display based on individual toggle states
+    if (showHighHarmony) {
       processedContent = processedContent.replace(
         /\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, 
         '<span class="harmony-high">$1</span>'
       );
-      // Handle low harmonies
+    } else {
+      processedContent = processedContent.replace(
+        /\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '$1'
+      );
+    }
+    
+    if (showLowHarmony) {
       processedContent = processedContent.replace(
         /\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, 
         '<span class="harmony-low">$1</span>'
       );
-      // Handle legacy harmony tags
-      processedContent = processedContent.replace(
-        /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
-        '<span class="harmony-highlight">$1</span>'
-      );
     } else {
-      // Remove all harmony tags when not showing harmonies
-      processedContent = processedContent
-        .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '$1')
-        .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '$1')
-        .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '$1');
+      processedContent = processedContent.replace(
+        /\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '$1'
+      );
     }
+    
+    // Always handle legacy harmony tags
+    processedContent = processedContent.replace(
+      /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
+      '<span class="harmony-highlight">$1</span>'
+    );
     
     return parseMarkdown(processedContent);
   };
@@ -195,16 +201,26 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
               </Button>
               
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowHarmonies(!showHarmonies)}
-                  disabled={!showPreview}
-                >
-                  <Music className="h-4 w-4 mr-1" />
-                  {showHarmonies ? 'Hide' : 'Show'} Harmonies
-                </Button>
-                {!showPreview && (
+                {showPreview ? (
+                  <>
+                    <Button
+                      variant={showHighHarmony ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setShowHighHarmony(!showHighHarmony)}
+                      title="Toggle High Harmony Display (♫♫)"
+                    >
+                      High
+                    </Button>
+                    <Button
+                      variant={showLowHarmony ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setShowLowHarmony(!showLowHarmony)}
+                      title="Toggle Low Harmony Display (♩)"
+                    >
+                      Low
+                    </Button>
+                  </>
+                ) : (
                   <>
                     <Button
                       variant="outline"
