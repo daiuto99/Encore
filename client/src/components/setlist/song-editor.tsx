@@ -278,7 +278,7 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
             {showPreview && (
               <div className="lg:col-span-2">
                 <div 
-                  className="min-h-[500px] p-4 border rounded-md bg-muted/20 song-viewer"
+                  className="song-viewer prose max-w-none min-h-[500px] p-4 bg-muted/20 rounded-md overflow-y-auto custom-scrollbar"
                   dangerouslySetInnerHTML={{ __html: renderPreview() }}
                 />
               </div>
