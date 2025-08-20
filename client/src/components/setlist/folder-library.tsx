@@ -79,45 +79,60 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
   if (!state.isSupported) {
     const inIframe = window !== window.parent;
     const hasAPI = 'showDirectoryPicker' in window;
+    const isIOSorSafari = /iPad|iPhone|iPod/.test(navigator.userAgent) || /Safari/.test(navigator.userAgent);
     
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-amber-500" />
-            Folder Library Limited
+            <Folder className="h-5 w-5 text-blue-500" />
+            File Upload Only
           </CardTitle>
           <CardDescription>
-            {inIframe ? (
+            {isIOSorSafari ? (
               <>
-                Folder access is restricted in embedded environments. For full folder functionality, 
-                open this app in a new browser tab or use the drag & drop method below.
+                iPad/Safari: Folder sync not supported. Use drag & drop or the file chooser below to upload your songs. 
+                Your setlists will export as downloadable files you can save to Files app.
+              </>
+            ) : inIframe ? (
+              <>
+                Folder access restricted in embedded view. Open in new tab for automatic folder sync, 
+                or use drag & drop upload below.
               </>
             ) : !hasAPI ? (
               <>
-                Safari doesn't support automatic folder access. Try Chrome or Edge for folder 
-                features, or use drag & drop below to upload your songs.
+                Your browser doesn't support automatic folder sync. Use drag & drop or file upload below. 
+                Chrome/Edge offer automatic folder features.
               </>
             ) : (
               <>
-                Folder access is not available. You can still upload songs using drag & drop below.
+                Folder sync unavailable. Use drag & drop or file upload below to add your songs.
               </>
             )}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center">
-            <Button 
-              variant="outline" 
-              onClick={() => window.open(window.location.href, '_blank')}
-              className="mb-2"
-              data-testid="button-open-new-tab"
-            >
-              Open in New Tab for Full Features
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              Opening in a new tab enables folder access and automatic exports
-            </p>
+          <div className="text-center space-y-2">
+            {!isIOSorSafari && (
+              <>
+                <Button 
+                  variant="outline" 
+                  onClick={() => window.open(window.location.href, '_blank')}
+                  className="w-full"
+                  data-testid="button-open-new-tab"
+                >
+                  Open in New Tab for Full Features
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  New tab enables automatic folder sync and export
+                </p>
+              </>
+            )}
+            {isIOSorSafari && (
+              <p className="text-xs text-muted-foreground">
+                💡 Tip: Export your setlists to save them to your Files app for easy access
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

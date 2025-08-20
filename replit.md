@@ -17,6 +17,7 @@ Encore is a musician's tool for creating and managing song setlists with both on
 - **Header Proportions**: Fixed header bar scaling with logo height (h-10) matching button heights exactly, maintaining consistent proportions across responsive states
 - **Editor Preview Consistency**: Aligned formatting between song editor preview mode and main song viewer using identical CSS classes and typography
 - **Production Deployment**: Successfully deployed to custom domain `encore.sonicink.com` with proper SSL certificate and DNS configuration
+- **iPad/Safari Compatibility**: Enhanced folder library messaging for iPad/Safari users, clarifying that automatic folder sync requires Chrome/Edge while drag & drop upload works universally
 
 ## User Preferences
 

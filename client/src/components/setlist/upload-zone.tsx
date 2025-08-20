@@ -47,7 +47,8 @@ export default function UploadZone({ onSongsUploaded }: UploadZoneProps) {
           resolve({
             name: name,
             content: e.target?.result as string,
-            duration: 0
+            duration: 0,
+            isModified: false
           });
         };
         reader.onerror = reject;
