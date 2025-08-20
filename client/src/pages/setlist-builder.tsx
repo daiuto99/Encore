@@ -147,7 +147,7 @@ export default function SetlistBuilder() {
                 <img 
                   src="/src/assets/encore-logo.png" 
                   alt="Encore" 
-                  style={{ height: '2em', width: 'auto' }}
+                  className="header-logo"
                   data-testid="logo-encore"
                 />
               </div>

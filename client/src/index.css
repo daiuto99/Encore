@@ -76,6 +76,16 @@
 }
 
 @layer components {
+  /* Force logo to display at correct size */
+  .header-logo {
+    height: 2em !important;
+    width: auto !important;
+    min-height: 2em !important;
+    max-height: 2em !important;
+    flex-shrink: 0 !important;
+    object-fit: contain !important;
+  }
+
   .song-viewer {
     font-size: var(--font-scale, 1em);
     line-height: 1.6;
