@@ -47,8 +47,24 @@ export default function AvailableSongs({
     songsInSets: songsInSets.length,
     availableSongs: availableSongs.length,
     setCount: sets.length,
-    sets: sets.map(s => ({ name: s.name, songCount: s.songs.length }))
+    sets: sets.map(s => ({ name: s.name, songCount: s.songs.length })),
+    sampleSongs: songs.slice(0, 3).map(s => ({ id: s.id, name: s.name })),
+    sampleSongsInSets: songsInSets.slice(0, 3).map(s => ({ id: s.id, name: s.name }))
   });
+  
+  // Additional debugging for the counting mismatch
+  if (songs.length > 0) {
+    const manualCount = songs.reduce((count, song) => {
+      const inAnySet = sets.some(set => set.songs.some(setSong => setSong.id === song.id));
+      return inAnySet ? count : count + 1;
+    }, 0);
+    
+    console.log('Manual count verification:', {
+      calculatedAvailable: availableSongs.length,
+      manualAvailable: manualCount,
+      matches: availableSongs.length === manualCount
+    });
+  }
 
   const filteredSongs = useMemo(() => {
     if (!searchQuery) return songs;
