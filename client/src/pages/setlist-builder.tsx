@@ -166,6 +166,7 @@ export default function SetlistBuilder() {
                   variant="outline"
                   onClick={() => actions.setFontSize(state.fontSize - 10)}
                   data-testid="button-font-decrease"
+                  style={{ height: '2em', width: '2em' }}
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -177,6 +178,7 @@ export default function SetlistBuilder() {
                   variant="outline"
                   onClick={() => actions.setFontSize(state.fontSize + 10)}
                   data-testid="button-font-increase"
+                  style={{ height: '2em', width: '2em' }}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -188,6 +190,7 @@ export default function SetlistBuilder() {
                 variant="outline"
                 onClick={actions.toggleDarkMode}
                 data-testid="button-dark-mode-toggle"
+                style={{ height: '2em', width: '2em' }}
               >
                 {state.isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
@@ -196,6 +199,7 @@ export default function SetlistBuilder() {
               <Button 
                 onClick={actions.togglePerformanceMode}
                 data-testid="button-performance-mode-toggle"
+                style={{ height: '2em' }}
               >
                 <Play className="h-4 w-4" />
               </Button>
@@ -206,6 +210,7 @@ export default function SetlistBuilder() {
                   className="bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
                   onClick={handleExport}
                   data-testid="button-save-setlist"
+                  style={{ height: '2em' }}
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Save
@@ -216,7 +221,7 @@ export default function SetlistBuilder() {
                     className="bg-secondary hover:bg-secondary/90" 
                     asChild
                   >
-                    <span>
+                    <span style={{ height: '2em', display: 'flex', alignItems: 'center' }}>
                       <Upload className="h-4 w-4 mr-2" />
                       Load
                     </span>
