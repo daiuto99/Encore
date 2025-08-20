@@ -207,7 +207,7 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
                       variant={showHighHarmony ? "default" : "outline"}
                       size="sm"
                       onClick={() => setShowHighHarmony(!showHighHarmony)}
-                      title="Toggle High Harmony Display (♫♫)"
+                      title="Toggle High Harmony Display (↑)"
                     >
                       High
                     </Button>
@@ -215,7 +215,7 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
                       variant={showLowHarmony ? "default" : "outline"}
                       size="sm"
                       onClick={() => setShowLowHarmony(!showLowHarmony)}
-                      title="Toggle Low Harmony Display (♩)"
+                      title="Toggle Low Harmony Display (↓)"
                     >
                       Low
                     </Button>
@@ -226,7 +226,7 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
                       variant="outline"
                       size="sm"
                       onClick={() => insertHighHarmony()}
-                      title="Insert High Harmony (♫♫)"
+                      title="Insert High Harmony (↑)"
                     >
                       High
                     </Button>
@@ -234,7 +234,7 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
                       variant="outline"
                       size="sm"
                       onClick={() => insertLowHarmony()}
-                      title="Insert Low Harmony (♩)"
+                      title="Insert Low Harmony (↓)"
                     >
                       Low
                     </Button>
@@ -247,17 +247,6 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
         
         <CardContent>
           <div className="flex flex-wrap gap-2 mb-4">
-            {selectedText && (
-              <Button
-                size="sm"
-                onClick={handleMarkAsHarmony}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                <Music className="h-4 w-4 mr-1" />
-                Mark as Harmony
-              </Button>
-            )}
-            
             {hasChanges && song.originalContent && (
               <Button
                 variant="outline"
@@ -268,10 +257,6 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
                 Revert Changes
               </Button>
             )}
-            
-            <div className="text-xs text-muted-foreground flex items-center gap-2">
-              💡 Tip: Select text and click "Mark as Harmony" to highlight vocal parts
-            </div>
           </div>
           
           {/* Editor/Preview Area */}

@@ -235,7 +235,7 @@
 
 /* High harmony highlighting */
 .harmony-high {
-  background: linear-gradient(135deg, #f3e8ff 0%, #e879f9 100%);
+  background: linear-gradient(135deg, #e879f9 0%, #c084fc 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -247,19 +247,14 @@
 }
 
 .harmony-high::before {
-  content: "♫♫";
-  position: absolute;
-  top: -4px;
-  right: -8px;
-  font-size: 0.7em;
+  content: "↑ ";
   color: rgba(168, 85, 247, 0.9);
   font-weight: normal;
-  z-index: 1;
 }
 
 /* Low harmony highlighting */
 .harmony-low {
-  background: linear-gradient(135deg, #a855f7 0%, #581c87 100%);
+  background: linear-gradient(135deg, #e879f9 0%, #c084fc 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -267,18 +262,13 @@
   position: relative;
   padding: 2px 4px;
   border-radius: 4px;
-  box-shadow: inset 0 0 0 1px rgba(88, 28, 135, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.3);
 }
 
 .harmony-low::after {
-  content: "♩";
-  position: absolute;
-  bottom: -4px;
-  left: -6px;
-  font-size: 0.8em;
-  color: rgba(88, 28, 135, 0.9);
+  content: " ↓";
+  color: rgba(168, 85, 247, 0.9);
   font-weight: normal;
-  z-index: 1;
 }
 
 /* Dark mode variants */
@@ -295,13 +285,13 @@
 }
 
 .dark .harmony-low {
-  background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+  background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  box-shadow: inset 0 0 0 1px rgba(88, 28, 135, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.5);
 }
 
 .dark .harmony-low::after {
-  color: rgba(126, 58, 193, 0.9);
+  color: rgba(196, 132, 252, 0.9);
 }

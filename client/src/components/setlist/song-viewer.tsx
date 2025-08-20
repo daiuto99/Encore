@@ -160,24 +160,22 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
             
             {currentSong && (
               <div className="flex gap-1 flex-wrap">
-                {state.selectedPreviewSong && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => actions.selectPreviewSong(null)}
-                    className="flex-shrink-0"
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Exit Preview
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                  className="flex-shrink-0"
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
                 
                 <Button
                   variant={showHighHarmony ? "default" : "outline"}
                   size="sm"
                   onClick={() => setShowHighHarmony(!showHighHarmony)}
                   className="flex-shrink-0"
-                  title="Toggle High Harmony Display (♫♫)"
+                  title="Toggle High Harmony Display (↑)"
                 >
                   High
                 </Button>
@@ -187,7 +185,7 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
                   size="sm"
                   onClick={() => setShowLowHarmony(!showLowHarmony)}
                   className="flex-shrink-0"
-                  title="Toggle Low Harmony Display (♩)"
+                  title="Toggle Low Harmony Display (↓)"
                 >
                   Low
                 </Button>
@@ -202,15 +200,17 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
                   <span className="text-xs">Lyrics</span>
                 </Button>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                  className="flex-shrink-0"
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
+                {state.selectedPreviewSong && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => actions.selectPreviewSong(null)}
+                    className="flex-shrink-0"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Exit Preview
+                  </Button>
+                )}
               </div>
             )}
           </div>
