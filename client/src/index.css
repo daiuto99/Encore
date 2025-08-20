@@ -248,8 +248,8 @@
 
 .harmony-high::before {
   content: "↑ ";
-  color: #d97706;
-  font-weight: bold;
+  color: #f59e0b !important;
+  font-weight: bold !important;
 }
 
 /* Low harmony highlighting */
@@ -267,8 +267,8 @@
 
 .harmony-low::after {
   content: " ↓";
-  color: #d97706;
-  font-weight: bold;
+  color: #f59e0b !important;
+  font-weight: bold !important;
 }
 
 /* Dark mode variants */
@@ -281,7 +281,8 @@
 }
 
 .dark .harmony-high::before {
-  color: #fbbf24;
+  color: #fbbf24 !important;
+  font-weight: bold !important;
 }
 
 .dark .harmony-low {
@@ -293,5 +294,6 @@
 }
 
 .dark .harmony-low::after {
-  color: #fbbf24;
+  color: #fbbf24 !important;
+  font-weight: bold !important;
 }

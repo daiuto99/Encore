@@ -57,24 +57,32 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
     let processedContent = currentSong.content;
     
     if (isLyricsOnly) {
-      // Remove chord symbols and clean up formatting
-      processedContent = processedContent
+      // Simple and effective lyrics-only processing
+      const lines = processedContent.split('\n');
+      const lyricsLines = [];
+      
+      for (const line of lines) {
+        let cleanLine = line;
+        
         // Remove chord symbols in brackets [C], [Am7], etc.
-        .replace(/\[[A-G][#b]?[^[\]]*\]/g, '')
-        // Remove chord-only lines (lines that start with chord names)
-        .split('\n')
-        .filter(line => {
-          const trimmed = line.trim();
-          // Keep line if it's not just chord symbols
-          return !(trimmed.match(/^[A-G][#b]?[^\s]*(\s+[A-G][#b]?[^\s]*)*\s*$/));
-        })
-        .join('\n')
-        // Clean up extra whitespace
-        .replace(/\s+/g, ' ')
-        .replace(/\n\s+/g, '\n')
-        .replace(/\s+\n/g, '\n')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
+        cleanLine = cleanLine.replace(/\[[A-G][#b]?[^[\]]*\]/g, '');
+        
+        // Remove isolated chord names at the beginning of words
+        cleanLine = cleanLine.replace(/\b[A-G][#b]?(?:maj|min|sus|dim|aug)?[0-9]*\b/g, '');
+        
+        // Clean up the line
+        cleanLine = cleanLine.replace(/\s+/g, ' ').trim();
+        
+        // Only keep lines that have actual content (not just empty or very short)
+        if (cleanLine.length > 2) {
+          lyricsLines.push(cleanLine);
+        } else if (cleanLine.length === 0 && lyricsLines.length > 0) {
+          // Keep empty lines for spacing, but not at the start
+          lyricsLines.push('');
+        }
+      }
+      
+      processedContent = lyricsLines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
     }
     
     // Handle harmony display based on individual toggle states
