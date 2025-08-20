@@ -79,6 +79,30 @@
   .song-viewer {
     font-size: var(--font-scale, 1em);
     line-height: 1.6;
+    font-family: inherit;
+  }
+  
+  /* Ensure consistent typography between viewer and editor preview */
+  .song-viewer.prose {
+    font-family: inherit;
+  }
+
+  .song-viewer.prose h1,
+  .song-viewer.prose h2,
+  .song-viewer.prose h3,
+  .song-viewer.prose h4,
+  .song-viewer.prose h5,
+  .song-viewer.prose h6 {
+    font-family: inherit;
+    font-size: calc(var(--font-scale, 1em) * 1.2);
+    line-height: 1.4;
+  }
+
+  .song-viewer.prose p {
+    font-family: inherit;
+    font-size: var(--font-scale, 1em);
+    line-height: 1.6;
+    margin: 0.5em 0;
   }
   
   /* Vocal Harmony Styling - Clean single highlight */
