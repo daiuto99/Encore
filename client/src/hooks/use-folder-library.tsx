@@ -155,7 +155,8 @@ export function useFolderLibrary() {
                 id: Date.now() + Math.random() + processedCount,
                 name: name.replace(/\.(md|txt)$/, ''),
                 content: content,
-                duration: 0
+                duration: 0,
+                isModified: false
               });
               processedCount++;
               console.log(`Successfully processed: ${name}`);

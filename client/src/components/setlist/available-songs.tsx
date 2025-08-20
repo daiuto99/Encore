@@ -38,6 +38,18 @@ export default function AvailableSongs({
     return { inSet: false };
   };
 
+  // Debug logging for song count calculation
+  const availableSongs = songs.filter(song => !isSongInAnySet(song.id).inSet);
+  const songsInSets = songs.filter(song => isSongInAnySet(song.id).inSet);
+  
+  console.log('Song count debug:', {
+    totalSongs: songs.length,
+    songsInSets: songsInSets.length,
+    availableSongs: availableSongs.length,
+    setCount: sets.length,
+    sets: sets.map(s => ({ name: s.name, songCount: s.songs.length }))
+  });
+
   const filteredSongs = useMemo(() => {
     if (!searchQuery) return songs;
     

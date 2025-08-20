@@ -95,8 +95,8 @@ export default function FolderLibrary({ onSongsLoaded }: FolderLibraryProps) {
               </>
             ) : !hasAPI ? (
               <>
-                Your browser doesn't support automatic folder access. Try Chrome or Edge for folder features, 
-                or use drag & drop below.
+                Safari doesn't support automatic folder access. Try Chrome or Edge for folder 
+                features, or use drag & drop below to upload your songs.
               </>
             ) : (
               <>
