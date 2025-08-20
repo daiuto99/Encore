@@ -57,56 +57,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
   };
 
   const renderSongWithHarmonies = (content: string) => {
-    // Determine if lyrics-only mode should be active
-    const isLyricsOnly = state.globalLyricsOnly || 
-      (currentSong && state.sets[state.currentSetIndex]?.songLyricsOnly?.[currentSong.id.toString()]);
-
     let processedContent = content;
-
-    // Process content for lyrics-only mode first
-    if (isLyricsOnly) {
-      // Enhanced lyrics-only processing to remove all chord information
-      const lines = processedContent.split('\n');
-      const lyricsLines = [];
-      
-      for (const line of lines) {
-        let cleanLine = line;
-        
-        // Remove chord symbols in brackets [C], [Am7], etc.
-        cleanLine = cleanLine.replace(/\[[A-G][#b]?[^[\]]*\]/g, '');
-        
-        // Remove chord progression lines like "- Bm x2 -"
-        if (cleanLine.match(/^\s*-\s*[A-G][#b]?.*-\s*$/)) {
-          continue; // Skip this line entirely
-        }
-        
-        // Remove isolated chord names and chord patterns
-        cleanLine = cleanLine.replace(/\b[A-G][#b]?(?:maj|min|sus|dim|aug|add)?[0-9]*(?:\/[A-G][#b]?)?\b/g, '');
-        
-        // Remove chord timing patterns like "2 - 3 - 4"
-        if (cleanLine.match(/^\s*[\d\s\-]+\s*$/)) {
-          continue; // Skip this line entirely
-        }
-        
-        // Remove lines that are just chord progressions or musical notation
-        if (cleanLine.match(/^\s*[A-G#b\s\-x]+\s*$/)) {
-          continue; // Skip this line entirely
-        }
-        
-        // Clean up the line
-        cleanLine = cleanLine.replace(/\s+/g, ' ').trim();
-        
-        // Only keep lines that have actual lyrical content
-        if (cleanLine.length > 2 && !cleanLine.match(/^[A-G#b\s\-\d]+$/)) {
-          lyricsLines.push(cleanLine);
-        } else if (cleanLine.length === 0 && lyricsLines.length > 0) {
-          // Keep empty lines for spacing, but not at the start
-          lyricsLines.push('');
-        }
-      }
-      
-      processedContent = lyricsLines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-    }
     
     // Process harmony tags for performance mode display (handle multiline)
     processedContent = processedContent

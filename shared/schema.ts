@@ -14,8 +14,7 @@ export const setSchema = z.object({
   id: z.number(),
   name: z.string(),
   songs: z.array(songSchema),
-  color: z.string().default('blue'),
-  songLyricsOnly: z.record(z.boolean()).default({}) // Track per-song lyrics-only mode
+  color: z.string().default('blue')
 });
 
 export const appStateSchema = z.object({
@@ -27,7 +26,6 @@ export const appStateSchema = z.object({
   fontSize: z.number().min(50).max(200).default(100),
   isDarkMode: z.boolean().default(false),
   isPerformanceMode: z.boolean().default(false),
-  globalLyricsOnly: z.boolean().default(false),
   selectedPreviewSong: songSchema.nullable().optional(),
   exportDate: z.string().optional()
 });
