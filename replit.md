@@ -14,6 +14,8 @@ Encore is a musician's tool for creating and managing song setlists with both on
 - **Set Assignment Logic**: Implemented proper one-song-per-set logic with either "Add to Set" button OR "Set #" badge display
 - **Branding Update**: Rebranded from "Setlist Builder" to "Encore" with custom logo integration
 - **Layout Optimization**: Maintained clean vertical stacking: Folder Library → Upload Zone → Song Library → Sets → Song Viewer
+- **Header Proportions**: Fixed header bar scaling with logo height (h-10) matching button heights exactly, maintaining consistent proportions across responsive states
+- **Editor Preview Consistency**: Aligned formatting between song editor preview mode and main song viewer using identical CSS classes and typography
 
 ## User Preferences
 
