@@ -250,6 +250,9 @@
   content: "↑ ";
   color: #f59e0b !important;
   font-weight: bold !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #f59e0b !important;
 }
 
 /* Low harmony highlighting */
@@ -269,6 +272,9 @@
   content: " ↓";
   color: #f59e0b !important;
   font-weight: bold !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #f59e0b !important;
 }
 
 /* Dark mode variants */
@@ -283,6 +289,9 @@
 .dark .harmony-high::before {
   color: #fbbf24 !important;
   font-weight: bold !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #fbbf24 !important;
 }
 
 .dark .harmony-low {
@@ -296,4 +305,7 @@
 .dark .harmony-low::after {
   color: #fbbf24 !important;
   font-weight: bold !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #fbbf24 !important;
 }

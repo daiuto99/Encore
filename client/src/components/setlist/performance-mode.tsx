@@ -65,7 +65,7 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
 
     // Process content for lyrics-only mode first
     if (isLyricsOnly) {
-      // Simple and effective lyrics-only processing
+      // Enhanced lyrics-only processing to remove all chord information
       const lines = processedContent.split('\n');
       const lyricsLines = [];
       
@@ -75,14 +75,29 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
         // Remove chord symbols in brackets [C], [Am7], etc.
         cleanLine = cleanLine.replace(/\[[A-G][#b]?[^[\]]*\]/g, '');
         
-        // Remove isolated chord names at the beginning of words
-        cleanLine = cleanLine.replace(/\b[A-G][#b]?(?:maj|min|sus|dim|aug)?[0-9]*\b/g, '');
+        // Remove chord progression lines like "- Bm x2 -"
+        if (cleanLine.match(/^\s*-\s*[A-G][#b]?.*-\s*$/)) {
+          continue; // Skip this line entirely
+        }
+        
+        // Remove isolated chord names and chord patterns
+        cleanLine = cleanLine.replace(/\b[A-G][#b]?(?:maj|min|sus|dim|aug|add)?[0-9]*(?:\/[A-G][#b]?)?\b/g, '');
+        
+        // Remove chord timing patterns like "2 - 3 - 4"
+        if (cleanLine.match(/^\s*[\d\s\-]+\s*$/)) {
+          continue; // Skip this line entirely
+        }
+        
+        // Remove lines that are just chord progressions or musical notation
+        if (cleanLine.match(/^\s*[A-G#b\s\-x]+\s*$/)) {
+          continue; // Skip this line entirely
+        }
         
         // Clean up the line
         cleanLine = cleanLine.replace(/\s+/g, ' ').trim();
         
-        // Only keep lines that have actual content (not just empty or very short)
-        if (cleanLine.length > 2) {
+        // Only keep lines that have actual lyrical content
+        if (cleanLine.length > 2 && !cleanLine.match(/^[A-G#b\s\-\d]+$/)) {
           lyricsLines.push(cleanLine);
         } else if (cleanLine.length === 0 && lyricsLines.length > 0) {
           // Keep empty lines for spacing, but not at the start
