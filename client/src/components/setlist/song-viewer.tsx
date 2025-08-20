@@ -48,20 +48,32 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
   const renderSongContent = () => {
     if (!currentSong) return '';
     
-    // Process harmony syntax for display
+    // Determine if lyrics-only mode should be active
+    const isLyricsOnly = state.globalLyricsOnly || 
+      (currentSong && state.sets[state.currentSetIndex]?.songLyricsOnly?.[currentSong.id.toString()]);
+
+    // Process content for lyrics-only mode first
     let processedContent = currentSong.content;
     
+    if (isLyricsOnly) {
+      // Remove chord annotations like [C], [Am], [G7], etc.
+      processedContent = processedContent
+        .replace(/\[[A-G][#b]?[^[\]]*\]/g, '') // Remove chord symbols
+        .replace(/^\s*\n/gm, '') // Remove blank lines
+        .trim();
+    }
+    
     if (showHarmonies) {
-      processedContent = processedContent.replace(
-        /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
-        '<span class="harmony-line">$1</span>'
-      );
+      processedContent = processedContent
+        .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '<span class="harmony-high">$1</span>')
+        .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '<span class="harmony-low">$1</span>')
+        .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-highlight">$1</span>');
     } else {
       // Remove harmony tags but keep the content
-      processedContent = processedContent.replace(
-        /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
-        '$1'
-      );
+      processedContent = processedContent
+        .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '$1')
+        .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '$1')
+        .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '$1');
     }
     
     return parseMarkdown(processedContent);
@@ -157,6 +169,16 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
                   <Music className="h-4 w-4 mr-1" />
                   <span className="hidden sm:inline">{showHarmonies ? 'Hide' : 'Show'} Harmonies</span>
                   <span className="sm:hidden">{showHarmonies ? 'Hide' : 'Show'}</span>
+                </Button>
+                
+                <Button
+                  variant={state.globalLyricsOnly ? "default" : "outline"}
+                  size="sm"
+                  onClick={actions.toggleGlobalLyricsOnly}
+                  className="flex-shrink-0"
+                  title="Toggle Lyrics Only Mode"
+                >
+                  <span className="text-xs">Lyrics</span>
                 </Button>
                 
                 <Button

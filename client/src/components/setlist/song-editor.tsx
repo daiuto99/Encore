@@ -87,14 +87,81 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
     setSelectedText(selected.trim());
   };
 
+  const insertHighHarmony = () => {
+    const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = textarea.value.substring(start, end);
+      
+      const beforeText = textarea.value.substring(0, start);
+      const afterText = textarea.value.substring(end);
+      
+      const harmonyText = selectedText || 'harmony text';
+      const newText = `${beforeText}{harmony-high}${harmonyText}{/harmony-high}${afterText}`;
+      
+      setContent(newText);
+      
+      // Focus back to textarea
+      setTimeout(() => {
+        textarea.focus();
+        const newCursorPos = start + `{harmony-high}${harmonyText}`.length;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }, 0);
+    }
+  };
+
+  const insertLowHarmony = () => {
+    const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = textarea.value.substring(start, end);
+      
+      const beforeText = textarea.value.substring(0, start);
+      const afterText = textarea.value.substring(end);
+      
+      const harmonyText = selectedText || 'harmony text';
+      const newText = `${beforeText}{harmony-low}${harmonyText}{/harmony-low}${afterText}`;
+      
+      setContent(newText);
+      
+      // Focus back to textarea
+      setTimeout(() => {
+        textarea.focus();
+        const newCursorPos = start + `{harmony-low}${harmonyText}`.length;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }, 0);
+    }
+  };
+
   const renderPreview = () => {
     // Enhanced markdown parser that handles harmony syntax (multiline support)
-    const processedContent = showHarmonies 
-      ? content.replace(
-          /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
-          '<span class="harmony-line">$1</span>'
-        )
-      : content.replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '$1');
+    let processedContent = content;
+    
+    if (showHarmonies) {
+      // Handle high harmonies
+      processedContent = processedContent.replace(
+        /\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, 
+        '<span class="harmony-high">$1</span>'
+      );
+      // Handle low harmonies
+      processedContent = processedContent.replace(
+        /\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, 
+        '<span class="harmony-low">$1</span>'
+      );
+      // Handle legacy harmony tags
+      processedContent = processedContent.replace(
+        /\{harmony\}([\s\S]*?)\{\/harmony\}/g, 
+        '<span class="harmony-highlight">$1</span>'
+      );
+    } else {
+      // Remove all harmony tags when not showing harmonies
+      processedContent = processedContent
+        .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '$1')
+        .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '$1')
+        .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '$1');
+    }
     
     return parseMarkdown(processedContent);
   };
@@ -127,15 +194,37 @@ export default function SongEditor({ song, onSave, onCancel, onSyncToFolder }: S
                 {showPreview ? 'Edit' : 'Preview'}
               </Button>
               
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowHarmonies(!showHarmonies)}
-                disabled={!showPreview}
-              >
-                <Music className="h-4 w-4 mr-1" />
-                {showHarmonies ? 'Hide' : 'Show'} Harmonies
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowHarmonies(!showHarmonies)}
+                  disabled={!showPreview}
+                >
+                  <Music className="h-4 w-4 mr-1" />
+                  {showHarmonies ? 'Hide' : 'Show'} Harmonies
+                </Button>
+                {!showPreview && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => insertHighHarmony()}
+                      title="Insert High Harmony (♫♫)"
+                    >
+                      High
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => insertLowHarmony()}
+                      title="Insert Low Harmony (♩)"
+                    >
+                      Low
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </CardHeader>

@@ -21,7 +21,9 @@ export function parseMarkdown(content: string): string {
     .replace(/`([^`\n]+)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm font-mono">$1</code>')
     
     // Process vocal harmony markers (handle multiline) - but only if harmony tags exist
-    .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-line">$1</span>')
+    .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '<span class="harmony-high">$1</span>')
+    .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '<span class="harmony-low">$1</span>')
+    .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-highlight">$1</span>')
     
     // Process links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>')

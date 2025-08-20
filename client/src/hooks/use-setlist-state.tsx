@@ -266,11 +266,15 @@ export function useSetlistState() {
         const validatedState: AppState = {
           setlistName: newState.setlistName || 'Imported Setlist',
           allSongs: newState.allSongs || [],
-          sets: newState.sets.length > 0 ? newState.sets : [{ id: 1, name: 'Set 1', songs: [], color: 'blue' }],
+          sets: newState.sets.length > 0 ? newState.sets.map(set => ({
+            ...set,
+            songLyricsOnly: set.songLyricsOnly || {}
+          })) : [{ id: 1, name: 'Set 1', songs: [], color: 'blue', songLyricsOnly: {} }],
           currentSetIndex: Math.max(0, Math.min(newState.currentSetIndex || 0, (newState.sets?.length || 1) - 1)),
           currentSongIndex: newState.currentSongIndex || -1,
           fontSize: newState.fontSize || 100,
           isDarkMode: newState.isDarkMode || false,
+          globalLyricsOnly: newState.globalLyricsOnly || false,
           isPerformanceMode: false // Always start in normal mode
         };
         
