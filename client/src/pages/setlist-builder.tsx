@@ -8,6 +8,7 @@ import SetManager from '@/components/setlist/set-manager';
 import SongViewer from '@/components/setlist/song-viewer';
 import PerformanceMode from '@/components/setlist/performance-mode';
 import FolderLibrary from '@/components/setlist/folder-library';
+import encoreLogoUrl from '@/assets/encore-logo.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Moon, Sun, Play, Pause, Download, Upload, Minus, Plus, Mic } from 'lucide-react';
@@ -145,7 +146,7 @@ export default function SetlistBuilder() {
               {/* Logo */}
               <div className="flex items-center flex-shrink-0">
                 <img 
-                  src="/src/assets/encore-logo.png" 
+                  src={encoreLogoUrl} 
                   alt="Encore" 
                   className="header-logo"
                   data-testid="logo-encore"
