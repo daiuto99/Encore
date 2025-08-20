@@ -10,7 +10,7 @@ import PerformanceMode from '@/components/setlist/performance-mode';
 import FolderLibrary from '@/components/setlist/folder-library';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Moon, Sun, Play, Pause, Download, Upload, Minus, Plus } from 'lucide-react';
+import { Moon, Sun, Play, Pause, Download, Upload, Minus, Plus, Mic } from 'lucide-react';
 import { exportSetlist, loadSetlist } from '@/lib/export-utils';
 import { Song } from '@shared/schema';
 
@@ -192,14 +192,24 @@ export default function SetlistBuilder() {
                 {state.isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
 
-              {/* Performance Mode Toggle */}
-              <Button 
-                onClick={actions.togglePerformanceMode}
-                data-testid="button-performance-mode-toggle"
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Performance Mode
-              </Button>
+              {/* Performance Mode and Lyrics Mode Toggles */}
+              <div className="flex gap-2">
+                <Button 
+                  onClick={actions.togglePerformanceMode}
+                  className="flex-1"
+                  data-testid="button-performance-mode-toggle"
+                >
+                  <Play className="h-4 w-4" />
+                </Button>
+                <Button 
+                  onClick={actions.toggleGlobalLyricsOnly}
+                  className="flex-1"
+                  variant={state.globalLyricsOnly ? "default" : "outline"}
+                  data-testid="button-lyrics-mode-toggle"
+                >
+                  <Mic className="h-4 w-4" />
+                </Button>
+              </div>
 
               {/* Save/Load Controls */}
               <div className="flex items-center space-x-2">

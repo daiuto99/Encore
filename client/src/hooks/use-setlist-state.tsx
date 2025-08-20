@@ -6,13 +6,14 @@ const initialState: AppState = {
   setlistName: 'My Setlist',
   allSongs: [],
   sets: [
-    { id: 1, name: 'Set 1', songs: [], color: 'blue' }
+    { id: 1, name: 'Set 1', songs: [], color: 'blue', songLyricsOnly: {} }
   ],
   currentSetIndex: 0,
   currentSongIndex: -1,
   fontSize: 100,
   isDarkMode: false,
-  isPerformanceMode: false
+  isPerformanceMode: false,
+  globalLyricsOnly: false
 };
 
 export function useSetlistState() {
@@ -155,7 +156,8 @@ export function useSetlistState() {
           id: Date.now(),
           name: `Set ${prev.sets.length + 1}`,
           songs: [],
-          color: getSetColor(prev.sets.length)
+          color: getSetColor(prev.sets.length),
+          songLyricsOnly: {}
         };
         return {
           ...prev,
@@ -313,6 +315,13 @@ export function useSetlistState() {
       setState(prev => ({
         ...prev,
         selectedPreviewSong: song
+      }));
+    },
+
+    toggleGlobalLyricsOnly: () => {
+      setState(prev => ({
+        ...prev,
+        globalLyricsOnly: !prev.globalLyricsOnly
       }));
     },
 
