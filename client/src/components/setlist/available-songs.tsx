@@ -31,12 +31,15 @@ export default function AvailableSongs({
 
   const isSongInAnySet = (songId: number) => {
     for (let i = 0; i < sets.length; i++) {
-      if (sets[i].songs.some(song => song.id === songId)) {
+      // Use both exact ID match and loose comparison for loaded setlists
+      if (sets[i].songs.some(song => song.id === songId || Number(song.id) === Number(songId))) {
         return { inSet: true, setIndex: i, setName: sets[i].name };
       }
     }
     return { inSet: false };
   };
+
+
 
 
 
