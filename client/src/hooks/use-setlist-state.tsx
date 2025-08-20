@@ -260,19 +260,47 @@ export function useSetlistState() {
           throw new Error('Missing required state properties');
         }
         
+        // Create a map of all songs by ID for reference matching
+        const allSongsMap = new Map();
+        newState.allSongs.forEach(song => {
+          allSongsMap.set(song.id, song);
+        });
+        
+        // Ensure songs in sets reference the same objects as in allSongs
+        const normalizedSets = newState.sets.map(set => ({
+          ...set,
+          songs: set.songs.map(setSong => {
+            // If the song exists in allSongs, use that reference
+            const mainSong = allSongsMap.get(setSong.id);
+            if (mainSong) {
+              return mainSong;
+            }
+            // Otherwise, add this song to allSongs and return it
+            allSongsMap.set(setSong.id, setSong);
+            return setSong;
+          })
+        }));
+        
+        // Update allSongs to include any songs that were only in sets
+        const finalAllSongs = Array.from(allSongsMap.values());
+        
         // Ensure required properties exist with defaults
         const validatedState: AppState = {
           setlistName: newState.setlistName || 'Imported Setlist',
-          allSongs: newState.allSongs || [],
-          sets: newState.sets.length > 0 ? newState.sets : [{ id: 1, name: 'Set 1', songs: [], color: 'blue' }],
-          currentSetIndex: Math.max(0, Math.min(newState.currentSetIndex || 0, (newState.sets?.length || 1) - 1)),
+          allSongs: finalAllSongs,
+          sets: normalizedSets.length > 0 ? normalizedSets : [{ id: 1, name: 'Set 1', songs: [], color: 'blue' }],
+          currentSetIndex: Math.max(0, Math.min(newState.currentSetIndex || 0, (normalizedSets?.length || 1) - 1)),
           currentSongIndex: newState.currentSongIndex || -1,
           fontSize: newState.fontSize || 100,
           isDarkMode: newState.isDarkMode || false,
           isPerformanceMode: false // Always start in normal mode
         };
         
-        console.log('Loading validated state:', validatedState);
+        console.log('Loading validated state with normalized song references:', {
+          totalSongs: validatedState.allSongs.length,
+          songsInSets: validatedState.sets.reduce((count, set) => count + set.songs.length, 0),
+          setCount: validatedState.sets.length
+        });
         setState(validatedState);
       } catch (error) {
         console.error('Error loading state:', error);
