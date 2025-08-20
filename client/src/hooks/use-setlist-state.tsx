@@ -270,19 +270,14 @@ export function useSetlistState() {
         const normalizedSets = newState.sets.map(set => ({
           ...set,
           songs: set.songs.map(setSong => {
-            // If the song exists in allSongs, use that reference
+            // Always use the song from allSongs if it exists
             const mainSong = allSongsMap.get(setSong.id);
-            if (mainSong) {
-              return mainSong;
-            }
-            // Otherwise, add this song to allSongs and return it
-            allSongsMap.set(setSong.id, setSong);
-            return setSong;
+            return mainSong || setSong;
           })
         }));
         
-        // Update allSongs to include any songs that were only in sets
-        const finalAllSongs = Array.from(allSongsMap.values());
+        // Keep allSongs as-is, don't add duplicates
+        const finalAllSongs = newState.allSongs;
         
         // Ensure required properties exist with defaults
         const validatedState: AppState = {
@@ -299,7 +294,8 @@ export function useSetlistState() {
         console.log('Loading validated state with normalized song references:', {
           totalSongs: validatedState.allSongs.length,
           songsInSets: validatedState.sets.reduce((count, set) => count + set.songs.length, 0),
-          setCount: validatedState.sets.length
+          setCount: validatedState.sets.length,
+          availableSongs: validatedState.allSongs.length - validatedState.sets.reduce((count, set) => count + set.songs.length, 0)
         });
         setState(validatedState);
       } catch (error) {
