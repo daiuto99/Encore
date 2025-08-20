@@ -139,93 +139,86 @@ export default function SetlistBuilder() {
     <div className="min-h-screen bg-muted/30 transition-colors duration-200">
       {/* Header */}
       <header className="bg-card shadow-sm border-b no-print" data-testid="header-main">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="flex items-center justify-between h-12 sm:h-14 lg:h-16">
-            <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
               {/* Logo */}
               <div className="flex items-center flex-shrink-0">
                 <img 
                   src="/src/assets/encore-logo.png" 
                   alt="Encore" 
-                  className="h-6 sm:h-8 lg:h-10 w-auto"
+                  className="h-8 w-auto"
                   data-testid="logo-encore"
                 />
               </div>
               {state.exportDate && (
-                <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline" data-testid="text-export-date">
+                <span className="text-sm text-muted-foreground" data-testid="text-export-date">
                   {new Date(state.exportDate).toLocaleDateString()}
                 </span>
               )}
             </div>
             
-            <div className="flex items-center space-x-1 sm:space-x-2">
+            <div className="flex items-center space-x-2">
               {/* Font Size Controls */}
               <div className="flex items-center space-x-1">
                 <Button 
-                  size="sm"
+                  size="icon"
                   variant="outline"
                   onClick={() => actions.setFontSize(state.fontSize - 10)}
                   data-testid="button-font-decrease"
-                  className="h-8 w-8 sm:h-9 sm:w-9"
                 >
-                  <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Minus className="h-4 w-4" />
                 </Button>
-                <span className="text-xs sm:text-sm text-muted-foreground min-w-[2.5rem] sm:min-w-[3rem] text-center" data-testid="text-font-size">
+                <span className="text-sm text-muted-foreground min-w-[3rem] text-center" data-testid="text-font-size">
                   {state.fontSize}%
                 </span>
                 <Button 
-                  size="sm"
+                  size="icon"
                   variant="outline"
                   onClick={() => actions.setFontSize(state.fontSize + 10)}
                   data-testid="button-font-increase"
-                  className="h-8 w-8 sm:h-9 sm:w-9"
                 >
-                  <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Plus className="h-4 w-4" />
                 </Button>
               </div>
 
               {/* Dark Mode Toggle */}
               <Button 
-                size="sm"
+                size="icon"
                 variant="outline"
                 onClick={actions.toggleDarkMode}
                 data-testid="button-dark-mode-toggle"
-                className="h-8 w-8 sm:h-9 sm:w-9"
               >
-                {state.isDarkMode ? <Sun className="h-3 w-3 sm:h-4 sm:w-4" /> : <Moon className="h-3 w-3 sm:h-4 sm:w-4" />}
+                {state.isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
 
               {/* Performance Mode Toggle */}
               <Button 
-                size="sm"
                 onClick={actions.togglePerformanceMode}
                 data-testid="button-performance-mode-toggle"
-                className="h-8 sm:h-9"
               >
-                <Play className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Play className="h-4 w-4" />
               </Button>
 
               {/* Save/Load Controls */}
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="flex items-center space-x-2">
                 <Button 
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700 h-8 sm:h-9"
+                  className="bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
                   onClick={handleExport}
                   data-testid="button-save-setlist"
                 >
-                  <Download className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Save</span>
+                  <Download className="h-4 w-4 mr-2" />
+                  Save
                 </Button>
                 <label className="cursor-pointer">
                   <Button 
-                    size="sm" 
                     variant="outline" 
-                    className="bg-secondary hover:bg-secondary/90 h-8 sm:h-9" 
+                    className="bg-secondary hover:bg-secondary/90" 
                     asChild
                   >
                     <span>
-                      <Upload className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Load</span>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Load
                     </span>
                   </Button>
                   <input 
