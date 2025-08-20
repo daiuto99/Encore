@@ -57,15 +57,23 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
     let processedContent = currentSong.content;
     
     if (isLyricsOnly) {
-      // Enhanced chord removal with better formatting
+      // Remove chord symbols and clean up formatting
       processedContent = processedContent
-        .replace(/\[[A-G][#b]?[^[\]]*\]/g, '') // Remove chord symbols like [C], [Am7], [Gsus4]
-        .replace(/^[A-G][#b]?[^\s\n]*\s*/gm, '') // Remove lines starting with chord names
-        .replace(/\b[A-G][#b]?[^\s\n]*(?=\s|$)/g, '') // Remove isolated chord symbols
-        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-        .replace(/\n\s*\n/g, '\n') // Remove extra blank lines
-        .replace(/^\s+/gm, '') // Remove leading whitespace from lines
-        .replace(/\s+$/gm, '') // Remove trailing whitespace from lines
+        // Remove chord symbols in brackets [C], [Am7], etc.
+        .replace(/\[[A-G][#b]?[^[\]]*\]/g, '')
+        // Remove chord-only lines (lines that start with chord names)
+        .split('\n')
+        .filter(line => {
+          const trimmed = line.trim();
+          // Keep line if it's not just chord symbols
+          return !(trimmed.match(/^[A-G][#b]?[^\s]*(\s+[A-G][#b]?[^\s]*)*\s*$/));
+        })
+        .join('\n')
+        // Clean up extra whitespace
+        .replace(/\s+/g, ' ')
+        .replace(/\n\s+/g, '\n')
+        .replace(/\s+\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
         .trim();
     }
     
