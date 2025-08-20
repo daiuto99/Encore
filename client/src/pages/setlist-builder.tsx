@@ -140,14 +140,14 @@ export default function SetlistBuilder() {
       {/* Header */}
       <header className="bg-card shadow-sm border-b no-print" data-testid="header-main">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between" style={{ height: '2.5em' }}>
             <div className="flex items-center space-x-4">
               {/* Logo */}
               <div className="flex items-center flex-shrink-0">
                 <img 
                   src="/src/assets/encore-logo.png" 
                   alt="Encore" 
-                  className="h-10 w-auto"
+                  style={{ height: '2em', width: 'auto' }}
                   data-testid="logo-encore"
                 />
               </div>
