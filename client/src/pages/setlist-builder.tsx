@@ -144,11 +144,20 @@ export default function SetlistBuilder() {
             <div className="flex items-center space-x-4">
               {/* Logo */}
               <div className="flex items-center flex-shrink-0">
-                <img 
-                  src="/src/assets/encore-logo.png" 
-                  alt="Encore" 
-                  className="header-logo"
+                <div 
+                  style={{
+                    height: '2em',
+                    width: 'auto',
+                    minHeight: '2em',
+                    maxHeight: '2em',
+                    backgroundImage: 'url(/src/assets/encore-logo.png)',
+                    backgroundSize: 'contain',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center left',
+                    minWidth: '120px'
+                  }}
                   data-testid="logo-encore"
+                  aria-label="Encore"
                 />
               </div>
               {state.exportDate && (
