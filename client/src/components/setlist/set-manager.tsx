@@ -27,8 +27,8 @@ export default function SetManager({ state, actions }: SetManagerProps) {
   const { toast } = useToast();
   const currentSet = state.sets[state.currentSetIndex];
   
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.setData('text/plain', index.toString());
+  const handleSongDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('application/json', JSON.stringify({ type: 'song', index }));
     e.dataTransfer.effectAllowed = 'move';
     
     // Add visual feedback for touch devices
@@ -37,27 +37,27 @@ export default function SetManager({ state, actions }: SetManagerProps) {
     }
   };
 
-  const handleDragEnd = (e: React.DragEvent) => {
+  const handleSongDragEnd = (e: React.DragEvent) => {
     // Reset visual feedback
     if (e.currentTarget instanceof HTMLElement) {
       e.currentTarget.style.opacity = '1';
     }
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleSongDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+  const handleSongDrop = (e: React.DragEvent, dropIndex: number) => {
     e.preventDefault();
-    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    const data = JSON.parse(e.dataTransfer.getData('application/json'));
     
-    if (dragIndex !== dropIndex) {
-      actions.reorderSets(dragIndex, dropIndex);
+    if (data.type === 'song' && data.index !== dropIndex) {
+      actions.reorderSongs(data.index, dropIndex);
       toast({
-        title: 'Set Reordered',
-        description: `Moved set to position ${dropIndex + 1}`,
+        title: 'Song Reordered',
+        description: `Moved song to position ${dropIndex + 1}`,
       });
     }
   };
@@ -107,35 +107,16 @@ export default function SetManager({ state, actions }: SetManagerProps) {
               : `whitespace-nowrap min-w-[80px] border ${getSetColorClasses(setColor, 'light')}`;
             
             return (
-              <div
+              <Button
                 key={set.id}
-                className="relative group"
-                draggable
-                onDragStart={(e) => handleDragStart(e, index)}
-                onDragEnd={handleDragEnd}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, index)}
-                data-testid={`set-tab-${index}`}
+                variant={isActive ? "default" : "outline"}
+                size="sm"
+                onClick={() => actions.switchToSet(index)}
+                className={tabClasses}
+                data-testid={`button-set-tab-${index}`}
               >
-                <div className="flex items-center relative">
-                  <div 
-                    className="absolute left-1 z-10 cursor-move touch-manipulation p-1"
-                    style={{ touchAction: 'none' }}
-                    data-testid={`drag-handle-${index}`}
-                  >
-                    <GripVertical className="h-4 w-4 text-muted-foreground opacity-70 hover:opacity-100" />
-                  </div>
-                  <Button
-                    variant={isActive ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => actions.switchToSet(index)}
-                    className={`${tabClasses} pl-8 relative`}
-                    data-testid={`button-set-tab-${index}`}
-                  >
-                    {set.name} ({set.songs.length})
-                  </Button>
-                </div>
-              </div>
+                {set.name} ({set.songs.length})
+              </Button>
             );
           })}
         </div>
@@ -213,17 +194,22 @@ export default function SetManager({ state, actions }: SetManagerProps) {
                   key={`${song.id}-${index}`}
                   className={songClasses}
                   onClick={() => actions.selectSong(index)}
+                  draggable
+                  onDragStart={(e) => handleSongDragStart(e, index)}
+                  onDragEnd={handleSongDragEnd}
+                  onDragOver={handleSongDragOver}
+                  onDrop={(e) => handleSongDrop(e, index)}
                   data-testid={`item-set-song-${index}`}
+                  style={{ touchAction: 'none' }}
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-muted-foreground font-mono" data-testid={`text-song-number-${index}`}>
-                        {index + 1}.
-                      </span>
-                      <h4 className="font-medium text-foreground truncate" data-testid={`text-set-song-name-${index}`}>
-                        {song.name}
-                      </h4>
-                    </div>
+                  <div className="flex items-center flex-1 min-w-0">
+                    <GripVertical className="h-4 w-4 text-muted-foreground/50 mr-2 cursor-move" />
+                    <span className="text-sm text-muted-foreground font-mono mr-2" data-testid={`text-song-number-${index}`}>
+                      {index + 1}.
+                    </span>
+                    <h4 className="font-medium text-foreground truncate" data-testid={`text-set-song-name-${index}`}>
+                      {song.name}
+                    </h4>
                   </div>
                   <div className="flex items-center space-x-1 ml-2">
                     <Button 
