@@ -117,16 +117,24 @@ export default function SetManager({ state, actions }: SetManagerProps) {
                 onDrop={(e) => handleDrop(e, index)}
                 data-testid={`set-tab-${index}`}
               >
-                <Button
-                  variant={isActive ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => actions.switchToSet(index)}
-                  className={`${tabClasses} cursor-move touch-manipulation`}
-                  data-testid={`button-set-tab-${index}`}
-                >
-                  <GripVertical className="h-3 w-3 mr-1 opacity-60" />
-                  {set.name} ({set.songs.length})
-                </Button>
+                <div className="flex items-center relative">
+                  <div 
+                    className="absolute left-1 z-10 cursor-move touch-manipulation p-1"
+                    style={{ touchAction: 'none' }}
+                    data-testid={`drag-handle-${index}`}
+                  >
+                    <GripVertical className="h-4 w-4 text-muted-foreground opacity-70 hover:opacity-100" />
+                  </div>
+                  <Button
+                    variant={isActive ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => actions.switchToSet(index)}
+                    className={`${tabClasses} pl-8 relative`}
+                    data-testid={`button-set-tab-${index}`}
+                  >
+                    {set.name} ({set.songs.length})
+                  </Button>
+                </div>
               </div>
             );
           })}
