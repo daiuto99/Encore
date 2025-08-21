@@ -59,11 +59,28 @@ export default function AvailableSongs({
   const filteredSongs = useMemo(() => {
     if (!searchQuery) return songs;
     
-    const query = searchQuery.toLowerCase();
-    return songs.filter(song => 
-      song.name.toLowerCase().includes(query) ||
-      song.content.toLowerCase().includes(query)
-    );
+    const query = searchQuery.toLowerCase().trim();
+    return songs.filter(song => {
+      const songName = song.name.toLowerCase();
+      
+      // Direct name search (most common case)
+      if (songName.includes(query)) {
+        return true;
+      }
+      
+      // Split song name to search title and artist separately
+      // Common formats: "Title - Artist", "Title by Artist", "Artist - Title"
+      const parts = songName.split(/\s*[-–—]\s*|\s+by\s+/i);
+      
+      if (parts.length >= 2) {
+        // Check if query matches either part (title or artist)
+        return parts.some(part => part.trim().includes(query));
+      }
+      
+      // For single part names, check if any word starts with the query
+      const words = songName.split(/\s+/);
+      return words.some(word => word.startsWith(query));
+    });
   }, [songs, searchQuery]);
 
   // Debounced search
@@ -91,7 +108,7 @@ export default function AvailableSongs({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input 
             type="text"
-            placeholder="Search songs..."
+            placeholder="Search by title or artist..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-10"
