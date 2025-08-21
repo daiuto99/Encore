@@ -276,12 +276,7 @@ export function useSetlistState() {
           isPerformanceMode: false // Always start in normal mode
         };
         
-        console.log('Loading validated state with normalized song references:', {
-          totalSongs: validatedState.allSongs.length,
-          songsInSets: validatedState.sets.reduce((count, set) => count + set.songs.length, 0),
-          setCount: validatedState.sets.length,
-          availableSongs: validatedState.allSongs.length - validatedState.sets.reduce((count, set) => count + set.songs.length, 0)
-        });
+
         setState(validatedState);
       } catch (error) {
         console.error('Error loading state:', error);
