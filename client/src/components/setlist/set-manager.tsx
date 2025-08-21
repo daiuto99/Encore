@@ -205,9 +205,9 @@ export default function SetManager({ state, actions }: SetManagerProps) {
                 <div key={`${song.id}-${index}`} className="relative">
                   {/* Drop indicator */}
                   {dragOverIndex === index && (
-                    <div className="absolute -top-1 left-0 right-0 h-0.5 bg-primary z-10 rounded-full">
-                      <div className="absolute -left-1 -top-1 w-2 h-2 bg-primary rounded-full"></div>
-                      <div className="absolute -right-1 -top-1 w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="absolute -top-1 left-0 right-0 h-0.5 bg-purple-500 z-10 rounded-full">
+                      <div className="absolute -left-1 -top-1 w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <div className="absolute -right-1 -top-1 w-2 h-2 bg-purple-500 rounded-full"></div>
                     </div>
                   )}
                   

@@ -20,6 +20,7 @@ Encore is a musician's tool for creating and managing song setlists with both on
 - **iPad/Safari Compatibility**: Enhanced folder library messaging for iPad/Safari users, clarifying that automatic folder sync requires Chrome/Edge while drag & drop upload works universally
 - **Song Counting Bug Fix**: Resolved critical issue where loaded setlists showed incorrect available song counts due to ID mismatch between allSongs and sets after import/export cycles. Implemented name-based fallback matching for reliable song assignment tracking
 - **Enhanced Search Precision**: Improved song library search to only search titles and artists instead of full song content, with smart parsing for "Title - Artist" formats and word-based matching for better results
+- **Song Drag-and-Drop Reordering**: Implemented comprehensive song reordering within sets using both up/down arrow buttons and touch-friendly drag-and-drop with bright purple visual drop indicators for iPad compatibility
 
 ## User Preferences
 
