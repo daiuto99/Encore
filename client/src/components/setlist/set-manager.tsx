@@ -13,7 +13,7 @@ import {
   AlertDialogTitle, 
   AlertDialogTrigger 
 } from '@/components/ui/alert-dialog';
-import { List, Plus, Trash2, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { List, Plus, Trash2, ChevronUp, ChevronDown, X, GripVertical } from 'lucide-react';
 import { AppState } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 import { getSetColor, getSetColorClasses } from '@/lib/set-colors';
@@ -26,6 +26,41 @@ interface SetManagerProps {
 export default function SetManager({ state, actions }: SetManagerProps) {
   const { toast } = useToast();
   const currentSet = state.sets[state.currentSetIndex];
+  
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('text/plain', index.toString());
+    e.dataTransfer.effectAllowed = 'move';
+    
+    // Add visual feedback for touch devices
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '0.5';
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    // Reset visual feedback
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '1';
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    
+    if (dragIndex !== dropIndex) {
+      actions.reorderSets(dragIndex, dropIndex);
+      toast({
+        title: 'Set Reordered',
+        description: `Moved set to position ${dropIndex + 1}`,
+      });
+    }
+  };
   
   const handleDeleteSet = () => {
     if (state.sets.length <= 1) {
@@ -72,16 +107,27 @@ export default function SetManager({ state, actions }: SetManagerProps) {
               : `whitespace-nowrap min-w-[80px] border ${getSetColorClasses(setColor, 'light')}`;
             
             return (
-              <Button
+              <div
                 key={set.id}
-                variant={isActive ? "default" : "outline"}
-                size="sm"
-                onClick={() => actions.switchToSet(index)}
-                className={tabClasses}
-                data-testid={`button-set-tab-${index}`}
+                className="relative group"
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragEnd={handleDragEnd}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, index)}
+                data-testid={`set-tab-${index}`}
               >
-                {set.name} ({set.songs.length})
-              </Button>
+                <Button
+                  variant={isActive ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => actions.switchToSet(index)}
+                  className={`${tabClasses} cursor-move touch-manipulation`}
+                  data-testid={`button-set-tab-${index}`}
+                >
+                  <GripVertical className="h-3 w-3 mr-1 opacity-60" />
+                  {set.name} ({set.songs.length})
+                </Button>
+              </div>
             );
           })}
         </div>

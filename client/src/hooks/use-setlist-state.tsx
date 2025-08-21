@@ -186,6 +186,35 @@ export function useSetlistState() {
       });
     },
 
+    reorderSets: (fromIndex: number, toIndex: number) => {
+      setState(prev => {
+        if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || 
+            fromIndex >= prev.sets.length || toIndex >= prev.sets.length) {
+          return prev;
+        }
+        
+        const sets = [...prev.sets];
+        const [movedSet] = sets.splice(fromIndex, 1);
+        sets.splice(toIndex, 0, movedSet);
+        
+        // Adjust current set index
+        let newCurrentSetIndex = prev.currentSetIndex;
+        if (fromIndex === prev.currentSetIndex) {
+          newCurrentSetIndex = toIndex;
+        } else if (fromIndex < prev.currentSetIndex && toIndex >= prev.currentSetIndex) {
+          newCurrentSetIndex = prev.currentSetIndex - 1;
+        } else if (fromIndex > prev.currentSetIndex && toIndex <= prev.currentSetIndex) {
+          newCurrentSetIndex = prev.currentSetIndex + 1;
+        }
+        
+        return { 
+          ...prev,
+          sets: sets,
+          currentSetIndex: newCurrentSetIndex
+        };
+      });
+    },
+
     switchToSet: (setIndex: number) => {
       setState(prev => ({
         ...prev,
