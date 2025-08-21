@@ -31,11 +31,24 @@ export default function AvailableSongs({
 
   const isSongInAnySet = (songId: number) => {
     for (let i = 0; i < sets.length; i++) {
-      // Use both exact ID match and loose comparison for loaded setlists
-      if (sets[i].songs.some(song => song.id === songId || Number(song.id) === Number(songId))) {
+      // Check by song name as fallback since IDs might not match after import/export
+      const foundById = sets[i].songs.some(song => song.id === songId);
+      if (foundById) {
         return { inSet: true, setIndex: i, setName: sets[i].name };
       }
     }
+    
+    // If ID matching fails, try matching by name for imported setlists
+    const songToCheck = songs.find(s => s.id === songId);
+    if (songToCheck) {
+      for (let i = 0; i < sets.length; i++) {
+        const foundByName = sets[i].songs.some(song => song.name === songToCheck.name);
+        if (foundByName) {
+          return { inSet: true, setIndex: i, setName: sets[i].name };
+        }
+      }
+    }
+    
     return { inSet: false };
   };
 
