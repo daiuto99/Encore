@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
+import { useState } from 'react';
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -26,6 +27,7 @@ interface SetManagerProps {
 export default function SetManager({ state, actions }: SetManagerProps) {
   const { toast } = useToast();
   const currentSet = state.sets[state.currentSetIndex];
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   
   const handleSongDragStart = (e: React.DragEvent, index: number) => {
     e.dataTransfer.setData('application/json', JSON.stringify({ type: 'song', index }));
@@ -42,15 +44,25 @@ export default function SetManager({ state, actions }: SetManagerProps) {
     if (e.currentTarget instanceof HTMLElement) {
       e.currentTarget.style.opacity = '1';
     }
+    setDragOverIndex(null);
   };
 
-  const handleSongDragOver = (e: React.DragEvent) => {
+  const handleSongDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  };
+
+  const handleSongDragLeave = (e: React.DragEvent) => {
+    // Only clear if we're actually leaving the container
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverIndex(null);
+    }
   };
 
   const handleSongDrop = (e: React.DragEvent, dropIndex: number) => {
     e.preventDefault();
+    setDragOverIndex(null);
     const data = JSON.parse(e.dataTransfer.getData('application/json'));
     
     if (data.type === 'song' && data.index !== dropIndex) {
@@ -190,18 +202,27 @@ export default function SetManager({ state, actions }: SetManagerProps) {
                 : `flex items-center p-3 rounded-md border transition-colors cursor-pointer ${getSetColorClasses(setColor, 'light')} hover:opacity-80`;
               
               return (
-                <div 
-                  key={`${song.id}-${index}`}
-                  className={songClasses}
-                  onClick={() => actions.selectSong(index)}
-                  draggable
-                  onDragStart={(e) => handleSongDragStart(e, index)}
-                  onDragEnd={handleSongDragEnd}
-                  onDragOver={handleSongDragOver}
-                  onDrop={(e) => handleSongDrop(e, index)}
-                  data-testid={`item-set-song-${index}`}
-                  style={{ touchAction: 'none' }}
-                >
+                <div key={`${song.id}-${index}`} className="relative">
+                  {/* Drop indicator */}
+                  {dragOverIndex === index && (
+                    <div className="absolute -top-1 left-0 right-0 h-0.5 bg-primary z-10 rounded-full">
+                      <div className="absolute -left-1 -top-1 w-2 h-2 bg-primary rounded-full"></div>
+                      <div className="absolute -right-1 -top-1 w-2 h-2 bg-primary rounded-full"></div>
+                    </div>
+                  )}
+                  
+                  <div 
+                    className={songClasses}
+                    onClick={() => actions.selectSong(index)}
+                    draggable
+                    onDragStart={(e) => handleSongDragStart(e, index)}
+                    onDragEnd={handleSongDragEnd}
+                    onDragOver={(e) => handleSongDragOver(e, index)}
+                    onDragLeave={handleSongDragLeave}
+                    onDrop={(e) => handleSongDrop(e, index)}
+                    data-testid={`item-set-song-${index}`}
+                    style={{ touchAction: 'none' }}
+                  >
                   <div className="flex items-center flex-1 min-w-0">
                     <GripVertical className="h-4 w-4 text-muted-foreground/50 mr-2 cursor-move" />
                     <span className="text-sm text-muted-foreground font-mono mr-2" data-testid={`text-song-number-${index}`}>
@@ -250,6 +271,7 @@ export default function SetManager({ state, actions }: SetManagerProps) {
                     >
                       <X className="h-3 w-3" />
                     </Button>
+                  </div>
                   </div>
                 </div>
               );
