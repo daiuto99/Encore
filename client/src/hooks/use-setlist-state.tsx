@@ -270,14 +270,20 @@ export function useSetlistState() {
         const normalizedSets = newState.sets.map(set => ({
           ...set,
           songs: set.songs.map(setSong => {
-            // Always use the song from allSongs if it exists
+            // Find matching song in allSongs by ID
             const mainSong = allSongsMap.get(setSong.id);
-            return mainSong || setSong;
+            if (mainSong) {
+              // Use the song from allSongs to ensure object reference equality
+              return mainSong;
+            }
+            // If not found in allSongs, add it there and use the same reference
+            allSongsMap.set(setSong.id, setSong);
+            return setSong;
           })
         }));
         
-        // Keep allSongs as-is, don't add duplicates
-        const finalAllSongs = newState.allSongs;
+        // Rebuild allSongs to include any songs that were only in sets
+        const finalAllSongs = Array.from(allSongsMap.values());
         
         // Ensure required properties exist with defaults
         const validatedState: AppState = {
