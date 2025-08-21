@@ -19,6 +19,7 @@ Encore is a musician's tool for creating and managing song setlists with both on
 - **Production Deployment**: Successfully deployed to custom domain `encore.sonicink.com` with proper SSL certificate and DNS configuration
 - **iPad/Safari Compatibility**: Enhanced folder library messaging for iPad/Safari users, clarifying that automatic folder sync requires Chrome/Edge while drag & drop upload works universally
 - **Song Counting Bug Fix**: Resolved critical issue where loaded setlists showed incorrect available song counts due to ID mismatch between allSongs and sets after import/export cycles. Implemented name-based fallback matching for reliable song assignment tracking
+- **Enhanced Search Precision**: Improved song library search to only search titles and artists instead of full song content, with smart parsing for "Title - Artist" formats and word-based matching for better results
 
 ## User Preferences
 
