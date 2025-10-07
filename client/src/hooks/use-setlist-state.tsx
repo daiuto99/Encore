@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AppState, Song, Set } from '@shared/schema';
 import { getSetColor } from '@/lib/set-colors';
+import { loadDisplaySettings, saveDisplaySettings, type DisplaySettingsState } from '@/lib/display-settings';
 
 const initialState: AppState = {
   setlistName: 'My Setlist',
@@ -12,7 +13,8 @@ const initialState: AppState = {
   currentSongIndex: -1,
   fontSize: 100,
   isDarkMode: false,
-  isPerformanceMode: false
+  isPerformanceMode: false,
+  displaySettings: loadDisplaySettings()
 };
 
 export function useSetlistState() {
@@ -414,6 +416,11 @@ export function useSetlistState() {
     clearState: () => {
       localStorage.removeItem('encore-app-state');
       setState(initialState);
+    },
+
+    updateDisplaySettings: (settings: DisplaySettingsState) => {
+      saveDisplaySettings(settings);
+      setState(prev => ({ ...prev, displaySettings: settings }));
     }
   };
 

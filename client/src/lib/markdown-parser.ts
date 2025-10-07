@@ -1,11 +1,35 @@
+import { defaultDisplaySettings, type DisplaySettings } from './display-settings';
+
 // Enhanced markdown parser with better iOS Safari support
-export function parseMarkdown(content: string): string {
+export function parseMarkdown(content: string, settings?: DisplaySettings): string {
   if (!content) return '';
   
+  const s = settings || defaultDisplaySettings;
+  
   // Normalize line endings for cross-platform compatibility
-  const normalized = content
+  let normalized = content
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n');
+  
+  // Hide key if setting is off
+  if (!s.showKey) {
+    normalized = normalized.replace(/^\*\*Key:\*\* .+$/gm, '');
+  }
+  
+  // Remove section colors if disabled
+  if (!s.showSectionColors) {
+    normalized = normalized.replace(/<span style="[^"]*">(##\s*[^<]*)<\/span>/g, '$1');
+  }
+  
+  // Handle chords based on display style
+  if (!s.showChords || s.chordDisplayStyle === 'hidden') {
+    normalized = normalized.replace(/`\[[^\]]+\]`/g, '');
+  }
+  
+  // Bold chorus if enabled
+  if (s.boldChorus) {
+    normalized = normalized.replace(/(##\s*Chorus[\s\S]*?)(?=##|$)/gi, '<strong>$1</strong>');
+  }
     
   return normalized
     // Process headings first (with proper line boundary handling)

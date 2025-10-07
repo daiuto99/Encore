@@ -30,7 +30,27 @@ export const appStateSchema = z.object({
   isPerformanceMode: z.boolean().default(false),
   selectedPreviewSong: songSchema.nullable().optional(),
   exportDate: z.string().optional(),
-  exportVersion: z.string().optional()
+  exportVersion: z.string().optional(),
+  displaySettings: z.object({
+    light: z.object({
+      showSectionColors: z.boolean().default(true),
+      showChords: z.boolean().default(true),
+      chordDisplayStyle: z.enum(['inline', 'above', 'hidden']).default('inline'),
+      chordFontSize: z.number().default(100),
+      boldChorus: z.boolean().default(false),
+      sectionIndent: z.boolean().default(false),
+      showKey: z.boolean().default(true),
+    }),
+    dark: z.object({
+      showSectionColors: z.boolean().default(true),
+      showChords: z.boolean().default(true),
+      chordDisplayStyle: z.enum(['inline', 'above', 'hidden']).default('inline'),
+      chordFontSize: z.number().default(100),
+      boldChorus: z.boolean().default(false),
+      sectionIndent: z.boolean().default(false),
+      showKey: z.boolean().default(true),
+    })
+  }).optional()
 });
 
 export type Song = z.infer<typeof songSchema>;
