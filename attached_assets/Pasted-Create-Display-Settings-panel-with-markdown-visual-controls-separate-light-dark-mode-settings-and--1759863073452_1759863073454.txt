@@ -1,0 +1,300 @@
+Create Display Settings panel with markdown visual controls, separate light/dark mode settings, and export them with setlist files.
+
+1. UPDATE client/src/lib/display-settings.ts:
+
+export interface DisplaySettings {
+  showSectionColors: boolean;
+  showChords: boolean;
+  chordDisplayStyle: 'inline' | 'above' | 'hidden';
+  chordFontSize: number;
+  boldChorus: boolean;
+  sectionIndent: boolean;
+  showKey: boolean;
+}
+
+export interface DisplaySettingsState {
+  light: DisplaySettings;
+  dark: DisplaySettings;
+}
+
+export const defaultDisplaySettings: DisplaySettings = {
+  showSectionColors: true,
+  showChords: true,
+  chordDisplayStyle: 'inline',
+  chordFontSize: 100,
+  boldChorus: false,
+  sectionIndent: false,
+  showKey: true,
+};
+
+export const defaultDisplaySettingsState: DisplaySettingsState = {
+  light: { ...defaultDisplaySettings },
+  dark: { ...defaultDisplaySettings }
+};
+
+export function loadDisplaySettings(): DisplaySettingsState {
+  try {
+    const saved = localStorage.getItem('encore-display-settings');
+    return saved ? JSON.parse(saved) : defaultDisplaySettingsState;
+  } catch {
+    return defaultDisplaySettingsState;
+  }
+}
+
+export function saveDisplaySettings(settings: DisplaySettingsState): void {
+  localStorage.setItem('encore-display-settings', JSON.stringify(settings));
+}
+
+export function getCurrentSettings(state: DisplaySettingsState, isDarkMode: boolean): DisplaySettings {
+  return isDarkMode ? state.dark : state.light;
+}
+
+2. UPDATE shared/schema.ts:
+
+Add to appStateSchema:
+displaySettings: z.object({
+  light: z.object({
+    showSectionColors: z.boolean().default(true),
+    showChords: z.boolean().default(true),
+    chordDisplayStyle: z.enum(['inline', 'above', 'hidden']).default('inline'),
+    chordFontSize: z.number().default(100),
+    boldChorus: z.boolean().default(false),
+    sectionIndent: z.boolean().default(false),
+    showKey: z.boolean().default(true),
+  }),
+  dark: z.object({
+    showSectionColors: z.boolean().default(true),
+    showChords: z.boolean().default(true),
+    chordDisplayStyle: z.enum(['inline', 'above', 'hidden']).default('inline'),
+    chordFontSize: z.number().default(100),
+    boldChorus: z.boolean().default(false),
+    sectionIndent: z.boolean().default(false),
+    showKey: z.boolean().default(true),
+  })
+}).optional()
+
+3. UPDATE client/src/hooks/use-setlist-state.tsx:
+
+Import at top:
+import { loadDisplaySettings, type DisplaySettingsState } from '@/lib/display-settings';
+
+Add to initialState:
+displaySettings: loadDisplaySettings()
+
+Add action:
+updateDisplaySettings: (settings: DisplaySettingsState) => {
+  saveDisplaySettings(settings);
+  setState(prev => ({ ...prev, displaySettings: settings }));
+},
+
+4. UPDATE client/src/lib/markdown-parser.ts:
+
+export function parseMarkdown(content: string, settings?: DisplaySettings): string {
+  if (!content) return '';
+  
+  const s = settings || defaultDisplaySettings;
+  
+  let normalized = content
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n');
+  
+  // Hide key if setting is off
+  if (!s.showKey) {
+    normalized = normalized.replace(/^\*\*Key:\*\* .+$/gm, '');
+  }
+  
+  // Remove section colors if disabled
+  if (!s.showSectionColors) {
+    normalized = normalized.replace(/<span style="[^"]*">(##\s*[^<]*)<\/span>/g, '$1');
+  }
+  
+  // Handle chords based on display style
+  if (!s.showChords || s.chordDisplayStyle === 'hidden') {
+    normalized = normalized.replace(/`\[[^\]]+\]`/g, '');
+  }
+  
+  // Bold chorus if enabled
+  if (s.boldChorus) {
+    normalized = normalized.replace(/(##\s*Chorus[\s\S]*?)(?=##|$)/gi, '<strong>$1</strong>');
+  }
+  
+  return normalized
+    .replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold mb-2 mt-4">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold mb-3 mt-6">$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold mb-4 mt-6">$1</h1>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold">$1</strong>')
+    .replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em class="italic">$1</em>')
+    .replace(/`([^`\n]+)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm font-mono">$1</code>')
+    .replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '<span class="harmony-high">$1</span>')
+    .replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '<span class="harmony-low">$1</span>')
+    .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-highlight">$1</span>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>')
+    .replace(/\n\n+/g, '</p><p class="mb-4">')
+    .replace(/\n/g, '<br>')
+    .replace(/^(?!<[h1-6])/gm, '<p class="mb-4">')
+    .replace(/<p class="mb-4"><\/p>/g, '')
+    .replace(/<p class="mb-4">(<h[1-6])/g, '$1')
+    .replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+}
+
+5. CREATE client/src/components/setlist/display-settings-panel.tsx:
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Settings, Sun, Moon } from 'lucide-react';
+import { type DisplaySettingsState, type DisplaySettings } from '@/lib/display-settings';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+
+interface DisplaySettingsPanelProps {
+  settings: DisplaySettingsState;
+  isDarkMode: boolean;
+  onUpdate: (settings: DisplaySettingsState) => void;
+}
+
+export default function DisplaySettingsPanel({ settings, isDarkMode, onUpdate }: DisplaySettingsPanelProps) {
+  const [mode, setMode] = useState<'light' | 'dark'>(isDarkMode ? 'dark' : 'light');
+  
+  const currentSettings = settings[mode];
+  
+  const updateSetting = (key: keyof DisplaySettings, value: any) => {
+    const updated = {
+      ...settings,
+      [mode]: {
+        ...settings[mode],
+        [key]: value
+      }
+    };
+    onUpdate(updated);
+  };
+
+  return (
+    <Card className="h-32 overflow-hidden">
+      <CardHeader className="pb-1 px-3 pt-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center text-sm">
+            <Settings className="mr-2 h-3 w-3 text-primary" />
+            Display Settings
+          </CardTitle>
+          <div className="flex gap-1">
+            <Button
+              variant={mode === 'light' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setMode('light')}
+              className="h-5 w-5 p-0"
+            >
+              <Sun className="h-3 w-3" />
+            </Button>
+            <Button
+              variant={mode === 'dark' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setMode('dark')}
+              className="h-5 w-5 p-0"
+            >
+              <Moon className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0 px-3 pb-2 space-y-1 overflow-y-auto max-h-[70px]">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="section-colors" className="text-xs">Section Colors</Label>
+          <Switch
+            id="section-colors"
+            checked={currentSettings.showSectionColors}
+            onCheckedChange={(checked) => updateSetting('showSectionColors', checked)}
+            className="scale-75"
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="show-chords" className="text-xs">Show Chords</Label>
+          <Switch
+            id="show-chords"
+            checked={currentSettings.showChords}
+            onCheckedChange={(checked) => updateSetting('showChords', checked)}
+            className="scale-75"
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="bold-chorus" className="text-xs">Bold Chorus</Label>
+          <Switch
+            id="bold-chorus"
+            checked={currentSettings.boldChorus}
+            onCheckedChange={(checked) => updateSetting('boldChorus', checked)}
+            className="scale-75"
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="show-key" className="text-xs">Show Key</Label>
+          <Switch
+            id="show-key"
+            checked={currentSettings.showKey}
+            onCheckedChange={(checked) => updateSetting('showKey', checked)}
+            className="scale-75"
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+6. UPDATE client/src/pages/setlist-builder.tsx:
+
+Import at top:
+import DisplaySettingsPanel from '@/components/setlist/display-settings-panel';
+import { defaultDisplaySettingsState } from '@/lib/display-settings';
+
+Change top section grid (around line 245):
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+  <FolderLibrary onSongsLoaded={handleFolderSongsLoaded} />
+  <UploadZone onSongsUploaded={actions.addSongs} />
+  <DisplaySettingsPanel 
+    settings={state.displaySettings || defaultDisplaySettingsState}
+    isDarkMode={state.isDarkMode}
+    onUpdate={actions.updateDisplaySettings}
+  />
+</div>
+
+7. UPDATE client/src/components/setlist/song-viewer.tsx:
+
+Import at top:
+import { getCurrentSettings } from '@/lib/display-settings';
+import { defaultDisplaySettingsState } from '@/lib/display-settings';
+
+Update renderSongContent to use current mode settings:
+const renderSongContent = () => {
+  if (!currentSong) return '';
+  
+  let processedContent = currentSong.content;
+  
+  if (showHighHarmony) {
+    processedContent = processedContent.replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '<span class="harmony-high">$1</span>');
+  } else {
+    processedContent = processedContent.replace(/\{harmony-high\}([\s\S]*?)\{\/harmony-high\}/g, '$1');
+  }
+  
+  if (showLowHarmony) {
+    processedContent = processedContent.replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '<span class="harmony-low">$1</span>');
+  } else {
+    processedContent = processedContent.replace(/\{harmony-low\}([\s\S]*?)\{\/harmony-low\}/g, '$1');
+  }
+  
+  processedContent = processedContent.replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-highlight">$1</span>');
+  
+  const currentDisplaySettings = getCurrentSettings(
+    state.displaySettings || defaultDisplaySettingsState,
+    state.isDarkMode
+  );
+  
+  return parseMarkdown(processedContent, currentDisplaySettings);
+};
+
+8. UPDATE client/src/lib/export-utils.ts:
+
+The displaySettings are already part of the state, so they'll automatically be included in exported HTML files through the existing exportData object.
+
+This creates the Display Settings panel with light/dark mode toggle buttons and saves settings in exported files.
