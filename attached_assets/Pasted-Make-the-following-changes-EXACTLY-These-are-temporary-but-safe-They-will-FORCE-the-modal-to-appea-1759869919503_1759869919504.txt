@@ -1,0 +1,153 @@
+Make the following changes EXACTLY. These are temporary but safe. They will FORCE the modal to appear so we can confirm it’s rendering.
+
+/////////////////////////////////////////////////////
+// 1) Create a new global stylesheet
+//    File: src/debug-modal.css   (or /styles/debug-modal.css if you use Next)
+/////////////////////////////////////////////////////
+Create the file with EXACTLY this content:
+
+----------------------------------------------------
+/* Neutralize any transforms/filters that can trap fixed layers */
+html, body, #root, #__next {
+  transform: none !important;
+  filter: none !important;
+  perspective: none !important;
+  overflow: hidden; /* prevent background scroll while debugging */
+}
+
+/* Force overlay and content to render and stack above everything */
+.radix-debug-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.65) !important;
+  z-index: 2147483645 !important; /* very high */
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+.radix-debug-content {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%,-50%) !important;
+  width: min(640px, 90vw) !important;
+  max-height: 85vh !important;
+  overflow: auto !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 3px solid #ff3b30 !important; /* bright border so you can SEE it */
+  border-radius: 12px !important;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45) !important;
+  z-index: 2147483647 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  pointer-events: auto !important;
+}
+
+/* Make sure close buttons are clickable */
+.radix-debug-close {
+  position: absolute !important;
+  right: 10px !important;
+  top: 10px !important;
+  z-index: 2147483648 !important;
+}
+----------------------------------------------------
+
+
+/////////////////////////////////////////////////////
+// 2) Import this stylesheet once, globally
+/////////////////////////////////////////////////////
+
+• If Vite/CRA: open src/main.tsx (or src/index.tsx) and ADD:
+  import "./debug-modal.css";
+
+• If Next.js App Router: open app/globals.css and at the TOP add:
+  @import "../src/debug-modal.css";
+  (If your folder structure differs, import the correct relative path to debug-modal.css)
+
+
+/////////////////////////////////////////////////////
+// 3) Edit the shared dialog component to use the debug classes
+//    File path: components/ui/dialog.tsx  (your file that exports Dialog*, DialogContent, DialogOverlay)
+/////////////////////////////////////////////////////
+
+Make ONLY these concrete changes:
+
+3a) Ensure the file starts with:
+  "use client";
+
+3b) In the DialogPrimitive.Portal, force container to <body>:
+  container={typeof document !== "undefined" ? document.body : undefined}
+
+3c) Replace the Overlay component’s className so it includes the debug class:
+  className={cn("radix-debug-overlay", className)}
+
+3d) Replace the Content component’s className so it includes the debug class:
+  className={cn("radix-debug-content", className)}
+
+3e) Ensure your Close button has the debug close class added:
+  className={cn("radix-debug-close ...existing classes...")}
+
+(Leave everything else as-is.)
+
+Example snippet to guide you (do NOT duplicate components, just adjust yours):
+----------------------------------------------------
+<DialogPrimitive.Overlay
+  ref={ref}
+  className={cn("radix-debug-overlay", className)}
+  {...props}
+/>
+
+<DialogPrimitive.Content
+  ref={ref}
+  className={cn("radix-debug-content", className)}
+  {...props}
+>
+  {children}
+  <DialogPrimitive.Close asChild>
+    <button className={cn("radix-debug-close", "inline-flex h-8 w-8 items-center justify-center rounded-md border")}>
+      <X className="h-4 w-4" />
+    </button>
+  </DialogPrimitive.Close>
+</DialogPrimitive.Content>
+----------------------------------------------------
+
+
+/////////////////////////////////////////////////////
+// 4) Make sure the screen that opens the dialog is a client component
+//    File: display-settings-dialog.tsx
+/////////////////////////////////////////////////////
+
+At the VERY TOP insert (if not already present):
+  "use client";
+
+(No other change needed here for this test.)
+
+
+/////////////////////////////////////////////////////
+// 5) Re-run your app and open the Display Settings modal.
+/////////////////////////////////////////////////////
+
+EXPECTED RESULT:
+- The screen dims and a white panel with a BRIGHT RED BORDER appears in the center.
+- You can click the close button.
+
+IF YOU STILL SEE ONLY DIMMING (NO PANEL):
+- Press F12 (DevTools), run in Console:
+  document.querySelectorAll(".radix-debug-content").length
+  → If this returns 0, the dialog CONTENT never mounted (logic/state issue).
+  → If it returns 1 (or more), it IS mounted but hidden by outer CSS. In that case, add this final override at the VERY BOTTOM of debug-modal.css:
+
+----------------------------------------------------
+/* LAST RESORT: defeat iframe/ancestor clipping */
+*,
+*::before,
+*::after {
+  transform: none !important;
+  filter: none !important;
+  perspective: none !important;
+}
+----------------------------------------------------
+Save and re-run, test again.

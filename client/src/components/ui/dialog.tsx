@@ -30,10 +30,7 @@ export const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn(
-      "fixed inset-0 z-[1000] bg-black/70 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
-      className
-    )}
+    className={cn("radix-debug-overlay", className)}
     {...props}
   />
 ));
@@ -47,19 +44,14 @@ export const DialogContent = React.forwardRef<
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
-      className={cn(
-        // NOTE: relative (not fixed) because we already centered with the Portal wrapper.
-        // pointer-events-auto so the centered panel is clickable.
-        "relative z-[1001] mx-4 w-full max-w-2xl pointer-events-auto rounded-xl bg-white dark:bg-slate-900 shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
-        className
-      )}
+      className={cn("radix-debug-content", className)}
       {...props}
     >
       {children}
       <DialogPrimitive.Close asChild>
         <button
           aria-label="Close"
-          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+          className={cn("radix-debug-close", "inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800")}
         >
           <X className="h-4 w-4" />
         </button>

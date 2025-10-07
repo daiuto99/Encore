@@ -1,0 +1,46 @@
+/* Neutralize any transforms/filters that can trap fixed layers */
+html, body, #root, #__next {
+  transform: none !important;
+  filter: none !important;
+  perspective: none !important;
+  overflow: hidden; /* prevent background scroll while debugging */
+}
+
+/* Force overlay and content to render and stack above everything */
+.radix-debug-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.65) !important;
+  z-index: 2147483645 !important; /* very high */
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+.radix-debug-content {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%,-50%) !important;
+  width: min(640px, 90vw) !important;
+  max-height: 85vh !important;
+  overflow: auto !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 3px solid #ff3b30 !important; /* bright border so you can SEE it */
+  border-radius: 12px !important;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45) !important;
+  z-index: 2147483647 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  pointer-events: auto !important;
+}
+
+/* Make sure close buttons are clickable */
+.radix-debug-close {
+  position: absolute !important;
+  right: 10px !important;
+  top: 10px !important;
+  z-index: 2147483648 !important;
+}
