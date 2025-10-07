@@ -1,11 +1,21 @@
 export interface DisplaySettings {
-  showSectionColors: boolean;
+  // Text colors
+  mainTextColor: string;
+  
+  // Section colors - override markdown inline styles
+  introColor: string;
+  verseColor: string;
+  chorusColor: string;
+  bridgeColor: string;
+  outroColor: string;
+  soloColor: string;
+  interludeColor: string;
+  instrumentalColor: string;
+  
+  // Display toggles
   showChords: boolean;
-  chordDisplayStyle: 'inline' | 'above' | 'hidden';
-  chordFontSize: number;
-  boldChorus: boolean;
-  sectionIndent: boolean;
   showKey: boolean;
+  boldChorus: boolean;
 }
 
 export interface DisplaySettingsState {
@@ -13,19 +23,39 @@ export interface DisplaySettingsState {
   dark: DisplaySettings;
 }
 
-export const defaultDisplaySettings: DisplaySettings = {
-  showSectionColors: true,
+const defaultLight: DisplaySettings = {
+  mainTextColor: '#1e293b',
+  introColor: '#3B82F6',
+  verseColor: '#F97316',
+  chorusColor: '#EF4444',
+  bridgeColor: '#8B5CF6',
+  outroColor: '#F59E0B',
+  soloColor: '#10B981',
+  interludeColor: '#06B6D4',
+  instrumentalColor: '#EC4899',
   showChords: true,
-  chordDisplayStyle: 'inline',
-  chordFontSize: 100,
-  boldChorus: false,
-  sectionIndent: false,
   showKey: true,
+  boldChorus: false,
+};
+
+const defaultDark: DisplaySettings = {
+  mainTextColor: '#f8fafc',
+  introColor: '#60A5FA',
+  verseColor: '#FB923C',
+  chorusColor: '#F87171',
+  bridgeColor: '#A78BFA',
+  outroColor: '#FBBF24',
+  soloColor: '#34D399',
+  interludeColor: '#22D3EE',
+  instrumentalColor: '#F472B6',
+  showChords: true,
+  showKey: true,
+  boldChorus: false,
 };
 
 export const defaultDisplaySettingsState: DisplaySettingsState = {
-  light: { ...defaultDisplaySettings },
-  dark: { ...defaultDisplaySettings }
+  light: defaultLight,
+  dark: defaultDark
 };
 
 export function loadDisplaySettings(): DisplaySettingsState {
