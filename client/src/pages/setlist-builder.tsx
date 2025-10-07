@@ -8,7 +8,7 @@ import SetManager from '@/components/setlist/set-manager';
 import SongViewer from '@/components/setlist/song-viewer';
 import PerformanceMode from '@/components/setlist/performance-mode';
 import FolderLibrary from '@/components/setlist/folder-library';
-import DisplaySettingsPanel from '@/components/setlist/display-settings-panel';
+import DisplaySettingsDialog from '@/components/setlist/display-settings-dialog';
 import encoreLogoUrl from '@/assets/encore-logo.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -202,6 +202,13 @@ export default function SetlistBuilder() {
                 {state.isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
 
+              {/* Display Settings */}
+              <DisplaySettingsDialog
+                settings={state.displaySettings || defaultDisplaySettingsState}
+                isDarkMode={state.isDarkMode}
+                onUpdate={actions.updateDisplaySettings}
+              />
+
               {/* Performance Mode Toggle */}
               <Button 
                 onClick={actions.togglePerformanceMode}
@@ -271,15 +278,10 @@ export default function SetlistBuilder() {
       {/* Main Content */}
       <div className="main-content">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4">
-          {/* Top Section: Folder Library + Upload Zone + Display Settings */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          {/* Top Section: Folder Library + Upload Zone */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             <FolderLibrary onSongsLoaded={handleFolderSongsLoaded} />
             <UploadZone onSongsUploaded={actions.addSongs} />
-            <DisplaySettingsPanel 
-              settings={state.displaySettings || defaultDisplaySettingsState}
-              isDarkMode={state.isDarkMode}
-              onUpdate={actions.updateDisplaySettings}
-            />
           </div>
 
           {/* Available Songs */}
