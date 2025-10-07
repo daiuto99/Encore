@@ -1,0 +1,96 @@
+Make the following edits exactly.
+
+1) Add a dedicated portal root in your HTML/layout:
+
+• If using Vite/CRA:
+  - Open `index.html`
+  - Ensure it contains both roots:
+    <div id="root"></div>
+    <div id="dialog-root"></div>
+
+• If using Next.js App Router:
+  - Open `app/layout.tsx`
+  - Wrap children and add a sibling portal root:
+    export default function RootLayout({ children }: { children: React.ReactNode }) {
+      return (
+        <html lang="en">
+          <body>
+            <div id="app-root">{children}</div>
+            <div id="dialog-root" />
+          </body>
+        </html>
+      );
+    }
+
+2) Ensure your in-app zoom/scale is NOT applied to <body> or <html>.
+   - Search the repo for style changes like:
+       document.body.style.transform = ...
+       document.documentElement.style.transform = ...
+     Replace them so zoom applies ONLY to "#app-root" (from step 1).
+     Example:
+       const root = document.getElementById("app-root");
+       if (root) root.style.transform = `scale(${zoom})`;
+       if (root) root.style.transformOrigin = "top left";
+
+3) Update your shared dialog component: open `dialog.tsx` and make these changes.
+
+3a) Replace the DialogPortal definition with this exact version:
+----------------------------------------------------------------
+import * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
+
+const DialogPortal = ({
+  children,
+  ...props
+}: DialogPrimitive.DialogPortalProps) => (
+  <DialogPrimitive.Portal
+    {...props}
+    container={
+      typeof document !== "undefined"
+        ? document.getElementById("dialog-root") ?? undefined
+        : undefined
+    }
+  >
+    {/* fixed, full-viewport layer that is NOT transformed */}
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none">
+      {children}
+    </div>
+  </DialogPrimitive.Portal>
+);
+----------------------------------------------------------------
+
+3b) In `DialogOverlay`, change the className to ensure it sits above the app:
+----------------------------------------------------------------
+className={cn(
+  "fixed inset-0 z-[1000] bg-black/70 " +
+    "data-[state=open]:animate-in data-[state=closed]:animate-out " +
+    "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+  className
+)}
+----------------------------------------------------------------
+
+3c) In `DialogPrimitive.Content`, remove the old centering (left-[50%], top-[50%], translate-*) and use this:
+----------------------------------------------------------------
+className={cn(
+  "relative z-[1001] mx-4 w-full max-w-2xl pointer-events-auto " +
+    "rounded-xl bg-white dark:bg-slate-900 shadow-2xl outline-none " +
+    "data-[state=open]:animate-in data-[state=closed]:animate-out " +
+    "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+  className
+)}
+----------------------------------------------------------------
+
+4) Ensure your dialog usage file is a client component and has a visible background:
+   - Open `display-settings-dialog.tsx`
+   - Insert this as the first line (if not already present):
+     "use client";
+   - In the `<DialogContent ...>` add/replace className with:
+     className="relative z-[1001] max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-slate-900"
+
+5) Save all files and re-run.
+
+EXPECTED:
+- Modal centers correctly in both embedded and pop-out preview.
+- Overlay dims the app, and content renders above it regardless of zoom level.
+- No partial off-screen rendering when zoom ≠ 100%.

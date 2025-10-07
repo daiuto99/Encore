@@ -54,7 +54,7 @@ export default function DisplaySettingsDialog({ settings, isDarkMode, onUpdate }
           Display
         </Button>
       </DialogTrigger>
-      <DialogContent className="z-[999] max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-slate-900">
+      <DialogContent className="relative z-[1001] max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-slate-900 p-6">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Display Settings</DialogTitle>
