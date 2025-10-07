@@ -7,6 +7,7 @@ import { AppState, Song } from '@shared/schema';
 import { parseMarkdown } from '@/lib/markdown-parser';
 import SongEditor from './song-editor';
 import { GuitarBadges } from './guitar-badges';
+import { getCurrentSettings, defaultDisplaySettingsState } from '@/lib/display-settings';
 
 interface SongViewerProps {
   state: AppState;
@@ -73,7 +74,13 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
     processedContent = processedContent
       .replace(/\{harmony\}([\s\S]*?)\{\/harmony\}/g, '<span class="harmony-highlight">$1</span>');
     
-    return parseMarkdown(processedContent);
+    // Get current display settings based on theme
+    const currentDisplaySettings = getCurrentSettings(
+      state.displaySettings || defaultDisplaySettingsState,
+      state.isDarkMode
+    );
+    
+    return parseMarkdown(processedContent, currentDisplaySettings);
   };
 
   if (isEditing && currentSong) {
