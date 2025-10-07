@@ -22,6 +22,27 @@ Encore is a musician's tool for creating and managing song setlists with both on
 - **Enhanced Search Precision**: Improved song library search to only search titles and artists instead of full song content, with smart parsing for "Title - Artist" formats and word-based matching for better results
 - **Song Drag-and-Drop Reordering**: Implemented comprehensive song reordering within sets using both up/down arrow buttons and touch-friendly drag-and-drop with bright purple visual drop indicators for iPad compatibility
 
+### October 2025 - Version Tracking, State Persistence & Guitar Indicators (v1.0.0 → v1.2.0)
+
+**Version 1.0.0 - Initial Version Tracking**
+- **Version System**: Implemented version tracking displayed in header (v1.0.0), footer, and all exported HTML files
+- **Automatic State Persistence**: Added localStorage-based auto-save that remembers all songs, sets, preferences, and current position between sessions
+- **Clear All Feature**: Added "Clear All" button in header to reset app to blank slate with confirmation dialog
+- **State Priority**: localStorage → embedded HTML data → default initial state
+
+**Version 1.1.0 - Guitar Player Indicators**
+- **Guitar Badges**: Added guitar player tracking with visual badges showing who starts (L with orange 🟠 or C with green 🟢) and who plays solo
+- **Quick Assignment**: Implemented dropdowns in song viewer for on-the-fly guitar player assignment changes
+- **Display Throughout**: Badges appear in Song Library, Set Manager, Song Viewer, and Performance Mode
+- **Schema Update**: Added `startsBy` and `soloBy` fields to song schema (enum: 'L', 'C', 'none')
+
+**Version 1.2.0 - Performance Mode Enhancements**
+- **Auto Fullscreen**: Performance mode now automatically enters fullscreen on activation and exits cleanly on close
+- **Optimized Font Size**: Default font size automatically sets to 110% when entering performance mode for better live visibility
+- **Improved Swipe Detection**: Increased swipe threshold from 50px to 100px and added horizontal/vertical detection to prevent accidental navigation while scrolling
+- **Swipe-Down Exit**: Added swipe-down gesture from top 20% of screen to exit performance mode
+- **Touch Optimization**: Swipe only triggers if horizontal movement is 2x larger than vertical movement
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -55,9 +76,9 @@ Preferred communication style: Simple, everyday language.
 - **Session Management**: Connect-pg-simple for PostgreSQL session storage
 
 ### Data Schema
-- **Songs**: ID, name, content, duration
+- **Songs**: ID, name, content, duration, startsBy (L/C/none), soloBy (L/C/none), originalContent, isModified, lastModified
 - **Sets**: ID, name, songs array, color theme
-- **App State**: Comprehensive state including setlist name, current positions, UI preferences
+- **App State**: Comprehensive state including setlist name, current positions, UI preferences, auto-saved to localStorage
 
 ### Export/Import System
 - **Offline Export**: Generates self-contained HTML files with embedded JSON state and parsing libraries
