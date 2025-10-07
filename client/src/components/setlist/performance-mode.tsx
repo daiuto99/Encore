@@ -4,6 +4,7 @@ import { X, Minus, Plus, Moon, Sun, ChevronLeft, ChevronRight } from 'lucide-rea
 import { AppState } from '@shared/schema';
 import { parseMarkdown } from '@/lib/markdown-parser';
 import { useTouchGestures } from '@/hooks/use-touch-gestures';
+import { GuitarBadges } from './guitar-badges';
 
 interface PerformanceModeProps {
   state: AppState;
@@ -183,10 +184,13 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
         data-testid="performance-song-content"
       >
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold mb-4" data-testid="performance-song-title">
-            {currentSong ? currentSong.name : 'No Song Selected'}
-          </h2>
-          <div className="song-viewer prose max-w-none" data-testid="performance-song-viewer">
+          <div>
+            <h2 className="text-2xl font-bold mb-2" data-testid="performance-song-title">
+              {currentSong ? currentSong.name : 'No Song Selected'}
+            </h2>
+            {currentSong && <GuitarBadges song={currentSong} />}
+          </div>
+          <div className="song-viewer prose max-w-none mt-4" data-testid="performance-song-viewer">
             {currentSong ? (
               <div 
                 dangerouslySetInnerHTML={{ 

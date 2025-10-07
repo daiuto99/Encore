@@ -1,0 +1,78 @@
+Add guitar player indicators to songs. Each song should track who starts (L with orange dot or C with green dot) and who plays lead/solo. Display badges throughout the app and add dropdowns in song viewer to easily change on the fly.
+
+1. UPDATE shared/schema.ts - Add to songSchema (around line 4):
+startsBy: z.enum(['L', 'C', 'none']).default('none'),
+soloBy: z.enum(['L', 'C', 'none']).default('none'),
+
+2. CREATE new file: client/src/components/setlist/guitar-badges.tsx
+import { Song } from '@shared/schema';
+interface GuitarBadgesProps {
+  song: Song;
+  size?: 'sm' | 'md';
+}
+export function GuitarBadges({ song, size = 'md' }: GuitarBadgesProps) {
+  const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
+  const px = size === 'sm' ? 'px-2' : 'px-3';
+  return (
+    <div className="flex gap-1 items-center">
+      {song.startsBy && song.startsBy !== 'none' && (
+        <span className={`${textSize} ${px} py-0.5 rounded-full font-semibold ${song.startsBy === 'L' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'}`}>
+          {song.startsBy === 'L' ? '🟠 L' : '🟢 C'}
+        </span>
+      )}
+      {song.soloBy && song.soloBy !== 'none' && (
+        <span className={`${textSize} ${px} py-0.5 rounded-full font-semibold ${song.soloBy === 'L' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'}`}>
+          Solo: {song.soloBy === 'L' ? '🟠 L' : '🟢 C'}
+        </span>
+      )}
+    </div>
+  );
+}
+
+3. UPDATE client/src/components/setlist/song-viewer.tsx - Add import at top:
+import { GuitarBadges } from './guitar-badges';
+
+Then add dropdowns after the Edit button in the controls section (around line 75):
+<div className="flex gap-2 items-center flex-wrap">
+  <div className="flex items-center gap-1">
+    <span className="text-xs text-muted-foreground">Starts:</span>
+    <select value={currentSong.startsBy || 'none'} onChange={(e) => { const updated = { ...currentSong, startsBy: e.target.value as 'L' | 'C' | 'none' }; onSongUpdate?.(updated); }} className="text-xs border rounded px-2 py-1 bg-background">
+      <option value="none">-</option>
+      <option value="L">🟠 L</option>
+      <option value="C">🟢 C</option>
+    </select>
+  </div>
+  <div className="flex items-center gap-1">
+    <span className="text-xs text-muted-foreground">Solo:</span>
+    <select value={currentSong.soloBy || 'none'} onChange={(e) => { const updated = { ...currentSong, soloBy: e.target.value as 'L' | 'C' | 'none' }; onSongUpdate?.(updated); }} className="text-xs border rounded px-2 py-1 bg-background">
+      <option value="none">-</option>
+      <option value="L">🟠 L</option>
+      <option value="C">🟢 C</option>
+    </select>
+  </div>
+</div>
+
+4. UPDATE client/src/components/setlist/available-songs.tsx - Add import at top:
+import { GuitarBadges } from './guitar-badges';
+
+Add badges after song name (around line 90):
+<div className="flex items-center gap-2">
+  <h4 className="font-medium truncate" data-testid={`text-song-name-${song.id}`}>{song.name}</h4>
+  <GuitarBadges song={song} size="sm" />
+
+5. UPDATE client/src/components/setlist/set-manager.tsx - Add import at top:
+import { GuitarBadges } from './guitar-badges';
+
+Add badges after song name in set list (around line 180):
+<h4 className="font-medium text-foreground truncate" data-testid={`text-set-song-name-${index}`}>{song.name}</h4>
+<GuitarBadges song={song} size="sm" />
+
+6. UPDATE client/src/components/setlist/performance-mode.tsx - Add import at top:
+import { GuitarBadges } from './guitar-badges';
+
+Add badges in performance header (around line 90):
+<div>
+  <h2 id="currentSongTitle">{currentSong ? currentSong.name : 'Select a song'}</h2>
+  {currentSong && <GuitarBadges song={currentSong} />}
+  <span id="songPosition"></span>
+</div>

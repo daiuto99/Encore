@@ -6,6 +6,7 @@ import { Eye, ChevronLeft, ChevronRight, FileText, Edit, Music, X } from 'lucide
 import { AppState, Song } from '@shared/schema';
 import { parseMarkdown } from '@/lib/markdown-parser';
 import SongEditor from './song-editor';
+import { GuitarBadges } from './guitar-badges';
 
 interface SongViewerProps {
   state: AppState;
@@ -174,6 +175,24 @@ export default function SongViewer({ state, actions, onSongUpdate, onSyncToFolde
                   Low
                 </Button>
                 
+                <div className="flex gap-2 items-center flex-wrap">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-muted-foreground">Starts:</span>
+                    <select value={currentSong.startsBy || 'none'} onChange={(e) => { const updated = { ...currentSong, startsBy: e.target.value as 'L' | 'C' | 'none' }; onSongUpdate?.(updated); }} className="text-xs border rounded px-2 py-1 bg-background">
+                      <option value="none">-</option>
+                      <option value="L">🟠 L</option>
+                      <option value="C">🟢 C</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-muted-foreground">Solo:</span>
+                    <select value={currentSong.soloBy || 'none'} onChange={(e) => { const updated = { ...currentSong, soloBy: e.target.value as 'L' | 'C' | 'none' }; onSongUpdate?.(updated); }} className="text-xs border rounded px-2 py-1 bg-background">
+                      <option value="none">-</option>
+                      <option value="L">🟠 L</option>
+                      <option value="C">🟢 C</option>
+                    </select>
+                  </div>
+                </div>
 
                 
                 {state.selectedPreviewSong && (

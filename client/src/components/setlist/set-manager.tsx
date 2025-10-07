@@ -18,6 +18,7 @@ import { List, Plus, Trash2, ChevronUp, ChevronDown, X, GripVertical } from 'luc
 import { AppState } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 import { getSetColor, getSetColorClasses } from '@/lib/set-colors';
+import { GuitarBadges } from './guitar-badges';
 
 interface SetManagerProps {
   state: AppState;
@@ -231,6 +232,7 @@ export default function SetManager({ state, actions }: SetManagerProps) {
                     <h4 className="font-medium text-foreground truncate" data-testid={`text-set-song-name-${index}`}>
                       {song.name}
                     </h4>
+                    <GuitarBadges song={song} size="sm" />
                   </div>
                   <div className="flex items-center space-x-1 ml-2">
                     <Button 

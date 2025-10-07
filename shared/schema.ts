@@ -7,7 +7,9 @@ export const songSchema = z.object({
   duration: z.number().default(0),
   originalContent: z.string().optional(), // Track original content for comparison
   isModified: z.boolean().default(false), // Track if song has been edited
-  lastModified: z.string().optional() // ISO date string of last edit
+  lastModified: z.string().optional(), // ISO date string of last edit
+  startsBy: z.enum(['L', 'C', 'none']).default('none'),
+  soloBy: z.enum(['L', 'C', 'none']).default('none')
 });
 
 export const setSchema = z.object({

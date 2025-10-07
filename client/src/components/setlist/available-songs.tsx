@@ -7,6 +7,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Music, Search, Trash2 } from 'lucide-react';
 import { Song, Set } from '@shared/schema';
 import { getSetColor, getSetColorClasses } from '@/lib/set-colors';
+import { GuitarBadges } from './guitar-badges';
 
 interface AvailableSongsProps {
   songs: Song[];
@@ -149,6 +150,7 @@ export default function AvailableSongs({
                       <h4 className="font-medium truncate" data-testid={`text-song-name-${song.id}`}>
                         {song.name}
                       </h4>
+                      <GuitarBadges song={song} size="sm" />
                       {song.isModified && (
                         <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs">
                           Modified
