@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import SetlistBuilder from "@/pages/setlist-builder";
+import SettingsDisplayPage from "@/pages/settings-display";
 import { Component, ReactNode } from "react";
 
 interface ErrorBoundaryState {
@@ -60,6 +61,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={SetlistBuilder} />
+      <Route path="/settings/display" component={SettingsDisplayPage} />
       <Route path="*" component={SetlistBuilder} />
     </Switch>
   );

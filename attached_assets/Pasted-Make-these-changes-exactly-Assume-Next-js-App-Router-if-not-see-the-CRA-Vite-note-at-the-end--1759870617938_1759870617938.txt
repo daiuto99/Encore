@@ -1,0 +1,168 @@
+Make these changes exactly. Assume Next.js App Router; if not, see the CRA/Vite note at the end.
+
+/////////////////////////////////////////////////////
+// 1) Create a reusable SettingsPanel (no modal inside)
+/////////////////////////////////////////////////////
+// File: components/settings/DisplaySettingsPanel.tsx
+// (If the folder doesn't exist, create it.)
+Create this file with EXACT contents:
+
+----------------------------------------------------
+"use client";
+
+import * as React from "react";
+
+type Props = {
+  initialState?: {
+    // add any defaults you want pre-filled
+    darkMode?: boolean;
+    fontScale?: number;
+    showShortcuts?: boolean;
+  };
+  onClose?: () => void; // optional for when used in a modal
+};
+
+export default function DisplaySettingsPanel({ initialState, onClose }: Props) {
+  const [darkMode, setDarkMode] = React.useState(initialState?.darkMode ?? false);
+  const [fontScale, setFontScale] = React.useState(initialState?.fontScale ?? 1);
+  const [showShortcuts, setShowShortcuts] = React.useState(initialState?.showShortcuts ?? true);
+
+  return (
+    <div className="mx-auto w-full max-w-2xl p-4 sm:p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">Display Settings</h1>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+          >
+            Close
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-6 rounded-xl border p-4 dark:border-slate-700">
+        <label className="flex items-center justify-between gap-4">
+          <span className="text-sm">Dark Mode</span>
+          <input
+            type="checkbox"
+            checked={darkMode}
+            onChange={e => setDarkMode(e.target.checked)}
+          />
+        </label>
+
+        <label className="block">
+          <div className="mb-1 text-sm">Font Scale: {fontScale.toFixed(1)}×</div>
+          <input
+            type="range"
+            min={0.8}
+            max={1.6}
+            step={0.1}
+            value={fontScale}
+            onChange={e => setFontScale(parseFloat(e.target.value))}
+            className="w-full"
+          />
+        </label>
+
+        <label className="flex items-center justify-between gap-4">
+          <span className="text-sm">Show Keyboard Shortcuts</span>
+          <input
+            type="checkbox"
+            checked={showShortcuts}
+            onChange={e => setShowShortcuts(e.target.checked)}
+          />
+        </label>
+
+        <div className="pt-2">
+          <button
+            onClick={() => {
+              // TODO: persist to your store/API if needed
+              console.log("Saved settings:", { darkMode, fontScale, showShortcuts });
+              if (onClose) onClose();
+            }}
+            className="rounded-md bg-black px-4 py-2 text-white dark:bg-white dark:text-black"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+----------------------------------------------------
+
+
+/////////////////////////////////////////////////////
+// 2) Add a dedicated page route for these settings
+/////////////////////////////////////////////////////
+// File: app/settings/display/page.tsx
+// (Create folders if needed.)
+Create with EXACT contents:
+
+----------------------------------------------------
+"use client";
+
+import DisplaySettingsPanel from "@/components/settings/DisplaySettingsPanel";
+import { useRouter } from "next/navigation";
+
+export default function DisplaySettingsPage() {
+  const router = useRouter();
+  return (
+    <main className="min-h-dvh bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <div className="mx-auto w-full max-w-3xl p-4 sm:p-6">
+        <button
+          onClick={() => router.back()}
+          className="mb-4 inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+        >
+          ← Back
+        </button>
+        <DisplaySettingsPanel />
+      </div>
+    </main>
+  );
+}
+----------------------------------------------------
+
+
+/////////////////////////////////////////////////////
+// 3) Point your existing “Display Settings” button to the new page
+/////////////////////////////////////////////////////
+// Find the button or menu item that currently opens the modal.
+// Replace its onClick with a link to /settings/display.
+
+Example (client component):
+----------------------------------------------------
+// OLD (opening modal)
+// <Button onClick={() => setOpen(true)}>Display</Button>
+
+import Link from "next/link";
+// NEW (navigate to page)
+<Link
+  href="/settings/display"
+  className="rounded-md border px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+>
+  Display
+</Link>
+----------------------------------------------------
+
+
+/////////////////////////////////////////////////////
+// 4) (Optional) Keep the modal version for later reuse
+/////////////////////////////////////////////////////
+// If you still want the modal available elsewhere, keep your Dialog component,
+// but change your old DisplaySettingsDialog to simply render <DisplaySettingsPanel onClose={...} />
+// inside the dialog content. For now, you can remove or ignore the modal usage.
+
+/////////////////////////////////////////////////////
+// 5) Build and test: go to /settings/display
+/////////////////////////////////////////////////////
+
+// RESULT: You now have a full page for Display Settings with zero portal/z-index issues.
+
+/////////////////////////////////////////////////////
+// If you are NOT using Next.js (CRA/Vite):
+/////////////////////////////////////////////////////
+// - Create src/pages/SettingsDisplay.tsx with DisplaySettingsPanel inside a normal <div>.
+// - Add a route (e.g., using react-router-dom):
+//   <Route path="/settings/display" element={<SettingsDisplay />} />
+// - Replace the old "open modal" button with: navigate("/settings/display")

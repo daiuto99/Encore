@@ -2,21 +2,20 @@ import { useEffect } from 'react';
 import { useSetlistState } from '@/hooks/use-setlist-state';
 import { useFolderLibrary } from '@/hooks/use-folder-library';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'wouter';
 import UploadZone from '@/components/setlist/upload-zone';
 import AvailableSongs from '@/components/setlist/available-songs';
 import SetManager from '@/components/setlist/set-manager';
 import SongViewer from '@/components/setlist/song-viewer';
 import PerformanceMode from '@/components/setlist/performance-mode';
 import FolderLibrary from '@/components/setlist/folder-library';
-import DisplaySettingsDialog from '@/components/setlist/display-settings-dialog';
 import encoreLogoUrl from '@/assets/encore-logo.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Moon, Sun, Play, Pause, Download, Upload, Minus, Plus, Mic } from 'lucide-react';
+import { Moon, Sun, Play, Pause, Download, Upload, Minus, Plus, Mic, Settings } from 'lucide-react';
 import { exportSetlist, loadSetlist } from '@/lib/export-utils';
 import { Song } from '@shared/schema';
 import { getVersionString } from '@/lib/version';
-import { defaultDisplaySettingsState } from '@/lib/display-settings';
 
 export default function SetlistBuilder() {
   const { state, actions } = useSetlistState();
@@ -203,11 +202,12 @@ export default function SetlistBuilder() {
               </Button>
 
               {/* Display Settings */}
-              <DisplaySettingsDialog
-                settings={state.displaySettings || defaultDisplaySettingsState}
-                isDarkMode={state.isDarkMode}
-                onUpdate={actions.updateDisplaySettings}
-              />
+              <Link href="/settings/display">
+                <Button variant="outline" size="sm" style={{ height: '2em' }} data-testid="button-display-settings">
+                  <Settings className="h-4 w-4 mr-1" />
+                  Display
+                </Button>
+              </Link>
 
               {/* Performance Mode Toggle */}
               <Button 
