@@ -52,7 +52,7 @@ export default function DisplaySettingsDialog({ settings, isDarkMode, onUpdate }
           Display
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Display Settings</DialogTitle>
@@ -79,99 +79,101 @@ export default function DisplaySettingsDialog({ settings, isDarkMode, onUpdate }
           </div>
         </DialogHeader>
 
-        <Tabs defaultValue="colors" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="colors" data-testid="tab-colors">Colors</TabsTrigger>
-            <TabsTrigger value="display" data-testid="tab-display">Display Options</TabsTrigger>
-          </TabsList>
+        <div className="overflow-y-auto flex-1 pr-2">
+          <Tabs defaultValue="colors" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="colors" data-testid="tab-colors">Colors</TabsTrigger>
+              <TabsTrigger value="display" data-testid="tab-display">Display Options</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="colors" className="space-y-4">
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Text Colors</h3>
-              <ColorPicker
-                label="Main Text"
-                value={currentSettings.mainTextColor}
-                onChange={(color) => updateSetting('mainTextColor', color)}
-              />
-            </div>
+            <TabsContent value="colors" className="space-y-4">
+              <div>
+                <h3 className="text-sm font-semibold mb-3">Text Colors</h3>
+                <ColorPicker
+                  label="Main Text"
+                  value={currentSettings.mainTextColor}
+                  onChange={(color) => updateSetting('mainTextColor', color)}
+                />
+              </div>
 
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Section Header Colors</h3>
-              <ColorPicker
-                label="Intro"
-                value={currentSettings.introColor}
-                onChange={(color) => updateSetting('introColor', color)}
-              />
-              <ColorPicker
-                label="Verse"
-                value={currentSettings.verseColor}
-                onChange={(color) => updateSetting('verseColor', color)}
-              />
-              <ColorPicker
-                label="Chorus"
-                value={currentSettings.chorusColor}
-                onChange={(color) => updateSetting('chorusColor', color)}
-              />
-              <ColorPicker
-                label="Bridge"
-                value={currentSettings.bridgeColor}
-                onChange={(color) => updateSetting('bridgeColor', color)}
-              />
-              <ColorPicker
-                label="Outro"
-                value={currentSettings.outroColor}
-                onChange={(color) => updateSetting('outroColor', color)}
-              />
-              <ColorPicker
-                label="Solo"
-                value={currentSettings.soloColor}
-                onChange={(color) => updateSetting('soloColor', color)}
-              />
-              <ColorPicker
-                label="Interlude"
-                value={currentSettings.interludeColor}
-                onChange={(color) => updateSetting('interludeColor', color)}
-              />
-              <ColorPicker
-                label="Instrumental"
-                value={currentSettings.instrumentalColor}
-                onChange={(color) => updateSetting('instrumentalColor', color)}
-              />
-            </div>
-          </TabsContent>
+              <div>
+                <h3 className="text-sm font-semibold mb-3">Section Header Colors</h3>
+                <ColorPicker
+                  label="Intro"
+                  value={currentSettings.introColor}
+                  onChange={(color) => updateSetting('introColor', color)}
+                />
+                <ColorPicker
+                  label="Verse"
+                  value={currentSettings.verseColor}
+                  onChange={(color) => updateSetting('verseColor', color)}
+                />
+                <ColorPicker
+                  label="Chorus"
+                  value={currentSettings.chorusColor}
+                  onChange={(color) => updateSetting('chorusColor', color)}
+                />
+                <ColorPicker
+                  label="Bridge"
+                  value={currentSettings.bridgeColor}
+                  onChange={(color) => updateSetting('bridgeColor', color)}
+                />
+                <ColorPicker
+                  label="Outro"
+                  value={currentSettings.outroColor}
+                  onChange={(color) => updateSetting('outroColor', color)}
+                />
+                <ColorPicker
+                  label="Solo"
+                  value={currentSettings.soloColor}
+                  onChange={(color) => updateSetting('soloColor', color)}
+                />
+                <ColorPicker
+                  label="Interlude"
+                  value={currentSettings.interludeColor}
+                  onChange={(color) => updateSetting('interludeColor', color)}
+                />
+                <ColorPicker
+                  label="Instrumental"
+                  value={currentSettings.instrumentalColor}
+                  onChange={(color) => updateSetting('instrumentalColor', color)}
+                />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="display" className="space-y-4">
-            <div className="flex items-center justify-between py-3">
-              <Label htmlFor="show-chords">Show Chords</Label>
-              <Switch
-                id="show-chords"
-                checked={currentSettings.showChords}
-                onCheckedChange={(checked) => updateSetting('showChords', checked)}
-                data-testid="switch-show-chords"
-              />
-            </div>
+            <TabsContent value="display" className="space-y-4">
+              <div className="flex items-center justify-between py-3">
+                <Label htmlFor="show-chords">Show Chords</Label>
+                <Switch
+                  id="show-chords"
+                  checked={currentSettings.showChords}
+                  onCheckedChange={(checked) => updateSetting('showChords', checked)}
+                  data-testid="switch-show-chords"
+                />
+              </div>
 
-            <div className="flex items-center justify-between py-3">
-              <Label htmlFor="show-key">Show Key Info</Label>
-              <Switch
-                id="show-key"
-                checked={currentSettings.showKey}
-                onCheckedChange={(checked) => updateSetting('showKey', checked)}
-                data-testid="switch-show-key"
-              />
-            </div>
+              <div className="flex items-center justify-between py-3">
+                <Label htmlFor="show-key">Show Key Info</Label>
+                <Switch
+                  id="show-key"
+                  checked={currentSettings.showKey}
+                  onCheckedChange={(checked) => updateSetting('showKey', checked)}
+                  data-testid="switch-show-key"
+                />
+              </div>
 
-            <div className="flex items-center justify-between py-3">
-              <Label htmlFor="bold-chorus">Bold Chorus Sections</Label>
-              <Switch
-                id="bold-chorus"
-                checked={currentSettings.boldChorus}
-                onCheckedChange={(checked) => updateSetting('boldChorus', checked)}
-                data-testid="switch-bold-chorus"
-              />
-            </div>
-          </TabsContent>
-        </Tabs>
+              <div className="flex items-center justify-between py-3">
+                <Label htmlFor="bold-chorus">Bold Chorus Sections</Label>
+                <Switch
+                  id="bold-chorus"
+                  checked={currentSettings.boldChorus}
+                  onCheckedChange={(checked) => updateSetting('boldChorus', checked)}
+                  data-testid="switch-bold-chorus"
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </DialogContent>
     </Dialog>
   );
