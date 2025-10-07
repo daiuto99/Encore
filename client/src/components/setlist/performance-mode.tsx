@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Minus, Plus, Moon, Sun, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AppState } from '@shared/schema';
@@ -13,11 +13,31 @@ interface PerformanceModeProps {
 
 export default function PerformanceMode({ state, actions }: PerformanceModeProps) {
   const [currentTime, setCurrentTime] = useState('');
+  const [swipeStartY, setSwipeStartY] = useState(0);
   
   const currentSet = state.sets[state.currentSetIndex];
   const currentSong = currentSet.songs[state.currentSongIndex];
   const hasPrev = state.currentSongIndex > 0;
   const hasNext = state.currentSongIndex < currentSet.songs.length - 1;
+
+  // Auto fullscreen on entry
+  useEffect(() => {
+    const enterFullscreen = async () => {
+      try {
+        await document.documentElement.requestFullscreen();
+      } catch (err) {
+        console.log('Fullscreen not supported or denied');
+      }
+    };
+    
+    enterFullscreen();
+    
+    return () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+    };
+  }, []);
 
   // Clock update
   useEffect(() => {
@@ -42,6 +62,19 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
     onSwipeLeft: () => actions.navigateSong(1),
     onSwipeRight: () => actions.navigateSong(-1)
   });
+
+  // Swipe down from top to exit
+  const handleSwipeDownExit = useCallback((e: React.TouchEvent) => {
+    if (e.type === 'touchstart') {
+      setSwipeStartY(e.touches[0].clientY);
+    } else if (e.type === 'touchend') {
+      const swipeDistance = e.changedTouches[0].clientY - swipeStartY;
+      // Swipe down from top 20% of screen exits fullscreen
+      if (swipeStartY < window.innerHeight * 0.2 && swipeDistance > 100) {
+        actions.togglePerformanceMode();
+      }
+    }
+  }, [swipeStartY, actions]);
 
   const getPrevSongName = () => {
     if (hasPrev && state.currentSongIndex > 0) {
@@ -70,7 +103,11 @@ export default function PerformanceMode({ state, actions }: PerformanceModeProps
   };
 
   return (
-    <div className="performance-ui min-h-screen bg-background">
+    <div 
+      className="performance-ui min-h-screen bg-background"
+      onTouchStart={handleSwipeDownExit}
+      onTouchEnd={handleSwipeDownExit}
+    >
       {/* Sticky Set Tabs with Controls */}
       <div className="sticky top-0 z-40 bg-card border-b shadow-sm" data-testid="performance-sticky-tabs">
         <div className="max-w-7xl mx-auto px-4">

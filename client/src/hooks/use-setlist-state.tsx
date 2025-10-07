@@ -292,10 +292,14 @@ export function useSetlistState() {
           newSongIndex = 0;
         }
         
+        // Set font to 110% when entering performance mode, restore when exiting
+        const newFontSize = newPerformanceMode ? 110 : prev.fontSize;
+        
         return { 
           ...prev, 
           isPerformanceMode: newPerformanceMode,
-          currentSongIndex: newSongIndex
+          currentSongIndex: newSongIndex,
+          fontSize: newFontSize
         };
       });
     },

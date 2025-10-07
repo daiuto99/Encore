@@ -9,24 +9,31 @@ interface TouchGestureOptions {
 export function useTouchGestures({
   onSwipeLeft,
   onSwipeRight,
-  swipeThreshold = 50
+  swipeThreshold = 100  // Increased from 50 to 100
 }: TouchGestureOptions) {
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const touchEndX = useRef(0);
+  const touchEndY = useRef(0);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.changedTouches[0].screenX;
+    touchStartY.current = e.changedTouches[0].screenY;
   }, []);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     touchEndX.current = e.changedTouches[0].screenX;
+    touchEndY.current = e.changedTouches[0].screenY;
     
-    const swipeDistance = touchEndX.current - touchStartX.current;
+    const swipeDistanceX = touchEndX.current - touchStartX.current;
+    const swipeDistanceY = Math.abs(touchEndY.current - touchStartY.current);
     
-    if (Math.abs(swipeDistance) > swipeThreshold) {
-      if (swipeDistance > 0 && onSwipeRight) {
+    // Only trigger if horizontal swipe is larger than vertical swipe
+    // This prevents accidental swipes while scrolling
+    if (Math.abs(swipeDistanceX) > swipeThreshold && Math.abs(swipeDistanceX) > swipeDistanceY * 2) {
+      if (swipeDistanceX > 0 && onSwipeRight) {
         onSwipeRight();
-      } else if (swipeDistance < 0 && onSwipeLeft) {
+      } else if (swipeDistanceX < 0 && onSwipeLeft) {
         onSwipeLeft();
       }
     }

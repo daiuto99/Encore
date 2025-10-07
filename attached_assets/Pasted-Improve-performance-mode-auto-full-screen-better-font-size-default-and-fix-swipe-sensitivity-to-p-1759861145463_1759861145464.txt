@@ -1,0 +1,122 @@
+Improve performance mode: auto full-screen, better font size default, and fix swipe sensitivity to prevent accidental navigation while scrolling.
+
+UPDATE client/src/components/setlist/performance-mode.tsx:
+
+1. Add fullscreen on entry and improve swipe detection. At the top, add fullscreen utilities:
+
+useEffect(() => {
+  const enterFullscreen = async () => {
+    try {
+      await document.documentElement.requestFullscreen();
+    } catch (err) {
+      console.log('Fullscreen not supported or denied');
+    }
+  };
+  
+  enterFullscreen();
+  
+  return () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+}, []);
+
+2. Set default font size to 110% when entering performance mode. UPDATE client/src/hooks/use-setlist-state.tsx in the togglePerformanceMode action (around line 215):
+
+togglePerformanceMode: () => {
+  setState(prev => {
+    const newPerformanceMode = !prev.isPerformanceMode;
+    const currentSet = prev.sets[prev.currentSetIndex];
+    
+    let newSongIndex = prev.currentSongIndex;
+    if (newPerformanceMode && currentSet && currentSet.songs.length > 0 && prev.currentSongIndex === -1) {
+      newSongIndex = 0;
+    }
+    
+    // Set font to 110% when entering performance mode, restore when exiting
+    const newFontSize = newPerformanceMode ? 110 : prev.fontSize;
+    
+    return { 
+      ...prev, 
+      isPerformanceMode: newPerformanceMode,
+      currentSongIndex: newSongIndex,
+      fontSize: newFontSize
+    };
+  });
+},
+
+3. Fix swipe sensitivity - UPDATE client/src/hooks/use-touch-gestures.tsx to require horizontal swipe and minimum distance:
+
+import { useRef, useCallback } from 'react';
+
+interface TouchGestureOptions {
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
+  swipeThreshold?: number;
+}
+
+export function useTouchGestures({
+  onSwipeLeft,
+  onSwipeRight,
+  swipeThreshold = 100  // Increased from 50 to 100
+}: TouchGestureOptions) {
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchEndX = useRef(0);
+  const touchEndY = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].screenX;
+    touchStartY.current = e.changedTouches[0].screenY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].screenX;
+    touchEndY.current = e.changedTouches[0].screenY;
+    
+    const swipeDistanceX = touchEndX.current - touchStartX.current;
+    const swipeDistanceY = Math.abs(touchEndY.current - touchStartY.current);
+    
+    // Only trigger if horizontal swipe is larger than vertical swipe
+    // This prevents accidental swipes while scrolling
+    if (Math.abs(swipeDistanceX) > swipeThreshold && Math.abs(swipeDistanceX) > swipeDistanceY * 2) {
+      if (swipeDistanceX > 0 && onSwipeRight) {
+        onSwipeRight();
+      } else if (swipeDistanceX < 0 && onSwipeLeft) {
+        onSwipeLeft();
+      }
+    }
+  }, [onSwipeLeft, onSwipeRight, swipeThreshold]);
+
+  return {
+    onTouchStart: handleTouchStart,
+    onTouchEnd: handleTouchEnd
+  };
+}
+
+4. Add swipe-down to exit fullscreen. In performance-mode.tsx, add a new gesture handler:
+
+const [swipeStartY, setSwipeStartY] = useState(0);
+
+const handleSwipeDownExit = useCallback((e: React.TouchEvent) => {
+  if (e.type === 'touchstart') {
+    setSwipeStartY(e.touches[0].clientY);
+  } else if (e.type === 'touchend') {
+    const swipeDistance = e.changedTouches[0].clientY - swipeStartY;
+    // Swipe down from top 20% of screen exits fullscreen
+    if (swipeStartY < window.innerHeight * 0.2 && swipeDistance > 100) {
+      actions.togglePerformanceMode();
+    }
+  }
+}, [swipeStartY, actions]);
+
+Then add to the main performance div:
+<div 
+  className="performance-mode" 
+  id="performanceMode"
+  onTouchStart={handleSwipeDownExit}
+  onTouchEnd={handleSwipeDownExit}
+>
+
+This makes performance mode: auto fullscreen, 110% font default, and much less sensitive to accidental swipes while scrolling.
