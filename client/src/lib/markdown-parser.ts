@@ -1,10 +1,23 @@
-import { defaultDisplaySettings, type DisplaySettings } from './display-settings';
+import { type DisplaySettings } from './display-settings';
 
 // Enhanced markdown parser with better iOS Safari support
 export function parseMarkdown(content: string, settings?: DisplaySettings): string {
   if (!content) return '';
   
-  const s = settings || defaultDisplaySettings;
+  const s = settings || {
+    mainTextColor: '#1e293b',
+    introColor: '#3B82F6',
+    verseColor: '#F97316',
+    chorusColor: '#EF4444',
+    bridgeColor: '#8B5CF6',
+    outroColor: '#F59E0B',
+    soloColor: '#10B981',
+    interludeColor: '#06B6D4',
+    instrumentalColor: '#EC4899',
+    showChords: true,
+    showKey: true,
+    boldChorus: false,
+  };
   
   // Normalize line endings for cross-platform compatibility
   let normalized = content
@@ -16,13 +29,19 @@ export function parseMarkdown(content: string, settings?: DisplaySettings): stri
     normalized = normalized.replace(/^\*\*Key:\*\* .+$/gm, '');
   }
   
-  // Remove section colors if disabled
-  if (!s.showSectionColors) {
-    normalized = normalized.replace(/<span style="[^"]*">(##\s*[^<]*)<\/span>/g, '$1');
-  }
+  // Override section colors with settings
+  normalized = normalized
+    .replace(/<span style="[^"]*">(##\s*Intro[^<]*)<\/span>/gi, `<span style="color: ${s.introColor}; font-weight: bold;">$1</span>`)
+    .replace(/<span style="[^"]*">(##\s*Verse[^<]*)<\/span>/gi, `<span style="color: ${s.verseColor}; font-weight: bold;">$1</span>`)
+    .replace(/<span style="[^"]*">(##\s*Chorus[^<]*)<\/span>/gi, `<span style="color: ${s.chorusColor}; font-weight: bold;">$1</span>`)
+    .replace(/<span style="[^"]*">(##\s*Bridge[^<]*)<\/span>/gi, `<span style="color: ${s.bridgeColor}; font-weight: bold;">$1</span>`)
+    .replace(/<span style="[^"]*">(##\s*Outro[^<]*)<\/span>/gi, `<span style="color: ${s.outroColor}; font-weight: bold;">$1</span>`)
+    .replace(/<span style="[^"]*">(##\s*Solo[^<]*)<\/span>/gi, `<span style="color: ${s.soloColor}; font-weight: bold;">$1</span>`)
+    .replace(/<span style="[^"]*">(##\s*Interlude[^<]*)<\/span>/gi, `<span style="color: ${s.interludeColor}; font-weight: bold;">$1</span>`)
+    .replace(/<span style="[^"]*">(##\s*Instrumental[^<]*)<\/span>/gi, `<span style="color: ${s.instrumentalColor}; font-weight: bold;">$1</span>`);
   
-  // Handle chords based on display style
-  if (!s.showChords || s.chordDisplayStyle === 'hidden') {
+  // Hide chords if disabled
+  if (!s.showChords) {
     normalized = normalized.replace(/`\[[^\]]+\]`/g, '');
   }
   
@@ -31,7 +50,7 @@ export function parseMarkdown(content: string, settings?: DisplaySettings): stri
     normalized = normalized.replace(/(##\s*Chorus[\s\S]*?)(?=##|$)/gi, '<strong>$1</strong>');
   }
     
-  return normalized
+  let html = normalized
     // Process headings first (with proper line boundary handling)
     .replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold mb-2 mt-4">$1</h3>')
     .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold mb-3 mt-6">$1</h2>')
@@ -63,6 +82,11 @@ export function parseMarkdown(content: string, settings?: DisplaySettings): stri
     .replace(/<p class="mb-4"><\/p>/g, '')
     .replace(/<p class="mb-4">(<h[1-6])/g, '$1')
     .replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+  
+  // Apply main text color to all paragraph text
+  html = html.replace(/<p class="mb-4">/g, `<p class="mb-4" style="color: ${s.mainTextColor};">`);
+  
+  return html;
 }
 
 // Enhanced embedded markdown parser for offline exports
