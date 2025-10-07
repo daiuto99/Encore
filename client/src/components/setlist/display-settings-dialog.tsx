@@ -54,32 +54,33 @@ export default function DisplaySettingsDialog({ settings, isDarkMode, onUpdate }
           Display
         </Button>
       </DialogTrigger>
-      <DialogContent className="relative z-[1001] max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-slate-900 p-6">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle>Display Settings</DialogTitle>
-            <div className="flex gap-2">
-              <Button
-                variant={mode === 'light' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setMode('light')}
-                data-testid="button-settings-mode-light"
-              >
-                <Sun className="h-4 w-4 mr-1" />
-                Light
-              </Button>
-              <Button
-                variant={mode === 'dark' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setMode('dark')}
-                data-testid="button-settings-mode-dark"
-              >
-                <Moon className="h-4 w-4 mr-1" />
-                Dark
-              </Button>
+      <DialogContent className="relative z-[1001] max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-slate-900">
+        <div className="p-6 flex flex-col h-full">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Display Settings</DialogTitle>
+              <div className="flex gap-2">
+                <Button
+                  variant={mode === 'light' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setMode('light')}
+                  data-testid="button-settings-mode-light"
+                >
+                  <Sun className="h-4 w-4 mr-1" />
+                  Light
+                </Button>
+                <Button
+                  variant={mode === 'dark' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setMode('dark')}
+                  data-testid="button-settings-mode-dark"
+                >
+                  <Moon className="h-4 w-4 mr-1" />
+                  Dark
+                </Button>
+              </div>
             </div>
-          </div>
-        </DialogHeader>
+          </DialogHeader>
 
         <div className="overflow-y-auto flex-1 pr-2">
           <Tabs defaultValue="colors" className="w-full">
@@ -175,6 +176,7 @@ export default function DisplaySettingsDialog({ settings, isDarkMode, onUpdate }
               </div>
             </TabsContent>
           </Tabs>
+        </div>
         </div>
       </DialogContent>
     </Dialog>

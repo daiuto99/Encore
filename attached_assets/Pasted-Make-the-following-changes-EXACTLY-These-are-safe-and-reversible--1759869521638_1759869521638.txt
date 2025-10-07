@@ -1,3 +1,14 @@
+Make the following changes EXACTLY. These are safe and reversible.
+
+/////////////////////////////////////////////////////
+// 1) Replace the ENTIRE file at: components/ui/dialog.tsx
+//    (If your path is different, search for a file that exports
+//    Dialog, DialogTrigger, DialogContent, DialogOverlay, etc.)
+/////////////////////////////////////////////////////
+
+Overwrite its contents with this:
+
+----------------------------------------------------
 "use client";
 
 import * as React from "react";
@@ -106,3 +117,31 @@ export const DialogDescription = React.forwardRef<
   />
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
+----------------------------------------------------
+
+
+/////////////////////////////////////////////////////
+// 2) Ensure the DIALOG USAGE file is a client component
+//    File: display-settings-dialog.tsx
+/////////////////////////////////////////////////////
+
+At the VERY TOP of the file, insert exactly this line:
+----------------------------------------------------
+"use client";
+----------------------------------------------------
+
+Find your <DialogContent ...> in the same file and REPLACE its className with:
+----------------------------------------------------
+className="relative z-[1001] max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-slate-900"
+----------------------------------------------------
+
+
+/////////////////////////////////////////////////////
+// 3) (Temporary test) Set your in-app zoom to 100%
+//    using your app’s zoom control, then open the
+//    Display settings again.
+/////////////////////////////////////////////////////
+
+// If the panel now appears correctly both embedded and in the pop-out window,
+// keep these changes. If it still doesn’t, tell me and I’ll give you one
+// final 1-line CSS override to neutralize a body-level transform.
