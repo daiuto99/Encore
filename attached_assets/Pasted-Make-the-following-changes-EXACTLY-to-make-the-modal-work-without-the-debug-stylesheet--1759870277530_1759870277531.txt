@@ -1,3 +1,21 @@
+Make the following changes EXACTLY to make the modal work without the debug stylesheet.
+
+/////////////////////////////////////////////////////
+// 1) Remove the temporary debug CSS
+/////////////////////////////////////////////////////
+• Delete the file: src/debug-modal.css   (or /styles/debug-modal.css, whichever you created)
+• Remove any import of that file:
+  - If Vite/CRA: open src/main.tsx (or src/index.tsx) and delete:  import "./debug-modal.css";
+  - If Next.js: open app/globals.css and delete the @import that referenced debug-modal.css.
+
+/////////////////////////////////////////////////////
+// 2) Overwrite the shared dialog component with a clean, permanent version
+//    File: components/ui/dialog.tsx     (adjust path if yours differs)
+/////////////////////////////////////////////////////
+
+Replace the ENTIRE contents of components/ui/dialog.tsx with this:
+
+----------------------------------------------------
 "use client";
 
 import * as React from "react";
@@ -119,3 +137,32 @@ export const DialogDescription = React.forwardRef<
   />
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
+----------------------------------------------------
+
+
+/////////////////////////////////////////////////////
+// 3) Ensure the screen that opens the dialog is a client component
+//    File: display-settings-dialog.tsx
+/////////////////////////////////////////////////////
+
+At the VERY TOP of this file, insert (or keep) exactly:
+----------------------------------------------------
+"use client";
+----------------------------------------------------
+
+Find your <DialogContent ...> in this file and REPLACE its className with:
+----------------------------------------------------
+className="relative z-[1001] max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-slate-900"
+----------------------------------------------------
+
+(Accessibility bonus: if you saw a console warning about “Missing Description or aria-describedby”, wrap your body text with <DialogDescription>…</DialogDescription> to satisfy Radix’s a11y.)
+
+
+/////////////////////////////////////////////////////
+// 4) Re-run your app and test the modal (embedded and pop-out)
+/////////////////////////////////////////////////////
+
+EXPECTED:
+- The overlay dims the page.
+- The panel appears centered, above the overlay, fully clickable.
+- Works the same in both the embedded preview and the pop-out window.
