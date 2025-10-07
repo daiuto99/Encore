@@ -17,6 +17,18 @@ const initialState: AppState = {
 
 export function useSetlistState() {
   const [state, setState] = useState<AppState>(() => {
+    // Try to load from localStorage first
+    try {
+      const savedState = localStorage.getItem('encore-app-state');
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        console.log('Restored state from localStorage');
+        return parsed;
+      }
+    } catch (error) {
+      console.error('Error loading saved state:', error);
+    }
+    
     // Check for embedded data on initial load
     const embeddedData = document.getElementById('setlist-data');
     if (embeddedData) {
@@ -26,8 +38,18 @@ export function useSetlistState() {
         console.error('Error loading embedded data:', error);
       }
     }
+    
     return initialState;
   });
+
+  // Auto-save state to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('encore-app-state', JSON.stringify(state));
+    } catch (error) {
+      console.error('Error saving state:', error);
+    }
+  }, [state]);
 
   // Apply theme changes to document
   useEffect(() => {
@@ -383,6 +405,11 @@ export function useSetlistState() {
           currentSongIndex: newCurrentSongIndex
         };
       });
+    },
+
+    clearState: () => {
+      localStorage.removeItem('encore-app-state');
+      setState(initialState);
     }
   };
 

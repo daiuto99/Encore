@@ -244,6 +244,22 @@ export default function SetlistBuilder() {
                     data-testid="input-load-setlist"
                   />
                 </label>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    if (confirm('Clear all data and start fresh? This cannot be undone.')) {
+                      actions.clearState();
+                      toast({
+                        title: 'Cleared',
+                        description: 'All data has been cleared',
+                      });
+                    }
+                  }}
+                  data-testid="button-clear-all"
+                  style={{ height: '2em' }}
+                >
+                  Clear All
+                </Button>
               </div>
             </div>
           </div>
