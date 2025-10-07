@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -52,7 +54,7 @@ export default function DisplaySettingsDialog({ settings, isDarkMode, onUpdate }
           Display
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="z-[999] max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-slate-900">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Display Settings</DialogTitle>
