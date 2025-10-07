@@ -27,7 +27,8 @@ export const appStateSchema = z.object({
   isDarkMode: z.boolean().default(false),
   isPerformanceMode: z.boolean().default(false),
   selectedPreviewSong: songSchema.nullable().optional(),
-  exportDate: z.string().optional()
+  exportDate: z.string().optional(),
+  exportVersion: z.string().optional()
 });
 
 export type Song = z.infer<typeof songSchema>;

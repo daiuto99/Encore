@@ -1,10 +1,12 @@
 import { AppState } from '@shared/schema';
 import { embeddedMarkdownParser } from './markdown-parser';
+import { VERSION } from './version';
 
 export async function exportSetlist(state: AppState, folderHandle?: any): Promise<void> {
   const exportData = {
     ...state,
-    exportDate: new Date().toISOString()
+    exportDate: new Date().toISOString(),
+    exportVersion: VERSION
   };
   
   // Create the complete HTML file with embedded state and app code
@@ -143,6 +145,7 @@ async function createPortableHTML(data: AppState): Promise<string> {
         <div class="header">
             <h1>${data.setlistName}</h1>
             <p>Total Songs: ${data.allSongs.length} | Sets: ${data.sets.length}</p>
+            <p style="font-size: 0.875rem; color: #64748b; margin-top: 8px;">Encore v${VERSION}</p>
         </div>
         <div class="sets">
             ${data.sets.map((set, index) => {
@@ -329,6 +332,9 @@ async function createPortableHTML(data: AppState): Promise<string> {
             }
         }, { passive: false });
     </script>
+    <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.875rem;">
+        Encore v${VERSION}
+    </footer>
 </body>
 </html>`;
 }

@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Moon, Sun, Play, Pause, Download, Upload, Minus, Plus, Mic } from 'lucide-react';
 import { exportSetlist, loadSetlist } from '@/lib/export-utils';
 import { Song } from '@shared/schema';
+import { getVersionString } from '@/lib/version';
 
 export default function SetlistBuilder() {
   const { state, actions } = useSetlistState();
@@ -152,6 +153,9 @@ export default function SetlistBuilder() {
                   data-testid="logo-encore"
                 />
               </div>
+              <span className="text-sm text-muted-foreground" data-testid="text-version">
+                {getVersionString()}
+              </span>
               {state.exportDate && (
                 <span className="text-sm text-muted-foreground" data-testid="text-export-date">
                   {new Date(state.exportDate).toLocaleDateString()}
@@ -287,6 +291,15 @@ export default function SetlistBuilder() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-card border-t py-4 mt-8 no-print">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-sm text-muted-foreground" data-testid="text-footer-version">
+            Encore {getVersionString()}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
